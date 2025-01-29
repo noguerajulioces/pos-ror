@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-50">
+<html class="h-full">
   <head>
-    <title><%= content_for(:title) || "Pos Ror" %></title>
+    <title><%= content_for(:title) || "Multicarnes" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -23,22 +23,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="h-full">
-    <div data-controller="sidebar">
-      <%= render 'layouts/shared/sidebar' %>
-
-      <div class="lg:pl-72">
-        <%= render 'layouts/shared/navbar' %>
-
-        <main class="py-10">
-          <div class="px-4 sm:px-6 lg:px-8">
-            <div class="fixed top-50 left-0 right-0 z-50">
-              <%= render 'layouts/shared/notice' %>
-            </div>
-            <%= yield %>
-          </div>
-        </main>
+  <body class="bg-gray-200">
+    <main class="mt-28">
+      <%= render "layouts/shared/notice" %>
+      <div class="shadow rounded-[4vw] bg-white mx-48 pb-4">
+        <%= yield %>
       </div>
-    </div>
+    </main>
   </body>
 </html>
