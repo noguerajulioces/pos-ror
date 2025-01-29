@@ -51,7 +51,7 @@
             tabindex="-1" 
             data-dropdown-target="menu">
           <!-- Active: "bg-gray-50 outline-none", Not Active: "" -->
-          <a href="<%#= user_profile_path %>" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-0">Perfil</a>
+          <a href="<%= root_path %>" class="block px-3 py-1 text-sm/6 text-gray-900" role="menuitem" tabindex="-1" id="user-menu-item-0">Perfil</a>
           <%= link_to "Cerrar Sesión", destroy_user_session_path, class: "block px-3 py-1 text-sm/6 text-gray-900", role: "menuitem", id: "user-menu-item-1", data: { turbo_method: :delete } %>
         </div>
       </div>
