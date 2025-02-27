@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: purchases
+#
+#  id            :bigint           not null, primary key
+#  purchase_date :date
+#  supplier      :string
+#  total_amount  :decimal(, )
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+one:
+  supplier: MyString
+  purchase_date: 2025-02-27
+  total_amount: 9.99
+
+two:
+  supplier: MyString
+  purchase_date: 2025-02-27
+  total_amount: 9.99

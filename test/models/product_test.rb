@@ -2,18 +2,19 @@
 #
 # Table name: products
 #
-#  id          :bigint           not null, primary key
-#  barcode     :string
-#  description :text
-#  min_stock   :integer
-#  name        :string
-#  price       :decimal(, )
-#  sku         :string
-#  status      :string
-#  stock       :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  category_id :bigint           not null
+#  id           :bigint           not null, primary key
+#  average_cost :decimal(, )
+#  barcode      :string
+#  description  :text
+#  min_stock    :integer
+#  name         :string
+#  price        :decimal(, )
+#  sku          :string
+#  status       :string
+#  stock        :integer
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  category_id  :bigint           not null
 #
 # Indexes
 #

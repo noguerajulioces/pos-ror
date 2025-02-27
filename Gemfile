@@ -68,3 +68,7 @@ gem "devise"
 gem "will_paginate", "~> 4.0.1"
 gem "annotaterb"
 gem "rails-erd"
+
+gem "barby"
+gem "rqrcode"
+gem "chunky_png"
