@@ -1,0 +1,41 @@
+# docker-compose.yml
+# version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: pos_db
+    volumes:
+      - pos_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: pos_ror
+      POSTGRES_USER: pos_user
+      POSTGRES_PASSWORD: pos_password
+    networks:
+      - pos_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pos_app
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - ".:/rails"
+      - "bundle_data:/usr/local/bundle"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://pos_user:pos_password@db:5432/pos_ror"
+      RAILS_ENV: "development"
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    networks:
+      - pos_network
+
+volumes:
+  pos_db_data:
+  bundle_data:
+
+networks:
+  pos_network:
