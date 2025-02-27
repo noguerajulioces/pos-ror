@@ -1,0 +1,5 @@
+# app/views/subcategories/create.turbo_stream.erb
+
+<%= turbo_stream.append "subcategory_list", partial: "subcategories/subcategory", locals: { subcategory: @subcategory } %>
+
+<%= turbo_stream.update "modal", "" %>

@@ -1,11 +1,8 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[show edit update destroy]
+  before_action :set_category, only: %i[edit update destroy]
 
   def index
     @categories = Category.where(parent_id: nil).includes(:subcategories)
-  end
-
-  def show
   end
 
   def new

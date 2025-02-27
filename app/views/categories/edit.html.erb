@@ -1,4 +1,12 @@
-<div>
-  <h1 class="font-bold text-4xl">Categories#edit</h1>
-  <p>Find me in app/views/categories/edit.html.erb</p>
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Editar Categoría</h1>
+      <p class="mt-2 text-sm text-gray-700">Modifica los detalles de la categoría seleccionada.</p>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= render 'categories/form', category: @category %>
+  </div>
 </div>

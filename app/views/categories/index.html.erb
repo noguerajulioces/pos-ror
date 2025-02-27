@@ -21,28 +21,23 @@
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody id="subcategory_list" class="divide-y divide-gray-200 bg-white">
               <% @categories.each do |category| %>
                 <tr>
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <%= category.name %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Nueva Subcategoría", new_category_subcategory_path(category), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to "Nueva Subcategoría", 
+                      new_category_subcategory_path(category), 
+                      data: { turbo_frame: "modal" }, 
+                      class: "text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Editar", edit_category_path(category), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Eliminar", category_path(category), method: :delete, data: { confirm: "¿Estás seguro?" }, class: "ml-2 text-red-600 hover:text-red-900" %>
                   </td>
                 </tr>
                 <% category.subcategories.each do |subcategory| %>
-                  <tr class="bg-gray-50">
-                    <td class="whitespace-nowrap py-4 pl-8 pr-3 text-sm font-medium text-gray-900 sm:pl-10">
-                      └ <%= subcategory.name %>
-                    </td>
-                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <%= link_to "Editar", edit_category_path(subcategory), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Eliminar", category_path(subcategory), method: :delete, data: { confirm: "¿Estás seguro?" }, class: "ml-2 text-red-600 hover:text-red-900" %>
-                    </td>
-                  </tr>
+                  <%= render partial: "subcategories/subcategory", locals: { subcategory: subcategory } %>
                 <% end %>
               <% end %>
             </tbody>
