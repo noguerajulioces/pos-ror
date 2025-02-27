@@ -1,8 +1,7 @@
 class CategoriesController < ApplicationController
   before_action :set_category, only: %i[edit update destroy]
-
   def index
-    @categories = Category.where(parent_id: nil).includes(:subcategories)
+    @categories = Category.where(parent_id: nil).includes(:subcategories).paginate(page: params[:page], per_page: 10)
   end
 
   def new

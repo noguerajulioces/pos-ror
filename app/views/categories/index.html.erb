@@ -42,6 +42,9 @@
               <% end %>
             </tbody>
           </table>
+          <div class="px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+            <%= will_paginate @categories, class: "pagination" %>
+          </div>
         </div>
       </div>
     </div>
