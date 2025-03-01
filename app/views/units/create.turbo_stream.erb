@@ -1,0 +1,4 @@
+<%= turbo_stream.update "units_table",
+      partial: "units/table",
+      locals: { units: Unit.paginate(page: params[:page]) } %>
+<%= turbo_stream.remove "modal" %>

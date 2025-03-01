@@ -1,0 +1,22 @@
+<turbo-frame id="modal">
+  <div data-controller="modal" class="fixed inset-0 z-[1000] flex items-center justify-center">
+    <!-- Fondo Oscuro (Overlay) -->
+    <div data-action="click->modal#clickOutside" class="fixed inset-0 bg-black opacity-50"></div>
+    
+    <!-- Contenido del Modal -->
+    <div class="bg-white rounded-lg shadow-lg max-w-md w-full z-[1100] relative">
+      <div class="p-4 border-b flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Editar Unidad</h2>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-gray-500">
+          <span class="sr-only">Close</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+</turbo-frame>
