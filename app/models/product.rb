@@ -42,6 +42,7 @@ class Product < ApplicationRecord
   before_save :update_stock_status
 
   scope :available, -> { where(status: "active") }
+  scope :in_stock, -> { where(stock: 0..) }
 
   def update_average_cost(new_unit_price, new_quantity)
     total_cost = (average_cost * stock) + (new_unit_price * new_quantity)
