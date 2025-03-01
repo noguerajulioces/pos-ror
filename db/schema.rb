@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_01_150822) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_01_192828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_150822) do
     t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.integer "sluggable_id", null: false
+    t.string "sluggable_type", limit: 50
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
   create_table "inventory_movements", force: :cascade do |t|
@@ -93,7 +104,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_150822) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "average_cost"
+    t.bigint "unit_id"
+    t.string "slug"
     t.index ["category_id"], name: "index_products_on_category_id"
+    t.index ["slug"], name: "index_products_on_slug", unique: true
+    t.index ["unit_id"], name: "index_products_on_unit_id"
   end
 
   create_table "purchase_items", force: :cascade do |t|
@@ -163,6 +178,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_150822) do
   add_foreign_key "product_images", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"
+  add_foreign_key "products", "units"
   add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
   add_foreign_key "sale_items", "products"

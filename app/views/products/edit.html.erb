@@ -1,4 +1,12 @@
-<div>
-  <h1 class="font-bold text-4xl">Product#edit</h1>
-  <p>Find me in app/views/product/edit.html.erb</p>
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Editar Producto</h1>
+      <p class="mt-2 text-sm text-gray-700">Edita un producto al inventario</p>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= render 'products/form' %>
+  </div>
 </div>
