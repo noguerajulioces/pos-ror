@@ -9,7 +9,13 @@ export default class extends Controller {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        this.previewTarget.innerHTML = `<img src="${event.target.result}" alt="Vista previa" class="max-w-xs rounded-md">`;
+        this.previewTarget.innerHTML = `
+          <img
+            src="${event.target.result}"
+            alt="Vista previa"
+            class="w-[100px] h-[100px] object-cover rounded-md"
+          >
+        `;
       };
       reader.readAsDataURL(file);
     } else {

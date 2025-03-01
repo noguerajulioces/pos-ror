@@ -26,6 +26,7 @@
 #
 class Product < ApplicationRecord
   belongs_to :category
+  belongs_to :unit
   has_many :sale_items
   has_many :inventory_movements, dependent: :destroy
   has_many :variants, class_name: "ProductVariant", dependent: :destroy

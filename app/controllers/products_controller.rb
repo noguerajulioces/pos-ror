@@ -49,7 +49,10 @@ class ProductsController < ApplicationController
   # Permitimos solo los atributos que corresponden al modelo Product.
   # Notar que no incluimos :image porque lo manejamos por separado.
   def product_params
-    params.require(:product).permit(:name, :sku, :category_id, :price, :stock, :min_stock, :description)
+    params.require(:product).permit(
+      :name, :sku, :category_id, :price, :stock, :min_stock, :description, :image,
+      variants_attributes: [ :id, :name, :sku, :price, :stock, :_destroy ]
+    )
   end
 
   # Si se sube una imagen, la asocia al producto creando un registro en ProductImage.
