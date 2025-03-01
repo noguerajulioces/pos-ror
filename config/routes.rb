@@ -17,5 +17,5 @@ Rails.application.routes.draw do
     resources :subcategories, only: [ :new, :create ]
   end
   resources :products
-  resources :stocks, only: [:index]
+  resources :stocks, only: [ :index ]
 end
