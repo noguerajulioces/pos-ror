@@ -30,8 +30,11 @@
 #  fk_rails_...  (unit_id => units.id)
 #
 class Product < ApplicationRecord
+  include NumericFormatter
   extend FriendlyId
   friendly_id :name, use: :slugged
+
+  sanitize_numeric_attributes :price
 
   belongs_to :category
   belongs_to :unit

@@ -47,7 +47,9 @@
                     <%= product.category.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= number_to_currency(product.price) %>
+                    <strong>
+                      <%= number_to_currency(product.price.to_i, unit: "GS. ", precision: 0, delimiter: '.') %>
+                    </strong>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= product.stock %>
