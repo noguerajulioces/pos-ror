@@ -20,4 +20,13 @@
 class ProductImage < ApplicationRecord
   belongs_to :product
   has_one_attached :image
+
+  before_create :set_position_and_alt_text
+
+  private
+
+  def set_position_and_alt_text
+    self.position = product.images.count
+    self.alt_text = "#{product.name} - Imagen #{position + 1}"
+  end
 end

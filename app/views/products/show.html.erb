@@ -1,79 +1,128 @@
 <div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
       <h1 class="text-base font-semibold text-gray-900">Detalles del Producto</h1>
       <p class="mt-2 text-sm text-gray-700">Información detallada del producto y su inventario</p>
     </div>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Editar", edit_product_path(@product), class: "text-indigo-600 hover:text-indigo-900 font-semibold" %>
-      <%= link_to "Volver", products_path, class: "ml-4 text-gray-600 hover:text-gray-900 font-semibold" %>
+      <%= link_to "Editar", edit_product_path(@product), class: "rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      <%= link_to "Volver", products_path, class: "ml-4 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50" %>
     </div>
   </div>
 
-  <div class="mt-8 flow-root">
+  <!-- General Information -->
+  <div class="mt-8">
     <div class="overflow-hidden bg-white shadow sm:rounded-lg">
       <div class="px-4 py-6 sm:px-6">
         <h3 class="text-lg font-medium leading-6 text-gray-900">Información General</h3>
       </div>
-      <div class="border-t border-gray-200">
-        <dl>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Nombre</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">SKU</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.sku %></dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Código de Barras</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.barcode %></dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Categoría</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.category.name %></dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Unidad</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.unit.name %></dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Descripción</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.description %></dd>
-          </div>
-        </dl>
-      </div>
+      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Column 1 -->
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">SKU</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.sku %></dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Código de Barras</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.barcode %></dd>
+            </div>
+          </dl>
 
+          <!-- Column 2 -->
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Categoría</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.category.name %></dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Unidad</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.unit.name %></dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Descripción</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.description %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+  </div>
+
+  <!-- Inventory Information -->
+  <div class="mt-8">
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
       <div class="px-4 py-6 sm:px-6">
         <h3 class="text-lg font-medium leading-6 text-gray-900">Información de Inventario</h3>
       </div>
-      <div class="border-t border-gray-200">
-        <dl>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Precio</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.price) %></dd>
+      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Column 1 -->
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Precio</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.price) %></dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Costo Promedio</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost) %></dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Estado</dt>
+              <dd class="mt-1 sm:col-span-2 sm:mt-0">
+                <span class="<%= @product.active? ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+                  <%= @product.status.humanize %>
+                </span>
+              </dd>
+            </div>
+          </dl>
+
+          <!-- Column 2 -->
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Stock Actual</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.stock %></dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Stock Mínimo</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.min_stock %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Images Information -->
+  <div class="mt-8">
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-6 sm:px-6">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Imágenes del Producto</h3>
+      </div>
+      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+        <% if @product.images.any? %>
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            <% @product.images.order(position: :asc).each do |product_image| %>
+              <div class="relative group">
+                <%= image_tag product_image.image, 
+                    class: "h-48 w-full object-cover rounded-lg",
+                    alt: product_image.alt_text %>
+                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
+                  <div class="text-white text-sm">
+                    <%= product_image.alt_text %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Costo Promedio</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost) %></dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Stock Actual</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.stock %></dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Stock Mínimo</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.min_stock %></dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">Estado</dt>
-            <dd class="mt-1 sm:col-span-2 sm:mt-0">
-              <span class="<%= @product.active? ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                <%= @product.status.humanize %>
-              </span>
-            </dd>
-          </div>
-        </dl>
+        <% else %>
+          <p class="text-sm text-gray-500">No hay imágenes disponibles para este producto.</p>
+        <% end %>
       </div>
     </div>
   </div>
