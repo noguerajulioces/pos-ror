@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_04_164055) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
     t.index ["email"], name: "index_customers_on_email", unique: true
   end
 
+  create_table "expenses", force: :cascade do |t|
+    t.decimal "amount"
+    t.text "description"
+    t.date "expense_date"
+    t.bigint "purchase_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "payment_method_id", null: false
+    t.index ["payment_method_id"], name: "index_expenses_on_payment_method_id"
+    t.index ["purchase_id"], name: "index_expenses_on_purchase_id"
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
@@ -85,6 +97,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
+  end
+
+  create_table "payment_methods", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "product_images", force: :cascade do |t|
@@ -204,6 +224,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "expenses", "payment_methods"
+  add_foreign_key "expenses", "purchases"
   add_foreign_key "inventory_movements", "products"
   add_foreign_key "product_images", "products"
   add_foreign_key "product_variants", "products"
