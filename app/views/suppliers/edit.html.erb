@@ -1,0 +1,24 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Editar Proveedor</h1>
+      <p class="mt-2 text-sm text-gray-700">Modifique los datos del proveedor.</p>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+      <div class="md:col-span-1">
+        <div class="px-4 sm:px-0">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Información del Proveedor</h3>
+          <p class="mt-1 text-sm text-gray-600">
+            Actualice la información del proveedor según sea necesario.
+          </p>
+        </div>
+      </div>
+      <div class="mt-5 md:col-span-2 md:mt-0">
+        <%= render 'form', supplier: @supplier %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,4 +20,5 @@ Rails.application.routes.draw do
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]
   resources :customers
+  resources :suppliers
 end

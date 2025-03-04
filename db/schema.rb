@@ -121,7 +121,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "average_cost"
-    t.bigint "unit_id", null: false
+    t.bigint "unit_id"
     t.string "slug"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["slug"], name: "index_products_on_slug", unique: true
