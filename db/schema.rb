@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_01_192828) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_03_200301) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_192828) do
     t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.string "address"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
+    t.string "country"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "document"
+    t.index ["email"], name: "index_customers_on_email", unique: true
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -104,7 +121,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_192828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "average_cost"
-    t.bigint "unit_id"
+    t.bigint "unit_id", null: false
     t.string "slug"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["slug"], name: "index_products_on_slug", unique: true
@@ -149,6 +166,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_01_192828) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "suppliers", force: :cascade do |t|
+    t.string "company_name"
+    t.string "document"
+    t.string "contact_name"
+    t.string "email"
+    t.string "phone"
+    t.string "address"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document"], name: "index_suppliers_on_document", unique: true
   end
 
   create_table "units", force: :cascade do |t|

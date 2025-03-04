@@ -1,0 +1,28 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Editar Cliente</h1>
+      <p class="mt-2 text-sm text-gray-700">Modifique los datos del cliente.</p>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+      <div class="md:col-span-1">
+        <div class="px-4 sm:px-0">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Información Personal</h3>
+          <p class="mt-1 text-sm text-gray-600">
+            Actualice la información del cliente según sea necesario.
+          </p>
+        </div>
+      </div>
+      <div class="mt-5 md:col-span-2 md:mt-0">
+        <div class="shadow sm:rounded-md sm:overflow-hidden">
+          <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+            <%= render 'form', customer: @customer %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

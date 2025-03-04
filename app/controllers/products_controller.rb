@@ -50,7 +50,7 @@ class ProductsController < ApplicationController
   # Notar que no incluimos :image porque lo manejamos por separado.
   def product_params
     params.require(:product).permit(
-      :name, :sku, :category_id, :unit_id, :price, :stock, :min_stock, :description, :image,
+      :name, :sku, :category_id, :unit_id, :price, :stock, :min_stock, :description,
       variants_attributes: [ :id, :name, :sku, :price, :stock, :_destroy ]
     )
   end

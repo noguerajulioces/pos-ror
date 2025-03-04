@@ -16,7 +16,7 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  category_id  :bigint           not null
-#  unit_id      :bigint
+#  unit_id      :bigint           not null
 #
 # Indexes
 #

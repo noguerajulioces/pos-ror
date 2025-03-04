@@ -1,0 +1,85 @@
+<%= form_with(model: customer, class: "bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-3") do |f| %>
+  <% if customer.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Se encontraron <%= customer.errors.count %> errores:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc space-y-1 pl-5">
+              <% customer.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="px-4 py-6 sm:p-8">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div class="sm:col-span-3">
+        <%= f.label :first_name, "Nombre", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.text_field :first_name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= f.label :last_name, "Apellido", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.text_field :last_name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= f.label :document, "C.I./RUC", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.text_field :document, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= f.label :email, "Email", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.email_field :email, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      </div>
+
+        <div class="sm:col-span-3">
+          <%= f.label :phone, "Teléfono", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.telephone_field :phone, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-6">
+          <%= f.label :address, "Dirección", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :address, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <%= f.label :city, "Ciudad", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :city, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <%= f.label :state, "Estado/Provincia", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :state, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <%= f.label :zip_code, "Código Postal", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :zip_code, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-3">
+          <%= f.label :country, "País", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :country, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-6">
+          <%= f.label :notes, "Notas", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.text_area :notes, rows: 3, class: "mt-1 px-3 p-1.5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-5">
+    <div class="flex justify-end">
+      <%= link_to "Cancelar", customers_path, class: "rounded-md bg-white py-2 px-4 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <%= f.submit 'Guardar', class: "ml-3 inline-flex justify-center rounded-md bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+    </div>
+  </div>
+<% end %>
