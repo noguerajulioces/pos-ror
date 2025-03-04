@@ -21,4 +21,5 @@ Rails.application.routes.draw do
   resources :units, except: %i[show]
   resources :customers
   resources :suppliers
+  resources :users
 end

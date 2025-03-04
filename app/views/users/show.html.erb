@@ -1,0 +1,43 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Detalles del Usuario</h1>
+      <p class="mt-2 text-sm text-gray-700">Información detallada del usuario</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <%= link_to "Editar", edit_user_path(@user), class: "rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      <%= link_to "Volver", users_path, class: "ml-4 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50" %>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-6 sm:px-6">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Información del Usuario</h3>
+      </div>
+      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+          <div class="sm:col-span-1">
+            <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @user.name || "-" %></dd>
+          </div>
+
+          <div class="sm:col-span-1">
+            <dt class="text-sm font-medium text-gray-500">Email</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @user.email %></dd>
+          </div>
+
+          <div class="sm:col-span-1">
+            <dt class="text-sm font-medium text-gray-500">Fecha de Registro</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= l(@user.created_at, format: :long) %></dd>
+          </div>
+
+          <div class="sm:col-span-1">
+            <dt class="text-sm font-medium text-gray-500">Última Actualización</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= l(@user.updated_at, format: :long) %></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
