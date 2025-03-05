@@ -92,7 +92,7 @@
       <div class="col-span-1">
         <%= form.label :category_id, "Categoría", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.collection_select :category_id, Category.all, :id, :name, 
+          <%= form.collection_select :category_id, Category.where.not(parent_id: nil), :id, :name, 
               { prompt: "Selecciona una categoría" }, 
               class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
