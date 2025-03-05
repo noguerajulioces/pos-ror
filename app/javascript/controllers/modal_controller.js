@@ -13,10 +13,8 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
     
-    // Obtener el título del modal desde el atributo data
     const title = event.currentTarget.dataset.modalTitle || "Modal"
     
-    // Crear el modal dinámicamente
     const modalHTML = `
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50" data-controller="modal">
         <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto">
@@ -29,18 +27,17 @@ export default class extends Controller {
             </button>
           </div>
           <div class="p-4" id="modal-content">
-            <turbo-frame id="modal"></turbo-frame>
+            <turbo-frame id="order_type_modal" src="/pos/order_type_modal">
+            </turbo-frame>
           </div>
         </div>
       </div>
     `
     
-    // Insertar el modal en el DOM
     document.body.insertAdjacentHTML('beforeend', modalHTML)
   }
 
   close() {
-    // Find the modal container and remove it
     const modalContainer = document.querySelector('.fixed.inset-0.bg-gray-500')
     if (modalContainer) {
       modalContainer.remove()

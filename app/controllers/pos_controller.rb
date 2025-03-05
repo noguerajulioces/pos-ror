@@ -12,6 +12,11 @@ class PosController < ApplicationController
     @categories = Category.where(parent_id: nil)
   end
 
+
+  def order_type_modal
+    render partial: "order_type_modal"
+  end
+
   private
 
   def ensure_cash_register_open
