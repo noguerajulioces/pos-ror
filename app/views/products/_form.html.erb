@@ -101,7 +101,7 @@
       <div class="col-span-1">
         <%= form.label :price, "Precio", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.number_field :price,
+          <%= form.text_field :price,
             data: {
                   controller: "number-format",
                   "number-format-target": "input",

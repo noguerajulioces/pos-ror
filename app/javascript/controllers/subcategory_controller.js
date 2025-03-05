@@ -46,9 +46,14 @@ export default class extends Controller {
             maximumFractionDigits: 0,
           }).format(parseInt(product.price));
           
+          // Determine stock status and styling
+          const stockStatus = parseInt(product.stock) <= 0;
+          const stockClass = stockStatus ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100';
+          const stockText = stockStatus ? 'Sin stock' : `Stock: ${product.stock}`;
+          
           html += `
             <div class="w-1/3 p-2" data-product-id="${product.id}">
-              <div class="border rounded-lg p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col">
+              <div class="border rounded-lg p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col ${stockStatus ? 'border-red-300' : ''}">
                 <div class="h-24 bg-gray-100 rounded-md mb-2 flex items-center justify-center overflow-hidden">
                   ${product.image_url ? 
                     `<img src="${product.image_url}" alt="${product.image_alt || product.name}" class="w-full h-full object-cover object-center">` : 
@@ -59,7 +64,10 @@ export default class extends Controller {
                 </div>
                 <div class="flex-grow">
                   <h3 class="font-medium text-sm">${product.name}</h3>
-                  <p class="text-green-600 font-bold mt-1">GS. ${formattedPrice}</p>
+                  <div class="flex justify-between items-center mt-1">
+                    <p class="text-green-600 font-bold">GS. ${formattedPrice}</p>
+                    <span class="${stockClass} inline-flex rounded-full px-2 text-xs font-semibold leading-5">${stockText}</span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -51,7 +51,7 @@ class PosController < ApplicationController
 
     # Custom JSON response with first image
     products_with_images = products.map do |product|
-      product_json = product.as_json(only: [ :id, :name, :price ])
+      product_json = product.as_json(only: [ :id, :name, :price, :stock ])
 
       # Add first image if available
       first_image = product.product_images.first
