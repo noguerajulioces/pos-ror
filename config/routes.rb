@@ -28,4 +28,5 @@ Rails.application.routes.draw do
   get "pos/order_type_modal", to: "pos#order_type_modal"
   # Add this route alongside your other routes
   get 'pos/customer_search_modal', to: 'pos#customer_search_modal'
+  get 'pos/orders_modal', to: 'pos#orders_modal'
 end

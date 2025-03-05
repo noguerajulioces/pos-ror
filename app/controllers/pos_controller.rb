@@ -30,7 +30,10 @@ def update_order_type
     }
   end
 end
-
+def orders_modal
+  @orders = Order.order(created_at: :desc)
+  render partial: 'orders_modal'
+end
   private
 
   def ensure_cash_register_open

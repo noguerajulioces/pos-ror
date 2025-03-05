@@ -1,0 +1,72 @@
+<turbo-frame id="orders_modal">
+  <div class="p-4">
+    <!-- Tabs for order status -->
+    <div class="border-b border-gray-200 mb-4">
+      <nav class="flex space-x-4" aria-label="Order status">
+        <button class="px-3 py-2 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600">
+          On Hold
+        </button>
+        <button class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+          Unpaid
+        </button>
+        <button class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+          Partially Paid
+        </button>
+      </nav>
+    </div>
+
+    <!-- Search bar -->
+    <div class="mb-4">
+      <div class="flex">
+        <input type="text" 
+               placeholder="Buscar pedidos..." 
+               class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+               data-controller="order-search"
+               data-action="input->order-search#search" />
+        <button class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-r-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Orders list -->
+    <div class="overflow-y-auto max-h-96">
+      <div id="orders-list" class="space-y-2">
+        <% if @orders&.any? %>
+          <% @orders.each do |order| %>
+            <div class="border rounded-lg p-4 hover:bg-gray-50">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium">Order #<%= order.id %></h3>
+                  <p class="text-sm text-gray-500"><%= order.order_date.strftime("%B %d, %Y %H:%M") %></p>
+                </div>
+                <span class="px-2 py-1 text-xs font-medium rounded-full
+                  <%= case order.status
+                      when 'on_hold' then 'bg-yellow-100 text-yellow-800'
+                      when 'unpaid' then 'bg-red-100 text-red-800'
+                      when 'partially_paid' then 'bg-blue-100 text-blue-800'
+                      end %>">
+                  <%= order.status.titleize %>
+                </span>
+              </div>
+              <div class="mt-2 flex justify-between items-center">
+                <p class="text-sm text-gray-600">
+                  <%= order.user.name %>
+                </p>
+                <p class="font-medium">
+                  $<%= number_with_precision(order.total_amount, precision: 2) %>
+                </p>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-8 text-gray-500">
+            Nothing to display...
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</turbo-frame>
