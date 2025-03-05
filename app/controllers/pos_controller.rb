@@ -9,6 +9,7 @@ class PosController < ApplicationController
     # Aquí puedes cargar los datos que necesites en la vista
     # Por ejemplo, si quieres mostrar la lista de productos:
     @products = Product.all
+    @categories = Category.where(parent_id: nil)
   end
 
   private

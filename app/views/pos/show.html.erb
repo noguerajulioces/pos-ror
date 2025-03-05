@@ -122,13 +122,36 @@
     <!-- Columna Derecha -->
     <div class="w-2/4 p-4">
       <div class="bg-white rounded shadow p-4 h-full">
+        <!-- Buscador -->
+        <div class="mb-4">
+          <div class="flex">
+            <input type="text" placeholder="Buscar productos..." class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            <button class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-r-md border border-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
         <h2 class="text-lg font-semibold mb-3">Inicio</h2>
-        <p class="text-gray-600">
-          Parece que no hay productos o categorías. ¿Qué tal si empiezas creándolos primero?
-        </p>
-        <button class="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
-          Crear Categorías
-        </button>
+        <hr>
+        <div class="text-gray-600 mt-2">
+          <% if @categories.present? %>
+            <div class="flex flex-wrap border border-dotted border-gray-300 rounded-md">
+              <% @categories.each_with_index do |category, index| %>
+                <div class="w-1/3 p-3 flex flex-col items-center <%= index % 3 != 2 ? 'border-r border-dotted border-gray-300' : '' %> <%= index < @categories.length - 3 ? 'border-b border-dotted border-gray-300' : '' %>">
+                  <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-2">
+                    <span class="text-indigo-600 font-bold"><%= category.name.first.upcase %></span>
+                  </div>
+                  <span class="text-sm font-medium"><%= category.name %></span>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p>Parece que no hay productos o categorías. ¿Qué tal si empiezas creándolos primero?</p>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
