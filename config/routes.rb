@@ -27,6 +27,8 @@ Rails.application.routes.draw do
   patch "pos/update_order_type", to: "pos#update_order_type"
   get "pos/order_type_modal", to: "pos#order_type_modal"
   # Add this route alongside your other routes
-  get 'pos/customer_search_modal', to: 'pos#customer_search_modal'
-  get 'pos/orders_modal', to: 'pos#orders_modal'
+  get "pos/customer_search_modal", to: "pos#customer_search_modal"
+  get "pos/orders_modal", to: "pos#orders_modal"
+  # Add this route alongside your other routes
+  get "pos/subcategories", to: "pos#subcategories"
 end

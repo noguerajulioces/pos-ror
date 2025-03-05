@@ -18,22 +18,31 @@ class PosController < ApplicationController
   end
 
   # Add this method to your PosController
-def customer_search_modal
-  render partial: 'customer_search_modal'
-end
-
-def update_order_type
-  @order_type = params[:type]
-  respond_to do |format|
-    format.turbo_stream {
-      render turbo_stream: turbo_stream.update("order_type", @order_type.titleize)
-    }
+  def customer_search_modal
+    render partial: "customer_search_modal"
   end
-end
-def orders_modal
-  @orders = Order.order(created_at: :desc)
-  render partial: 'orders_modal'
-end
+
+  def update_order_type
+    @order_type = params[:type]
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.update("order_type", @order_type.titleize)
+      }
+    end
+  end
+
+  def orders_modal
+    @orders = Order.order(created_at: :desc)
+    render partial: "orders_modal"
+  end
+
+  # Add this method to your PosController
+  def subcategories
+    category = Category.find(params[:category_id])
+    subcategories = category.subcategories.order(:name)
+
+    render json: subcategories
+  end
   private
 
   def ensure_cash_register_open
