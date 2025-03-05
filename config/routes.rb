@@ -23,4 +23,5 @@ Rails.application.routes.draw do
   resources :suppliers
   resources :users
   resources :expenses
+  resource :pos, only: [ :show ]
 end

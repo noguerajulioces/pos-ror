@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_164055) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_05_134524) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_164055) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "cash_registers", force: :cascade do |t|
+    t.datetime "open_at"
+    t.datetime "close_at"
+    t.decimal "initial_amount"
+    t.decimal "final_amount"
+    t.string "status"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_cash_registers_on_user_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -97,6 +109,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_164055) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity"
+    t.decimal "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "order_date"
+    t.decimal "total_amount"
+    t.string "status"
+    t.bigint "user_id", null: false
+    t.bigint "payment_method_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "payment_methods", force: :cascade do |t|
@@ -224,9 +259,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_164055) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cash_registers", "users"
   add_foreign_key "expenses", "payment_methods"
   add_foreign_key "expenses", "purchases"
   add_foreign_key "inventory_movements", "products"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "payment_methods"
+  add_foreign_key "orders", "users"
   add_foreign_key "product_images", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"

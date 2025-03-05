@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: order_items
+#
+#  id         :bigint           not null, primary key
+#  price      :decimal(, )
+#  quantity   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  order_id   :bigint           not null
+#  product_id :bigint           not null
+#
+# Indexes
+#
+#  index_order_items_on_order_id    (order_id)
+#  index_order_items_on_product_id  (product_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (order_id => orders.id)
+#  fk_rails_...  (product_id => products.id)
+#
+one:
+  order: one
+  product: one
+  quantity: 1
+  price: 9.99
+
+two:
+  order: two
+  product: two
+  quantity: 1
+  price: 9.99
