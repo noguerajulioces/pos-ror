@@ -49,10 +49,21 @@ class PosController < ApplicationController
     subcategory = Category.find(params[:subcategory_id])
     products = subcategory.products.order(:name)
 
-    # Simplified JSON response without product_images
-    render json: products.as_json(
-      only: [ :id, :name, :price ]
-    )
+    # Custom JSON response with first image
+    products_with_images = products.map do |product|
+      product_json = product.as_json(only: [ :id, :name, :price ])
+
+      # Add first image if available
+      first_image = product.product_images.first
+      if first_image&.image&.attached?
+        product_json["image_url"] = Rails.application.routes.url_helpers.rails_blob_path(first_image.image, only_path: true)
+        product_json["image_alt"] = first_image.alt_text
+      end
+
+      product_json
+    end
+
+    render json: products_with_images
   end
 
   private
