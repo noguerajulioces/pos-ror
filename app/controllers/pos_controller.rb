@@ -2,8 +2,8 @@
 class PosController < ApplicationController
   layout "pos"
 
-  #before_action :authenticate_user!
-  #before_action :ensure_cash_register_open
+  # before_action :authenticate_user!
+  # before_action :ensure_cash_register_open
 
   def show
     # Aquí puedes cargar los datos que necesites en la vista
@@ -20,6 +20,15 @@ class PosController < ApplicationController
     @cash_register = CashRegister.open.first
     unless @cash_register
       redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
+    end
+  end
+
+  def update_order_type
+    @order_type = params[:type]
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.update("order_type", @order_type.titleize)
+      }
     end
   end
 end

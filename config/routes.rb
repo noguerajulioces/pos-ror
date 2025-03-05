@@ -24,4 +24,5 @@ Rails.application.routes.draw do
   resources :users
   resources :expenses
   resource :pos, only: [ :show ]
+  patch "pos/update_order_type", to: "pos#update_order_type"
 end

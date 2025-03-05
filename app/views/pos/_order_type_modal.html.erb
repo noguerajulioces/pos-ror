@@ -1,0 +1,37 @@
+<turbo-frame id="order_type_modal">
+  <div class="grid grid-cols-2 gap-4">
+    <%= link_to "#", 
+        class: "p-6 border rounded-lg text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500",
+        data: { 
+          controller: "order-type",
+          action: "order-type#select",
+          order_type_value: "Para Llevar"
+        } do %>
+      <div class="flex flex-col items-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+        <span class="font-medium">Para Llevar</span>
+      </div>
+    <% end %>
+
+    <%= link_to "#", 
+        class: "p-6 border rounded-lg text-center hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500",
+        data: { 
+          controller: "order-type",
+          action: "order-type#select",
+          order_type_value: "Delivery"
+        } do %>
+      <div class="flex flex-col items-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-2">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <span class="font-medium">Delivery</span>
+      </div>
+    <% end %>
+  </div>
+</turbo-frame>
