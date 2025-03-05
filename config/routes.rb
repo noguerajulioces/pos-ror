@@ -26,4 +26,6 @@ Rails.application.routes.draw do
   resource :pos, only: [ :show ]
   patch "pos/update_order_type", to: "pos#update_order_type"
   get "pos/order_type_modal", to: "pos#order_type_modal"
+  # Add this route alongside your other routes
+  get 'pos/customer_search_modal', to: 'pos#customer_search_modal'
 end

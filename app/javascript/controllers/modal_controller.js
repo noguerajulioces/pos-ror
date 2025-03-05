@@ -3,7 +3,9 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["container", "content"]
   static values = {
-    title: String
+    title: String,
+    frameId: String,
+    frameSrc: String
   }
 
   connect() {
@@ -13,7 +15,10 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
     
+    // Obtener el título y los datos del frame desde los atributos data
     const title = event.currentTarget.dataset.modalTitle || "Modal"
+    const frameId = event.currentTarget.dataset.modalFrameId || "modal-frame"
+    const frameSrc = event.currentTarget.dataset.modalFrameSrc || "/pos/order_type_modal"
     
     const modalHTML = `
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50" data-controller="modal">
@@ -27,7 +32,7 @@ export default class extends Controller {
             </button>
           </div>
           <div class="p-4" id="modal-content">
-            <turbo-frame id="order_type_modal" src="/pos/order_type_modal">
+            <turbo-frame id="${frameId}" src="${frameSrc}">
             </turbo-frame>
           </div>
         </div>
