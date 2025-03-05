@@ -56,7 +56,9 @@ class PosController < ApplicationController
       # Add first image if available
       first_image = product.product_images.first
       if first_image&.image&.attached?
-        product_json["image_url"] = Rails.application.routes.url_helpers.rails_blob_path(first_image.image, only_path: true)
+        # Generate a URL for the resized image
+        variant = first_image.image.variant(resize_to_fill: [ 200, 200 ]).processed
+        product_json["image_url"] = Rails.application.routes.url_helpers.rails_blob_path(variant, only_path: true)
         product_json["image_alt"] = first_image.alt_text
       end
 
