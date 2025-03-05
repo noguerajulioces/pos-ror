@@ -16,15 +16,23 @@ export default class extends Controller {
     // Hide categories, show subcategories container
     document.getElementById('categories-container').classList.add('hidden');
     document.getElementById('subcategories-container').classList.remove('hidden');
+    document.getElementById('products-container').classList.add('hidden');
     
     // Fetch subcategories
     this.fetchSubcategories(categoryId);
   }
   
   backToCategories() {
-    // Hide subcategories, show categories container
+    // Hide subcategories and products, show categories container
     document.getElementById('subcategories-container').classList.add('hidden');
+    document.getElementById('products-container').classList.add('hidden');
     document.getElementById('categories-container').classList.remove('hidden');
+  }
+  
+  backToSubcategories() {
+    // Hide products, show subcategories
+    document.getElementById('products-container').classList.add('hidden');
+    document.getElementById('subcategories-container').classList.remove('hidden');
   }
   
   fetchSubcategories(categoryId) {
@@ -50,7 +58,10 @@ export default class extends Controller {
           
           html += `
             <div class="w-1/3 p-3 flex flex-col items-center ${borderRight} ${borderBottom}" 
-                 data-subcategory-id="${subcategory.id}">
+                 data-controller="subcategory"
+                 data-action="click->subcategory#showProducts"
+                 data-subcategory-id-value="${subcategory.id}"
+                 data-subcategory-name-value="${subcategory.name}">
               <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2 cursor-pointer">
                 <span class="text-blue-600 font-bold">${subcategory.name.charAt(0).toUpperCase()}</span>
               </div>

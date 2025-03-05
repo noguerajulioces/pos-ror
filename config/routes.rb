@@ -31,4 +31,6 @@ Rails.application.routes.draw do
   get "pos/orders_modal", to: "pos#orders_modal"
   # Add this route alongside your other routes
   get "pos/subcategories", to: "pos#subcategories"
+  # Add this route alongside your other routes
+  get "pos/products_by_subcategory", to: "pos#products_by_subcategory"
 end

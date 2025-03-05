@@ -44,6 +44,7 @@ class Product < ApplicationRecord
   has_many :images, class_name: "ProductImage", dependent: :destroy
   has_many :purchase_items
   has_many :purchases, through: :purchase_items
+  has_many :product_images, dependent: :destroy
 
   enum :status, { active: "active", inactive: "inactive", out_of_stock: "out_of_stock" }
 

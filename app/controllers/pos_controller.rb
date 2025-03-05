@@ -43,6 +43,18 @@ class PosController < ApplicationController
 
     render json: subcategories
   end
+
+  # Method to fetch products by subcategory
+  def products_by_subcategory
+    subcategory = Category.find(params[:subcategory_id])
+    products = subcategory.products.order(:name)
+
+    # Simplified JSON response without product_images
+    render json: products.as_json(
+      only: [ :id, :name, :price ]
+    )
+  end
+
   private
 
   def ensure_cash_register_open

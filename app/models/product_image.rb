@@ -23,6 +23,12 @@ class ProductImage < ApplicationRecord
 
   before_create :set_position_and_alt_text
 
+  def image_url
+    if image.attached?
+      Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true)
+    end
+  end
+
   private
 
   def set_position_and_alt_text
