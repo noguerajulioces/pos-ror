@@ -231,6 +231,14 @@ class PosController < ApplicationController
     end
   end
 
+  # Add this method to your PosController
+  def set_customer
+    session[:customer_id] = params[:customer_id]
+    session[:customer_name] = params[:customer_name]
+    
+    render json: { success: true }
+  end
+
   private
 
   def ensure_cash_register_open
@@ -265,12 +273,4 @@ def calculate_cart_totals
     discount: discount,
     total: total
   }
-end
-
-# Add this method to your PosController
-def set_customer
-  session[:customer_id] = params[:customer_id]
-  session[:customer_name] = params[:customer_name]
-  
-  render json: { success: true }
 end

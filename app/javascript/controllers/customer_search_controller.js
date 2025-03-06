@@ -131,11 +131,10 @@ export default class extends Controller {
     })
   }
 
+  // Alternative approach to find and close the modal
   selectCustomer(event) {
-    event.preventDefault()
-    
-    const customerId = this.element.dataset.customerId
-    const customerName = this.element.dataset.customerFullName || this.element.dataset.customerName
+    const customerId = event.currentTarget.dataset.customerId
+    const customerName = event.currentTarget.dataset.customerFullName || event.currentTarget.dataset.customerName
     
     // Update customer info in the POS screen
     const customerInfoElement = document.getElementById("customer-info")
@@ -152,16 +151,12 @@ export default class extends Controller {
     // Save customer selection to session
     this.saveCustomerSelection(customerId, customerName)
     
-    // Close modal
-    const modal = document.querySelector('[data-controller="modal"]')
-    if (modal) {
-      const modalController = modal.controller
-      if (modalController && typeof modalController.close === 'function') {
-        modalController.close()
-      } else {
-        // Fallback if controller not accessible
-        modal.remove()
-      }
+    // Find and close the modal by looking for closest modal container
+    const modalElement = event.currentTarget.closest('[data-controller="modal"]') || 
+                         document.querySelector('[data-controller="modal"]')
+    
+    if (modalElement) {
+      modalElement.remove()
     }
   }
   
