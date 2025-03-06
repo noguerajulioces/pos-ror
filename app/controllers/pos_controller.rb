@@ -68,42 +68,32 @@ class PosController < ApplicationController
     render json: products_with_images
   end
 
-    # Add this method to handle adding products to the order
-    def add_product_to_order
-      product = Product.find(params[:product_id])
-      quantity = params[:quantity].to_i
+  # Add this method to handle adding products to the order
+  def add_product_to_order
+    product = Product.find(params[:product_id])
+    quantity = params[:quantity].to_i
 
-      # Initialize or get the current order from the session
-      @order = current_order
+    # Initialize or get the current order from the session
+    @order = current_order
 
-      # Add the product to the order
-      @order.add_product(product, quantity)
+    # Add the product to the order
+    @order.add_product(product, quantity)
 
-      # Return the updated order as JSON
-      render json: {
-        items: @order.order_items.map do |item|
-          {
-            id: item.id,
-            product_id: item.product_id,
-            product_name: item.product.name,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.total
-          }
-        end,
-        subtotal: @order.subtotal,
-        total: @order.total
-      }
-    end
-
-
-  def ensure_cash_register_open
-    # Verifica que haya una caja abierta
-    # (asumiendo que tienes un modelo CashRegister con un scope :open)
-    @cash_register = CashRegister.open.first
-    unless @cash_register
-      redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
-    end
+    # Return the updated order as JSON
+    render json: {
+      items: @order.order_items.map do |item|
+        {
+          id: item.id,
+          product_id: item.product_id,
+          product_name: item.product.name,
+          quantity: item.quantity,
+          price: item.price,
+          total: item.total
+        }
+      end,
+      subtotal: @order.subtotal,
+      total: @order.total
+    }
   end
 
   # Helper method to get or initialize the current order
@@ -126,13 +116,13 @@ class PosController < ApplicationController
   def add_product_to_cart
     @product = Product.find(params[:product_id])
     quantity = params[:quantity].to_i || 1
-    
+
     # Initialize the cart in the session if it doesn't exist
     session[:cart] ||= []
-    
+
     # Check if the product is already in the cart
     existing_item = session[:cart].find { |item| item["product_id"] == @product.id }
-    
+
     if existing_item
       # Update quantity if product already exists in cart
       existing_item["quantity"] += quantity
@@ -145,7 +135,7 @@ class PosController < ApplicationController
         "quantity" => quantity
       }
     end
-    
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: turbo_stream.replace(
@@ -154,12 +144,45 @@ class PosController < ApplicationController
           locals: { cart_items: session[:cart] }
         )
       }
-      format.json { 
-        render json: { 
-          success: true, 
+      format.json {
+        render json: {
+          success: true,
           cart: session[:cart]
-        } 
+        }
       }
+    end
+  end
+
+  # Add this method to clear the cart
+  def clear_cart
+    # Reset the cart in the session
+    session[:cart] = []
+    
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.replace(
+          "cart-items-body",
+          partial: "cart_items",
+          locals: { cart_items: [] }
+        )
+      }
+      format.json {
+        render json: {
+          success: true,
+          message: "Cart cleared successfully"
+        }
+      }
+    end
+  end
+
+  private
+
+  def ensure_cash_register_open
+    # Verifica que haya una caja abierta
+    # (asumiendo que tienes un modelo CashRegister con un scope :open)
+    @cash_register = CashRegister.open.first
+    unless @cash_register
+      redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
     end
   end
 end
