@@ -1,5 +1,6 @@
 # app/controllers/pos_controller.rb
 class PosController < ApplicationController
+  include ActionView::Helpers::NumberHelper  # Add this line at the top of your controller
   layout "pos"
 
   # before_action :authenticate_user!
@@ -124,10 +125,8 @@ class PosController < ApplicationController
     existing_item = session[:cart].find { |item| item["product_id"] == @product.id }
 
     if existing_item
-      # Update quantity if product already exists in cart
       existing_item["quantity"] += quantity
     else
-      # Add new product to cart
       session[:cart] << {
         "product_id" => @product.id,
         "name" => @product.name,
@@ -136,18 +135,28 @@ class PosController < ApplicationController
       }
     end
 
+    # Calculate new totals
+    totals = calculate_cart_totals
+
     respond_to do |format|
       format.turbo_stream {
-        render turbo_stream: turbo_stream.replace(
-          "cart-items-body",
-          partial: "cart_items",
-          locals: { cart_items: session[:cart] }
-        )
+        render turbo_stream: [
+          turbo_stream.replace(
+            "cart-items-body",
+            partial: "cart_items",
+            locals: { cart_items: session[:cart] }
+          ),
+          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+        ]
       }
       format.json {
         render json: {
           success: true,
-          cart: session[:cart]
+          cart: session[:cart],
+          totals: totals
         }
       }
     end
@@ -188,6 +197,9 @@ class PosController < ApplicationController
     # Calculate totals after removing the item
     @subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"] }
 
+    # Calculate new totals
+    totals = calculate_cart_totals
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
@@ -217,4 +229,28 @@ class PosController < ApplicationController
       redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
     end
   end
+end
+
+def calculate_cart_totals
+  cart = session[:cart] || []
+
+  # Calculate subtotal
+  subtotal = cart.sum { |item| item["price"].to_f * item["quantity"].to_i }
+
+  # Calculate IVA (10%)
+  iva = subtotal * 0.10
+
+  # Get discount (for now it's 0, you can implement discount logic later)
+  discount = 0
+
+  # Calculate total
+  # total = subtotal + iva - discount
+  total = subtotal - discount
+
+  {
+    subtotal: subtotal,
+    iva: iva,
+    discount: discount,
+    total: total
+  }
 end
