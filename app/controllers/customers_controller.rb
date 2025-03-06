@@ -16,7 +16,8 @@ class CustomersController < ApplicationController
   end
 
   def search
-    @customers = Customer.where("first_name ILIKE ? OR last_name ILIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
+    @q = Customer.ransack(first_name_or_last_name_or_document_or_phone_cont: params[:query])
+    @customers = @q.result(distinct: true)
     render partial: "customers/search_results", locals: { customers: @customers }
   end
 

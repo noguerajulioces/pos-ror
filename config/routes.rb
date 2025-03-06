@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   resources :units, except: %i[show]
   resources :customers do
     collection do
-      get 'search'
+      get "search"
     end
   end
   resources :suppliers
