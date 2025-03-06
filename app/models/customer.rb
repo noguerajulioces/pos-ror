@@ -26,4 +26,16 @@ class Customer < ApplicationRecord
   validates :first_name, :last_name, presence: true
   validates :document, presence: true, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+
+  def full_name
+    "#{first_name} #{last_name}".strip
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[address city country created_at document email first_name id id_value last_name notes phone state updated_at zip_code]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[]
+  end
 end

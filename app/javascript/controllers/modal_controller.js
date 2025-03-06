@@ -53,4 +53,11 @@ export default class extends Controller {
       this.element.remove()
     }
   }
+  
+  // This method will be called when the form is submitted successfully
+  submitEnd(event) {
+    if (event.detail.success) {
+      this.close()
+    }
+  }
 }
