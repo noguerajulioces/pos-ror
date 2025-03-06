@@ -132,17 +132,53 @@ export default class extends Controller {
   }
 
   selectCustomer(event) {
-    const customerId = event.currentTarget.dataset.customerId
-    const customerName = event.currentTarget.dataset.customerName
+    event.preventDefault()
+    
+    const customerId = this.element.dataset.customerId
+    const customerName = this.element.dataset.customerFullName || this.element.dataset.customerName
     
     // Update customer info in the POS screen
-    document.getElementById("customer-info").textContent = customerName
+    const customerInfoElement = document.getElementById("customer-info")
+    if (customerInfoElement) {
+      customerInfoElement.textContent = customerName
+    }
+    
+    // Update hidden input with customer ID
+    const customerIdInput = document.getElementById("selected-customer-id")
+    if (customerIdInput) {
+      customerIdInput.value = customerId
+    }
+    
+    // Save customer selection to session
+    this.saveCustomerSelection(customerId, customerName)
     
     // Close modal
     const modal = document.querySelector('[data-controller="modal"]')
     if (modal) {
       const modalController = modal.controller
-      modalController.close()
+      if (modalController && typeof modalController.close === 'function') {
+        modalController.close()
+      } else {
+        // Fallback if controller not accessible
+        modal.remove()
+      }
     }
+  }
+  
+  saveCustomerSelection(customerId, customerName) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    
+    fetch('/pos/set_customer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({
+        customer_id: customerId,
+        customer_name: customerName
+      })
+    })
+    .catch(error => console.error('Error saving customer selection:', error))
   }
 }

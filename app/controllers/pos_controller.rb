@@ -266,3 +266,11 @@ def calculate_cart_totals
     total: total
   }
 end
+
+# Add this method to your PosController
+def set_customer
+  session[:customer_id] = params[:customer_id]
+  session[:customer_name] = params[:customer_name]
+  
+  render json: { success: true }
+end

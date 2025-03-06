@@ -136,7 +136,10 @@
               </div>
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700">Cliente:</span>
-                <span class="float-right font-medium">Julio César Noguera López</span>
+                <span class="float-right font-medium" id="customer-info">
+                  <%= session[:customer_name] || "Sin cliente" %>
+                </span>
+                <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
               </div>
               <div class="px-4 py-3">
                 <span class="text-gray-700">Tipo de Pedido:</span>

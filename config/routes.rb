@@ -45,4 +45,6 @@ Rails.application.routes.draw do
   post "pos/clear_cart", to: "pos#clear_cart"
   # Add this line to your routes.rb
   delete "pos/remove_from_cart", to: "pos#remove_from_cart"
+  # Add this route within your routes.rb file
+  post 'pos/set_customer', to: 'pos#set_customer'
 end
