@@ -144,7 +144,7 @@ export default class extends Controller {
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': csrfToken,
-        'Accept': 'text/vnd.turbo-stream.html, application/json'
+        'Accept': 'text/vnd.turbo-stream.html'
       },
       body: JSON.stringify({
         product_id: productId,
@@ -159,9 +159,20 @@ export default class extends Controller {
       return response.text();
     })
     .then(html => {
-      // Turbo will automatically process the response
+      // Let Turbo handle the response
       console.log('Product added to cart successfully');
       console.log('Response HTML length:', html.length);
+      
+      // Apply the Turbo Stream manually if needed
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const streamElement = doc.querySelector('turbo-stream');
+      
+      if (streamElement) {
+        // Apply the stream manually
+        document.adoptNode(streamElement);
+        document.body.appendChild(streamElement);
+      }
     })
     .catch(error => {
       console.error('Error adding product to cart:', error);

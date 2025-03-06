@@ -88,6 +88,7 @@ GEM
     brakeman (7.0.0)
       racc
     builder (3.3.0)
+    byebug (11.1.3)
     capybara (3.40.0)
       addressable
       matrix
@@ -412,6 +413,7 @@ DEPENDENCIES
   barby
   bootsnap
   brakeman
+  byebug
   capybara
   chunky_png
   debug

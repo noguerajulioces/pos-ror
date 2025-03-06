@@ -1,26 +1,17 @@
-<table class="w-full bg-white rounded-md shadow">
-  <thead>
-    <tr class="border-b border-gray-200">
-      <th class="px-4 py-3 text-left font-medium text-gray-700">Producto</th>
-      <th class="px-4 py-3 text-left font-medium text-gray-700">Cantidad</th>
-      <th class="px-4 py-3 text-left font-medium text-gray-700">Total</th>
-    </tr>
-  </thead>
-  <tbody id="cart-items-body">
-    <% if cart_items.present? %>
-      <% cart_items.each do |item| %>
-        <tr>
-          <td class="px-4 py-3"><%= item["name"] %></td>
-          <td class="px-4 py-3"><%= item["quantity"] %></td>
-          <td class="px-4 py-3">GS. <%= number_with_delimiter(item["price"].to_f * item["quantity"], delimiter: '.') %></td>
-        </tr>
-      <% end %>
-    <% else %>
+<tbody id="cart-items-body">
+  <% if cart_items.present? %>
+    <% cart_items.each do |item| %>
       <tr>
-        <td colspan="3" class="px-4 py-6 text-center text-gray-500">
-          No se han añadido productos...
-        </td>
+        <td class="px-4 py-3"><%= item["name"] %></td>
+        <td class="px-4 py-3"><%= item["quantity"] %></td>
+        <td class="px-4 py-3">GS. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
       </tr>
     <% end %>
-  </tbody>
-</table>
+  <% else %>
+    <tr>
+      <td colspan="3" class="px-4 py-6 text-center text-gray-500">
+        No se han añadido productos...
+      </td>
+    </tr>
+  <% end %>
+</tbody>

@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   # Add this route alongside your other routes
   get "pos/products_by_subcategory", to: "pos#products_by_subcategory"
   # Add this line to your routes.rb
+  # Add this line if it doesn't exist
   post 'pos/add_product_to_cart', to: 'pos#add_product_to_cart'
   post "pos/add_product_to_order", to: "pos#add_product_to_order"
 end

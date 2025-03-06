@@ -146,9 +146,6 @@ class PosController < ApplicationController
       }
     end
     
-    # Calculate totals
-    @subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"] }
-    
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: turbo_stream.replace(
@@ -160,8 +157,7 @@ class PosController < ApplicationController
       format.json { 
         render json: { 
           success: true, 
-          cart: session[:cart], 
-          subtotal: @subtotal 
+          cart: session[:cart]
         } 
       }
     end
