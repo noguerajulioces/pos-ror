@@ -242,7 +242,9 @@ class PosController < ApplicationController
   def set_order_type
     session[:order_type] = params[:order_type]
     
-    render json: { success: true }
+    respond_to do |format|
+      format.json { render json: { success: true, order_type: params[:order_type] } }
+    end
   end
 
   private

@@ -8,27 +8,42 @@ export default class extends Controller {
   }
   
   selectType(event) {
+    event.preventDefault()
     const orderType = event.currentTarget.dataset.orderType
+    console.log("Selected order type:", orderType)
     
     // Update the order type display in the POS view
     const orderTypeDisplay = document.getElementById("order-type-display")
     if (orderTypeDisplay) {
       orderTypeDisplay.textContent = orderType
+    } else {
+      console.error("Could not find order-type-display element")
     }
     
     // Update hidden input with order type
     const orderTypeInput = document.getElementById("selected-order-type")
     if (orderTypeInput) {
       orderTypeInput.value = orderType
+    } else {
+      console.error("Could not find selected-order-type element")
     }
     
     // Save order type selection to session
     this.saveOrderTypeSelection(orderType)
     
-    // Close modal
-    const modalElement = document.querySelector('[data-controller~="modal"]')
+    // Find the modal element
+    const modalElement = event.currentTarget.closest('[data-controller~="modal"]')
     if (modalElement) {
+      // Close the modal
+      console.log("Closing modal")
       modalElement.remove()
+    } else {
+      console.error("Could not find modal element")
+      // Try alternative method to find modal
+      const alternativeModal = document.getElementById("modal")
+      if (alternativeModal) {
+        alternativeModal.remove()
+      }
     }
   }
   
@@ -39,12 +54,24 @@ export default class extends Controller {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
         order_type: orderType
       })
     })
-    .catch(error => console.error('Error saving order type selection:', error))
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Order type saved successfully:', data);
+    })
+    .catch(error => {
+      console.error('Error saving order type selection:', error);
+    });
   }
 }

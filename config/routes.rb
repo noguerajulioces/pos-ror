@@ -47,5 +47,6 @@ Rails.application.routes.draw do
   delete "pos/remove_from_cart", to: "pos#remove_from_cart"
   # Add this route within your routes.rb file
   post 'pos/set_customer', to: 'pos#set_customer'
+  # Make sure this route is defined
   post 'pos/set_order_type', to: 'pos#set_order_type'
 end
