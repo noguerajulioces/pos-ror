@@ -68,7 +68,34 @@ class PosController < ApplicationController
     render json: products_with_images
   end
 
-  private
+    # Add this method to handle adding products to the order
+    def add_product_to_order
+      product = Product.find(params[:product_id])
+      quantity = params[:quantity].to_i
+
+      # Initialize or get the current order from the session
+      @order = current_order
+
+      # Add the product to the order
+      @order.add_product(product, quantity)
+
+      # Return the updated order as JSON
+      render json: {
+        items: @order.order_items.map do |item|
+          {
+            id: item.id,
+            product_id: item.product_id,
+            product_name: item.product.name,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.total
+          }
+        end,
+        subtotal: @order.subtotal,
+        total: @order.total
+      }
+    end
+
 
   def ensure_cash_register_open
     # Verifica que haya una caja abierta
@@ -76,6 +103,67 @@ class PosController < ApplicationController
     @cash_register = CashRegister.open.first
     unless @cash_register
       redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
+    end
+  end
+
+  # Helper method to get or initialize the current order
+  def current_order
+    # If you're using a session-based approach
+    if session[:order_id].present?
+      Order.find_by(id: session[:order_id]) || create_new_order
+    else
+      create_new_order
+    end
+  end
+
+  def create_new_order
+    order = Order.create(status: "draft")
+    session[:order_id] = order.id
+    order
+  end
+
+  # Add this method to your PosController
+  def add_product_to_cart
+    @product = Product.find(params[:product_id])
+    quantity = params[:quantity].to_i || 1
+    
+    # Initialize the cart in the session if it doesn't exist
+    session[:cart] ||= []
+    
+    # Check if the product is already in the cart
+    existing_item = session[:cart].find { |item| item["product_id"] == @product.id }
+    
+    if existing_item
+      # Update quantity if product already exists in cart
+      existing_item["quantity"] += quantity
+    else
+      # Add new product to cart
+      session[:cart] << {
+        "product_id" => @product.id,
+        "name" => @product.name,
+        "price" => @product.price,
+        "quantity" => quantity
+      }
+    end
+    
+    # Calculate totals
+    @subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"] }
+    
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.replace(
+          "cart-items-body",
+          partial: "cart_items",
+          locals: { cart_items: session[:cart] }
+        )
+      }
+      format.json { 
+        render json: { 
+          success: true, 
+          cart: session[:cart], 
+          subtotal: @subtotal 
+        } 
+      }
     end
   end
 end

@@ -33,4 +33,7 @@ Rails.application.routes.draw do
   get "pos/subcategories", to: "pos#subcategories"
   # Add this route alongside your other routes
   get "pos/products_by_subcategory", to: "pos#products_by_subcategory"
+  # Add this line to your routes.rb
+  post 'pos/add_product_to_cart', to: 'pos#add_product_to_cart'
+  post "pos/add_product_to_order", to: "pos#add_product_to_order"
 end

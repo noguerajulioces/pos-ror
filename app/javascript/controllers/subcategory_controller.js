@@ -6,7 +6,14 @@ export default class extends Controller {
     name: String
   }
 
+  connect() {
+    // Store for products data
+    this.productsData = [];
+    console.log("Subcategory controller connected");
+  }
+
   showProducts() {
+    console.log("showProducts called with ID:", this.idValue, "and name:", this.nameValue);
     const subcategoryId = this.idValue;
     const subcategoryName = this.nameValue;
     
@@ -22,6 +29,7 @@ export default class extends Controller {
   }
   
   fetchProducts(subcategoryId) {
+    console.log("Fetching products for subcategory ID:", subcategoryId);
     const productsContainer = document.getElementById('products-list');
     
     // Show loading state
@@ -29,9 +37,17 @@ export default class extends Controller {
     
     // Fetch products from server
     fetch(`/pos/products_by_subcategory?subcategory_id=${subcategoryId}`)
-      .then(response => response.json())
+      .then(response => {
+        console.log("Response status:", response.status);
+        return response.json();
+      })
       .then(data => {
+        console.log("Products data received:", data);
+        // Store the products data for later use
+        this.productsData = data;
+        
         if (data.length === 0) {
+          console.log("No products found for this subcategory");
           productsContainer.innerHTML = '<div class="w-full p-4 text-center text-gray-500">No hay productos disponibles</div>';
           return;
         }
@@ -39,6 +55,7 @@ export default class extends Controller {
         // Render products
         let html = '';
         data.forEach((product, index) => {
+          console.log(`Processing product ${index}:`, product.name);
           // Format price like Rails number_to_currency with Guaraní currency
           const formattedPrice = new Intl.NumberFormat('es-PY', {
             style: 'decimal',
@@ -48,11 +65,12 @@ export default class extends Controller {
           
           // Determine stock status and styling
           const stockStatus = parseInt(product.stock) <= 0;
+          console.log(`Product ${product.name} stock:`, product.stock, "In stock:", !stockStatus);
           const stockClass = stockStatus ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100';
           const stockText = stockStatus ? 'Sin stock' : `Stock: ${product.stock}`;
           
           html += `
-            <div class="w-1/3 p-2" data-product-id="${product.id}">
+            <div class="w-1/3 p-2 product-item" data-product-id="${product.id}">
               <div class="border rounded-lg p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col ${stockStatus ? 'border-red-300' : ''}">
                 <div class="h-24 bg-gray-100 rounded-md mb-2 flex items-center justify-center overflow-hidden">
                   ${product.image_url ? 
@@ -74,11 +92,79 @@ export default class extends Controller {
           `;
         });
         
+        // After setting the innerHTML, add event listeners to the product items
+        console.log("Updating products container with HTML");
         productsContainer.innerHTML = html;
+        
+        // Add click event listeners to all product items
+        const productItems = productsContainer.querySelectorAll('.product-item');
+        console.log(`Adding click listeners to ${productItems.length} products`);
+        productItems.forEach(item => {
+          item.addEventListener('click', (event) => {
+            const productId = item.dataset.productId;
+            console.log(`Product clicked: ${productId}`);
+            this.addToCart(event, productId);
+          });
+        });
       })
       .catch(error => {
         console.error('Error fetching products:', error);
         productsContainer.innerHTML = '<div class="w-full p-4 text-center text-red-500">Error al cargar productos</div>';
       });
+  }
+  
+  // Update the addToCart method to accept productId as a parameter
+  addToCart(event, productId) {
+    console.log("addToCart called for product ID:", productId);
+    
+    // Find the product in our stored data
+    const product = this.productsData.find(p => p.id.toString() === productId);
+    
+    if (!product) {
+      console.error('Product not found:', productId);
+      return;
+    }
+    
+    console.log("Product found:", product);
+    
+    // Check if product is in stock
+    if (parseInt(product.stock) <= 0) {
+      console.log("Product out of stock");
+      alert('Este producto está fuera de stock');
+      return;
+    }
+    
+    // Add product to cart via Turbo
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    console.log("CSRF token:", csrfToken ? "Found" : "Not found");
+    
+    console.log("Sending request to add product to cart");
+    fetch('/pos/add_product_to_cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'text/vnd.turbo-stream.html, application/json'
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        quantity: 1
+      })
+    })
+    .then(response => {
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
+    .then(html => {
+      // Turbo will automatically process the response
+      console.log('Product added to cart successfully');
+      console.log('Response HTML length:', html.length);
+    })
+    .catch(error => {
+      console.error('Error adding product to cart:', error);
+    });
   }
 }

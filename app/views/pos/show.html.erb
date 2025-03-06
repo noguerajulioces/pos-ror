@@ -80,7 +80,7 @@
     <!-- Columna Izquierda -->
     <div class="w-2/4 border-r border-gray-300 p-4 flex flex-col justify-between">
       <!-- Sección de productos (tabla) -->
-      <div>
+      <div id="cart-items">
         <table class="w-full bg-white rounded-md shadow">
           <thead>
             <tr class="border-b border-gray-200">
@@ -89,13 +89,22 @@
               <th class="px-4 py-3 text-left font-medium text-gray-700">Total</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- Ejemplo: no hay productos -->
-            <tr>
-              <td colspan="3" class="px-4 py-6 text-center text-gray-500">
-                No se han añadido productos...
-              </td>
-            </tr>
+          <tbody id="cart-items-body">
+            <% if session[:cart].present? %>
+              <% session[:cart].each do |item| %>
+                <tr>
+                  <td class="px-4 py-3"><%= item["name"] %></td>
+                  <td class="px-4 py-3"><%= item["quantity"] %></td>
+                  <td class="px-4 py-3">GS. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3" class="px-4 py-6 text-center text-gray-500">
+                  No se han añadido productos...
+                </td>
+              </tr>
+            <% end %>
           </tbody>
         </table>
       </div>
