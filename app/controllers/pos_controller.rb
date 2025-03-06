@@ -247,6 +247,23 @@ class PosController < ApplicationController
     end
   end
 
+  def search_products
+    @q = Product.ransack(name_or_description_cont: params[:query])
+    @products = @q.result(distinct: true).limit(30)
+    
+    render json: { 
+      products: @products.map do |product|
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image_url: nil,
+          description: product.description
+        }
+      end
+    }
+  end
+
   private
 
   def ensure_cash_register_open

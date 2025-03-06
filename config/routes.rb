@@ -49,4 +49,6 @@ Rails.application.routes.draw do
   post 'pos/set_customer', to: 'pos#set_customer'
   # Make sure this route is defined
   post 'pos/set_order_type', to: 'pos#set_order_type'
+  # Add this route within your routes.rb file
+  get 'pos/search_products', to: 'pos#search_products'
 end

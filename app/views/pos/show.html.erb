@@ -205,9 +205,14 @@
           <div class="bg-white rounded shadow p-4 h-full">
             <!-- Buscador -->
             <div class="mb-4">
-              <div class="flex">
-                <input type="text" placeholder="Buscar productos..." class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-                <button class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-r-md border border-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
+              <div class="flex" data-controller="product-search">
+                <input type="text" 
+                       placeholder="Buscar productos..." 
+                       class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                       data-action="input->product-search#search"
+                       data-product-search-target="query" />
+                <button class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-r-md border border-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
+                        data-action="click->product-search#search">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                   </svg>
@@ -218,6 +223,23 @@
             <h2 class="text-lg font-semibold mb-3">Inicio</h2>
             <hr>
             <div class="text-gray-600 mt-2">
+              <!-- Search results container (initially hidden) -->
+              <div id="search-results-container" class="mt-4 hidden">
+                <div class="flex items-center mb-2">
+                  <button id="back-to-categories-from-search" class="text-indigo-600 hover:text-indigo-800 mr-2"
+                          data-controller="product-search" 
+                          data-action="click->product-search#clearSearch">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                  </button>
+                  <h3 class="text-lg font-medium">Resultados de búsqueda</h3>
+                </div>
+                <div class="flex flex-wrap" id="search-results-list">
+                  <!-- Search results will be loaded here -->
+                </div>
+              </div>
+
               <% if @categories.present? %>
                 <div class="flex flex-wrap border border-dotted border-gray-300 rounded-md" id="categories-container">
                   <% if @categories.present? %>

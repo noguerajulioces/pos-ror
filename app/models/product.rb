@@ -73,4 +73,12 @@ class Product < ApplicationRecord
   def update_stock_status
     self.status = stock <= 0 ? "out_of_stock" : "active"
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["average_cost", "barcode", "category_id", "created_at", "description", "id", "min_stock", "name", "price", "sku", "slug", "status", "stock", "updated_at", "unit_id"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["category", "images", "inventory_movements", "purchases", "product_images", "unit", "variants"]
+  end
 end
