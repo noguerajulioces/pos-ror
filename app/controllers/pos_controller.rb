@@ -175,6 +175,33 @@ class PosController < ApplicationController
     end
   end
 
+  # Add this method to remove an item from the cart
+  def remove_from_cart
+    product_id = params[:product_id].to_i
+    
+    # Initialize the cart in the session if it doesn't exist
+    session[:cart] ||= []
+    
+    # Remove the item from the cart
+    session[:cart].reject! { |item| item["product_id"] == product_id }
+    
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.replace(
+          "cart-items-body",
+          partial: "cart_items",
+          locals: { cart_items: session[:cart] }
+        )
+      }
+      format.json {
+        render json: {
+          success: true,
+          cart: session[:cart]
+        }
+      }
+    end
+  end
+
   private
 
   def ensure_cash_register_open
