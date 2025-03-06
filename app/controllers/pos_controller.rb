@@ -167,18 +167,28 @@ class PosController < ApplicationController
     # Reset the cart in the session
     session[:cart] = []
 
+    # Calculate new totals
+    totals = calculate_cart_totals
+
     respond_to do |format|
       format.turbo_stream {
-        render turbo_stream: turbo_stream.replace(
-          "cart-items-body",
-          partial: "cart_items",
-          locals: { cart_items: [] }
-        )
+        render turbo_stream: [
+          turbo_stream.replace(
+            "cart-items-body",
+            partial: "cart_items",
+            locals: { cart_items: [] }
+          ),
+          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+        ]
       }
       format.json {
         render json: {
           success: true,
-          message: "Cart cleared successfully"
+          message: "Cart cleared successfully",
+          totals: totals
         }
       }
     end
@@ -194,9 +204,6 @@ class PosController < ApplicationController
     # Remove the item from the cart
     session[:cart].reject! { |item| item["product_id"] == product_id }
 
-    # Calculate totals after removing the item
-    @subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"] }
-
     # Calculate new totals
     totals = calculate_cart_totals
 
@@ -207,13 +214,18 @@ class PosController < ApplicationController
             "cart-items-body",
             partial: "cart_items",
             locals: { cart_items: session[:cart] }
-          )
+          ),
+          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
         ]
       }
       format.json {
         render json: {
           success: true,
-          cart: session[:cart]
+          cart: session[:cart],
+          totals: totals
         }
       }
     end
