@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   post "pos/add_product_to_cart", to: "pos#add_product_to_cart"
   post "pos/add_product_to_order", to: "pos#add_product_to_order"
   # Add this line to your routes.rb
-  post 'pos/clear_cart', to: 'pos#clear_cart'
+  post "pos/clear_cart", to: "pos#clear_cart"
   # Add this line to your routes.rb
-  delete 'pos/remove_from_cart', to: 'pos#remove_from_cart'
+  delete "pos/remove_from_cart", to: "pos#remove_from_cart"
 end

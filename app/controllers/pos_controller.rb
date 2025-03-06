@@ -157,7 +157,7 @@ class PosController < ApplicationController
   def clear_cart
     # Reset the cart in the session
     session[:cart] = []
-    
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: turbo_stream.replace(
@@ -178,20 +178,25 @@ class PosController < ApplicationController
   # Add this method to remove an item from the cart
   def remove_from_cart
     product_id = params[:product_id].to_i
-    
+
     # Initialize the cart in the session if it doesn't exist
     session[:cart] ||= []
-    
+
     # Remove the item from the cart
     session[:cart].reject! { |item| item["product_id"] == product_id }
-    
+
+    # Calculate totals after removing the item
+    @subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"] }
+
     respond_to do |format|
       format.turbo_stream {
-        render turbo_stream: turbo_stream.replace(
-          "cart-items-body",
-          partial: "cart_items",
-          locals: { cart_items: session[:cart] }
-        )
+        render turbo_stream: [
+          turbo_stream.replace(
+            "cart-items-body",
+            partial: "cart_items",
+            locals: { cart_items: session[:cart] }
+          )
+        ]
       }
       format.json {
         render json: {

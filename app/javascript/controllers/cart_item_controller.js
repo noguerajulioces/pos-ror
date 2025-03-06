@@ -21,7 +21,7 @@ export default class extends Controller {
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': csrfToken,
-        'Accept': 'text/vnd.turbo-stream.html, application/json'
+        'Accept': 'text/vnd.turbo-stream.html'
       },
       body: JSON.stringify({
         product_id: this.productIdValue
@@ -35,6 +35,18 @@ export default class extends Controller {
     })
     .then(html => {
       console.log('Product removed from cart successfully');
+      
+      // Process the Turbo Stream response manually if needed
+      if (html.includes('turbo-stream')) {
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const streamElement = template.content.querySelector('turbo-stream');
+        
+        if (streamElement) {
+          // Apply the stream manually
+          document.body.appendChild(streamElement);
+        }
+      }
     })
     .catch(error => {
       console.error('Error removing product from cart:', error);
