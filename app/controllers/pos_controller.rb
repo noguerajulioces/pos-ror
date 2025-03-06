@@ -239,6 +239,12 @@ class PosController < ApplicationController
     render json: { success: true }
   end
 
+  def set_order_type
+    session[:order_type] = params[:order_type]
+    
+    render json: { success: true }
+  end
+
   private
 
   def ensure_cash_register_open
