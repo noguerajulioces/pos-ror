@@ -15,13 +15,22 @@ class CustomersController < ApplicationController
   def edit
   end
 
+  def search
+    @customers = Customer.where("first_name ILIKE ? OR last_name ILIKE ?", "%#{params[:query]}%", "%#{params[:query]}%")
+    render partial: "customers/search_results", locals: { customers: @customers }
+  end
+
   def create
     @customer = Customer.new(customer_params)
 
-    if @customer.save
-      redirect_to @customer, notice: "Cliente creado exitosamente."
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @customer.save
+        format.html { redirect_to customer_url(@customer), notice: "Customer was successfully created." }
+        format.json { render json: { success: true, customer: @customer } }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 

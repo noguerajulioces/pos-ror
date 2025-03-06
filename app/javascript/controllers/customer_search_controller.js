@@ -70,23 +70,79 @@ export default class extends Controller {
     `
   }
   
+  search() {
+    const query = this.element.value.trim()
+    if (query.length < 2) return
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    
+    fetch(`/customers/search?query=${encodeURIComponent(query)}`, {
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "text/html"
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById("customer-search-results").innerHTML = html
+    })
+    .catch(error => {
+      console.error("Error searching customers:", error)
+    })
+  }
+
+  createCustomer(event) {
+    event.preventDefault()
+    const form = event.target.closest('form')
+    const formData = new FormData(form)
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "application/json"
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Close modal and update customer info
+        const modal = document.querySelector('[data-controller="modal"]')
+        if (modal) {
+          const modalController = modal.controller
+          modalController.close()
+        }
+        
+        // Update customer info in the POS screen
+        document.getElementById("customer-info").textContent = data.customer.name
+        
+        // Show success message
+        alert(`Cliente ${data.customer.name} creado exitosamente`)
+      } else {
+        // Show errors
+        alert(`Error: ${data.errors.join(', ')}`)
+      }
+    })
+    .catch(error => {
+      console.error("Error creating customer:", error)
+    })
+  }
+
   selectCustomer(event) {
     const customerId = event.currentTarget.dataset.customerId
     const customerName = event.currentTarget.dataset.customerName
     
-    // Update the customer display in the order summary
-    const customerDisplay = document.querySelector('.px-4.py-3.border-b.border-gray-200:nth-child(2) .float-right.font-medium')
-    if (customerDisplay) {
-      customerDisplay.textContent = customerName
-    }
+    // Update customer info in the POS screen
+    document.getElementById("customer-info").textContent = customerName
     
-    // Close the modal
-    const modal = event.currentTarget.closest('.fixed')
+    // Close modal
+    const modal = document.querySelector('[data-controller="modal"]')
     if (modal) {
-      modal.remove()
+      const modalController = modal.controller
+      modalController.close()
     }
-    
-    // You might want to store the selected customer ID in a hidden field or make an AJAX request
-    // to update the current order with this customer
   }
 }

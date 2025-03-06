@@ -1,0 +1,32 @@
+<% if customers.any? %>
+  <div class="divide-y divide-gray-200">
+    <% customers.each do |customer| %>
+      <div class="py-3 px-2 hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+           data-controller="customer-search"
+           data-action="click->customer-search#selectCustomer"
+           data-customer-id="<%= customer.id %>"
+           data-customer-name="<%= customer.first_name %>">
+        <div>
+          <div class="font-medium"><%= customer.first_name %></div>
+          <div class="text-sm text-gray-500">
+            <% if customer.phone.present? %>
+              <span class="mr-2"><%= customer.phone %></span>
+            <% end %>
+            <% if customer.email.present? %>
+              <span><%= customer.email %></span>
+            <% end %>
+          </div>
+        </div>
+        <button class="text-indigo-600 hover:text-indigo-900">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center text-gray-500 py-4">
+    No se encontraron clientes con ese criterio de búsqueda
+  </div>
+<% end %>
