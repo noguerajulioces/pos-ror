@@ -253,15 +253,15 @@ class PosController < ApplicationController
     
     render json: { 
       products: @products.map do |product|
-        {
+        product_json = {
           id: product.id,
           name: product.name,
           price: product.price,
           stock: product.stock || 0,
-          image_url: product.product_images.first.attached? ? url_for(product.product_images.first) : nil,
-          image_alt: product.name,
-          description: product.description
+          description: product.description,
+          image_url: nil
         }
+        product_json
       end
     }
   end
