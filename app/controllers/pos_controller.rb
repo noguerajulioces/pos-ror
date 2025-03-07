@@ -257,7 +257,9 @@ class PosController < ApplicationController
           id: product.id,
           name: product.name,
           price: product.price,
-          image_url: nil,
+          stock: product.stock || 0,
+          image_url: product.product_images.first.attached? ? url_for(product.product_images.first) : nil,
+          image_alt: product.name,
           description: product.description
         }
       end
