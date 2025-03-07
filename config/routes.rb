@@ -51,4 +51,7 @@ Rails.application.routes.draw do
   post 'pos/set_order_type', to: 'pos#set_order_type'
   # Add this route within your routes.rb file
   get 'pos/search_products', to: 'pos#search_products'
+  # Add these routes to your routes.rb file
+  resources :cash_registers, only: [:create]
+  get 'pos/cash_register_modal', to: 'pos#cash_register_modal'
 end

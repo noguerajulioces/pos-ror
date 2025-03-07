@@ -5,6 +5,7 @@ class PosController < ApplicationController
 
   # before_action :authenticate_user!
   # before_action :ensure_cash_register_open
+  before_action :check_cash_register, only: [:show]
 
   def show
     # Aquí puedes cargar los datos que necesites en la vista
@@ -266,7 +267,16 @@ class PosController < ApplicationController
     }
   end
 
+  def cash_register_modal
+    render partial: "cash_register_modal"
+  end
+
   private
+
+  def check_cash_register
+    @cash_register = CashRegister.open.first
+    @needs_cash_register = @cash_register.nil?
+  end
 
   def ensure_cash_register_open
     # Verifica que haya una caja abierta
