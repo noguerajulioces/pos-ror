@@ -259,7 +259,7 @@ class PosController < ApplicationController
           price: product.price,
           stock: product.stock || 0,
           description: product.description,
-          image_url: nil
+          image_url: product&.images&.first&.image&.variant(resize_to_fill: [100, 100])
         }
         product_json
       end
