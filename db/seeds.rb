@@ -46,16 +46,16 @@ puts "Se han creado 20 clientes de prueba."
 # categorias
 
 parent_categories = {
-  "Herramientas eléctricas" => ["Taladros", "Sierras eléctricas", "Amoladoras"],
-  "Herramientas manuales" => ["Martillos", "Destornilladores", "Llaves de vaso"],
-  "Materiales de construcción" => ["Cemento", "Ladrillos", "Arena y grava"],
-  "Fontanería" => ["Tubos y conexiones", "Griferías", "Accesorios de baño"],
-  "Electricidad" => ["Cables y conductores", "Interruptores", "Iluminación"],
-  "Jardinería" => ["Cortacéspedes", "Herramientas de jardín", "Sistemas de riego"],
-  "Seguridad y protección" => ["Equipos de protección", "Alarmas", "Cámaras de seguridad"],
-  "Pinturas y recubrimientos" => ["Pinturas", "Barnices", "Disolventes"],
-  "Accesorios y ferretería general" => ["Fijaciones", "Abrazaderas", "Tornillería"],
-  "Muebles y decoración" => ["Muebles de exterior", "Decoración interior", "Iluminación decorativa"]
+  "Herramientas eléctricas" => [ "Taladros", "Sierras eléctricas", "Amoladoras" ],
+  "Herramientas manuales" => [ "Martillos", "Destornilladores", "Llaves de vaso" ],
+  "Materiales de construcción" => [ "Cemento", "Ladrillos", "Arena y grava" ],
+  "Fontanería" => [ "Tubos y conexiones", "Griferías", "Accesorios de baño" ],
+  "Electricidad" => [ "Cables y conductores", "Interruptores", "Iluminación" ],
+  "Jardinería" => [ "Cortacéspedes", "Herramientas de jardín", "Sistemas de riego" ],
+  "Seguridad y protección" => [ "Equipos de protección", "Alarmas", "Cámaras de seguridad" ],
+  "Pinturas y recubrimientos" => [ "Pinturas", "Barnices", "Disolventes" ],
+  "Accesorios y ferretería general" => [ "Fijaciones", "Abrazaderas", "Tornillería" ],
+  "Muebles y decoración" => [ "Muebles de exterior", "Decoración interior", "Iluminación decorativa" ]
 }
 
 parent_categories.each do |parent_name, subcategories|
@@ -78,29 +78,29 @@ Category.all.each do |category|
   3.times do |i|
     # Seleccionar un nombre de producto basado en la categoría (se usa un case para dar ejemplos concretos)
     product_name = case category.name
-                   when /Herramientas eléctricas/i
-                     ["Taladro inalámbrico", "Sierra circular", "Amoladora angular"].sample
-                   when /Herramientas manuales/i
-                     ["Martillo", "Destornillador de precisión", "Juego de llaves"].sample
-                   when /Materiales de construcción/i
-                     ["Cemento Portland", "Ladrillo refractario", "Arena fina"].sample
-                   when /Fontanería/i
-                     ["Tubos PVC", "Grifería moderna", "Llave de paso"].sample
-                   when /Electricidad/i
-                     ["Cable eléctrico", "Interruptor", "Enchufe resistente"].sample
-                   when /Jardinería/i
-                     ["Cortacésped", "Podadora", "Manguera flexible"].sample
-                   when /Seguridad y protección/i
-                     ["Detector de humo", "Extintor", "Cámara de seguridad"].sample
-                   when /Pinturas y recubrimientos/i
-                     ["Pintura acrílica", "Barniz protector", "Disolvente ecológico"].sample
-                   when /Accesorios y ferretería general/i
-                     ["Tornillos", "Abrazaderas", "Fijaciones para madera"].sample
-                   when /Muebles y decoración/i
-                     ["Mueble de exterior", "Lámpara decorativa", "Estantería modular"].sample
-                   else
+    when /Herramientas eléctricas/i
+                     [ "Taladro inalámbrico", "Sierra circular", "Amoladora angular" ].sample
+    when /Herramientas manuales/i
+                     [ "Martillo", "Destornillador de precisión", "Juego de llaves" ].sample
+    when /Materiales de construcción/i
+                     [ "Cemento Portland", "Ladrillo refractario", "Arena fina" ].sample
+    when /Fontanería/i
+                     [ "Tubos PVC", "Grifería moderna", "Llave de paso" ].sample
+    when /Electricidad/i
+                     [ "Cable eléctrico", "Interruptor", "Enchufe resistente" ].sample
+    when /Jardinería/i
+                     [ "Cortacésped", "Podadora", "Manguera flexible" ].sample
+    when /Seguridad y protección/i
+                     [ "Detector de humo", "Extintor", "Cámara de seguridad" ].sample
+    when /Pinturas y recubrimientos/i
+                     [ "Pintura acrílica", "Barniz protector", "Disolvente ecológico" ].sample
+    when /Accesorios y ferretería general/i
+                     [ "Tornillos", "Abrazaderas", "Fijaciones para madera" ].sample
+    when /Muebles y decoración/i
+                     [ "Mueble de exterior", "Lámpara decorativa", "Estantería modular" ].sample
+    else
                      "#{category.name} Producto #{i+1}"
-                   end
+    end
 
     Product.create!(
       name: product_name,

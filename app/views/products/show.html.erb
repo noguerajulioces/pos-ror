@@ -123,6 +123,14 @@
                     <%= product_image.alt_text %>
                   </div>
                 </div>
+                <%= button_to product_product_image_path(@product, product_image), 
+                    method: :delete, 
+                    form: { data: { turbo_confirm: "¿Estás seguro de que deseas eliminar esta imagen?" } },
+                    class: "absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 shadow-md hover:bg-red-700 focus:outline-none" do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% end %>
               </div>
             <% end %>
           </div>

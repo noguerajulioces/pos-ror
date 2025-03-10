@@ -27,7 +27,7 @@ class CustomersController < ApplicationController
     respond_to do |format|
       if @customer.save
         # Close the modal and update customer info in the POS view
-        format.turbo_stream { 
+        format.turbo_stream {
           render turbo_stream: [
             turbo_stream.remove("modal"),
             turbo_stream.update("customer-info", @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
@@ -39,8 +39,8 @@ class CustomersController < ApplicationController
       else
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
-            "new_customer_form", 
-            partial: "customers/modal_form", 
+            "new_customer_form",
+            partial: "customers/modal_form",
             locals: { customer: @customer }
           )
         }

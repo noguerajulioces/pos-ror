@@ -16,7 +16,9 @@ Rails.application.routes.draw do
   resources :categories do
     resources :subcategories, only: [ :new, :create ]
   end
-  resources :products
+  resources :products do
+    resources :product_images, only: [ :destroy ]
+  end
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]
   resources :customers do
@@ -46,12 +48,12 @@ Rails.application.routes.draw do
   # Add this line to your routes.rb
   delete "pos/remove_from_cart", to: "pos#remove_from_cart"
   # Add this route within your routes.rb file
-  post 'pos/set_customer', to: 'pos#set_customer'
+  post "pos/set_customer", to: "pos#set_customer"
   # Make sure this route is defined
-  post 'pos/set_order_type', to: 'pos#set_order_type'
+  post "pos/set_order_type", to: "pos#set_order_type"
   # Add this route within your routes.rb file
-  get 'pos/search_products', to: 'pos#search_products'
+  get "pos/search_products", to: "pos#search_products"
   # Add these routes to your routes.rb file
-  resources :cash_registers, only: [:create]
-  get 'pos/cash_register_modal', to: 'pos#cash_register_modal'
+  resources :cash_registers, only: [ :create ]
+  get "pos/cash_register_modal", to: "pos#cash_register_modal"
 end

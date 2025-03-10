@@ -5,7 +5,7 @@ class PosController < ApplicationController
 
   # before_action :authenticate_user!
   # before_action :ensure_cash_register_open
-  before_action :check_cash_register, only: [:show]
+  before_action :check_cash_register, only: [ :show ]
 
   def show
     # Aquí puedes cargar los datos que necesites en la vista
@@ -236,13 +236,13 @@ class PosController < ApplicationController
   def set_customer
     session[:customer_id] = params[:customer_id]
     session[:customer_name] = params[:customer_name]
-    
+
     render json: { success: true }
   end
 
   def set_order_type
     session[:order_type] = params[:order_type]
-    
+
     respond_to do |format|
       format.json { render json: { success: true, order_type: params[:order_type] } }
     end
@@ -251,8 +251,8 @@ class PosController < ApplicationController
   def search_products
     @q = Product.ransack(name_or_description_cont: params[:query])
     @products = @q.result(distinct: true).limit(30)
-    
-    render json: { 
+
+    render json: {
       products: @products.map do |product|
         product_json = {
           id: product.id,
@@ -260,7 +260,7 @@ class PosController < ApplicationController
           price: product.price,
           stock: product.stock || 0,
           description: product.description,
-          image_url: product&.images&.first&.image&.variant(resize_to_fill: [100, 100])
+          image_url: product.images.first.present? ? url_for(product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
         }
         product_json
       end
