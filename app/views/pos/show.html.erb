@@ -75,7 +75,7 @@
           <div class="flex items-center text-gray-700 mr-4">
             <img src="<%= currency.flag_url %>" alt="<%= currency.name %>" class="h-4 mr-1">
             <span class="text-sm">
-              <strong><%= currency.code %></strong>: <%= "Gs. #{number_with_delimiter(currency.exchange_rate, delimiter: '.')}" %> </span>
+              <strong><%= currency.code %></strong>: <%= "₲s. #{number_with_delimiter(currency.exchange_rate, delimiter: '.')}" %> </span>
           </div>
         <% end %>
       </div>
@@ -242,7 +242,7 @@
                   </button>
                   <h3 class="text-lg font-medium">Resultados de búsqueda</h3>
                 </div>
-                <div class="flex flex-wrap" id="search-results-list">
+                <div class="flex flex-wrap min-h-max overflow-y-auto pr-2" id="search-results-list">
                   <!-- Search results will be loaded here -->
                 </div>
               </div>
