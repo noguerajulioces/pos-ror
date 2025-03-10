@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   resources :suppliers
   resources :users
   resources :expenses
+  resources :currencies
   resource :pos, only: [ :show ]
   patch "pos/update_order_type", to: "pos#update_order_type"
   get "pos/order_type_modal", to: "pos#order_type_modal"

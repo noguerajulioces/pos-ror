@@ -71,18 +71,13 @@
     
     <div class="flex items-center space-x-4">
       <div class="flex items-center space-x-4 mr-4">
-        <div class="flex items-center text-gray-700 mr-4">
-          <img src="https://flagcdn.com/w20/us.png" alt="Estados Unidos" class="h-4 mr-1">
-          <span class="text-sm">USD: 7.350 ₲s</span>
-        </div>
-        <div class="flex items-center text-gray-700 mr-4">
-          <img src="https://flagcdn.com/w20/ar.png" alt="Argentina" class="h-4 mr-1">
-          <span class="text-sm">ARS: 85,50 ₲s</span>
-        </div>
-        <div class="flex items-center text-gray-700">
-          <img src="https://flagcdn.com/w20/br.png" alt="Brasil" class="h-4 mr-1">
-          <span class="text-sm">BRL: 1.250 ₲s</span>
-        </div>
+        <% Currency.where(display: true).order(:code).each do |currency| %>
+          <div class="flex items-center text-gray-700 mr-4">
+            <img src="<%= currency.flag_url %>" alt="<%= currency.name %>" class="h-4 mr-1">
+            <span class="text-sm">
+              <strong><%= currency.code %></strong>: <%= "Gs. #{number_with_delimiter(currency.exchange_rate, delimiter: '.')}" %> </span>
+          </div>
+        <% end %>
       </div>
     </div>
   </nav>

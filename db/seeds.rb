@@ -118,3 +118,17 @@ Category.all.each do |category|
 end
 
 puts "Se han creado #{Product.count} productos."
+
+# Add currency seeds
+currencies = [
+  { name: 'Dólar', code: 'USD', symbol: '$', exchange_rate: 7350, flag_url: 'https://flagcdn.com/w20/us.png', display: true },
+  { name: 'Peso Argentino', code: 'ARS', symbol: '$', exchange_rate: 85.5, flag_url: 'https://flagcdn.com/w20/ar.png', display: true },
+  { name: 'Real Brasileño', code: 'BRL', symbol: 'R$', exchange_rate: 1250, flag_url: 'https://flagcdn.com/w20/br.png', display: true },
+  { name: 'Guarani', code: 'PYG', symbol: '₲', exchange_rate: 1, flag_url: 'https://flagcdn.com/w20/py.png', display: true }
+]
+
+currencies.each do |currency_data|
+  Currency.find_or_create_by!(code: currency_data[:code]) do |currency|
+    currency.update(currency_data)
+  end
+end
