@@ -10,9 +10,7 @@ export default class extends Controller {
   }
 
   toggleSymbols() {
-    console.log("Toggle symbols called")
     if (this.fixedRadioTarget.checked) {
-      this.symbolTarget.textContent = 'GS.'
       this.symbolTarget.classList.remove('hidden')
       this.percentageSymbolTarget.classList.add('hidden')
     } else if (this.percentageRadioTarget.checked) {
