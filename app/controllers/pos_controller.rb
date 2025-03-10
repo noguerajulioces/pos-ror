@@ -276,46 +276,6 @@ class PosController < ApplicationController
     render partial: "discount_modal"
   end
 
-  private
-
-  def check_cash_register
-    @cash_register = CashRegister.open.first
-    @needs_cash_register = @cash_register.nil?
-  end
-
-  def ensure_cash_register_open
-    # Verifica que haya una caja abierta
-    # (asumiendo que tienes un modelo CashRegister con un scope :open)
-    @cash_register = CashRegister.open.first
-    unless @cash_register
-      redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
-    end
-  end
-end
-
-def calculate_cart_totals
-  cart = session[:cart] || []
-
-  # Calculate subtotal
-  subtotal = cart.sum { |item| item["price"].to_f * item["quantity"].to_i }
-
-  # Calculate IVA (10%)
-  iva = subtotal * 0.10
-
-  # Get discount (for now it's 0, you can implement discount logic later)
-  discount = 0
-
-  # Calculate total
-  # total = subtotal + iva - discount
-  total = subtotal - discount
-
-  {
-    subtotal: subtotal,
-    iva: iva,
-    discount: discount,
-    total: total
-  }
-end
 
 # Add these methods to your PosController
 def apply_discount
@@ -350,4 +310,45 @@ def apply_discount
     formatted_total: "GS. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
     formatted_iva: "GS. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}"
   }
+end
+
+  private
+
+  def check_cash_register
+    @cash_register = CashRegister.open.first
+    @needs_cash_register = @cash_register.nil?
+  end
+
+  def ensure_cash_register_open
+    # Verifica que haya una caja abierta
+    # (asumiendo que tienes un modelo CashRegister con un scope :open)
+    @cash_register = CashRegister.open.first
+    unless @cash_register
+      redirect_to new_cash_register_path, notice: "Por favor, abre la caja antes de continuar."
+    end
+  end
+
+  def calculate_cart_totals
+    cart = session[:cart] || []
+
+    # Calculate subtotal
+    subtotal = cart.sum { |item| item["price"].to_f * item["quantity"].to_i }
+
+    # Calculate IVA (10%)
+    iva = subtotal * 0.10
+
+    # Get discount (for now it's 0, you can implement discount logic later)
+    discount = 0
+
+    # Calculate total
+    # total = subtotal + iva - discount
+    total = subtotal - discount
+
+    {
+      subtotal: subtotal,
+      iva: iva,
+      discount: discount,
+      total: total
+    }
+  end
 end
