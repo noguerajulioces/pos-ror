@@ -4,17 +4,18 @@ export default class extends Controller {
   static targets = ["fixedRadio", "percentageRadio", "symbol", "percentageSymbol", "amount"]
 
   connect() {
-    // Set initial state
+    console.log("Discount controller connected!")
+    // Set initial state based on which radio is checked
     this.toggleSymbols()
   }
 
   toggleSymbols() {
+    console.log("Toggle symbols called")
     if (this.fixedRadioTarget.checked) {
       this.symbolTarget.textContent = 'GS.'
       this.symbolTarget.classList.remove('hidden')
       this.percentageSymbolTarget.classList.add('hidden')
-    } else {
-      this.symbolTarget.textContent = ''
+    } else if (this.percentageRadioTarget.checked) {
       this.symbolTarget.classList.add('hidden')
       this.percentageSymbolTarget.classList.remove('hidden')
     }
@@ -45,7 +46,9 @@ export default class extends Controller {
     .then(data => {
       if (data.success) {
         // Update totals in the UI
-        document.getElementById('cart-discount').textContent = data.formatted_discount
+        if (document.getElementById('cart-discount')) {
+          document.getElementById('cart-discount').textContent = data.formatted_discount
+        }
         document.getElementById('cart-total').textContent = data.formatted_total
         document.getElementById('cart-subtotal').textContent = data.formatted_subtotal
         document.getElementById('cart-iva').textContent = data.formatted_iva

@@ -10,7 +10,7 @@
                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
                 checked
                 data-discount-target="fixedRadio"
-                data-action="change->discount#toggleSymbols">
+                data-action="click->discount#toggleSymbols">
           <label for="amount_type_fixed" class="ml-2 block text-sm text-gray-700">Monto Fijo</label>
         </div>
         <div class="flex items-center">
@@ -20,7 +20,7 @@
                 value="percentage" 
                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 data-discount-target="percentageRadio"
-                data-action="change->discount#toggleSymbols">
+                data-action="click->discount#toggleSymbols">
           <label for="amount_type_percentage" class="ml-2 block text-sm text-gray-700">Porcentaje (%)</label>
         </div>
       </div>
@@ -32,7 +32,7 @@
         <input type="number" 
               id="discount_amount" 
               name="discount_amount" 
-              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-12 pr-12 sm:text-sm border-gray-300 rounded-md" 
+              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-12 pr-12 sm:text-sm border-gray-300 rounded-md px-2 py-1.5" 
               placeholder="0" 
               min="0"
               data-discount-target="amount">
