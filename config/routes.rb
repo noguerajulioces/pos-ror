@@ -57,4 +57,7 @@ Rails.application.routes.draw do
   # Add these routes to your routes.rb file
   resources :cash_registers, only: [ :create ]
   get "pos/cash_register_modal", to: "pos#cash_register_modal"
+  # Agrega estas rutas dentro del bloque de rutas existente
+  get "pos/discount_modal", to: "pos#discount_modal"
+  post "pos/apply_discount", to: "pos#apply_discount"
 end

@@ -271,6 +271,11 @@ class PosController < ApplicationController
     render partial: "cash_register_modal"
   end
 
+  def discount_modal
+    # Simple action to render the discount modal
+    render partial: "discount_modal"
+  end
+
   private
 
   def check_cash_register
@@ -309,5 +314,40 @@ def calculate_cart_totals
     iva: iva,
     discount: discount,
     total: total
+  }
+end
+
+# Add these methods to your PosController
+def apply_discount
+  discount_amount = params[:discount_amount].to_f
+  discount_type = params[:discount_type]
+
+  # Get the current subtotal
+  cart_totals = calculate_cart_totals
+  subtotal = cart_totals[:subtotal]
+
+  # Calculate the discount
+  if discount_type == "percentage"
+    # Ensure percentage is valid (0-100)
+    discount_percentage = [ 0, [ discount_amount, 100 ].min ].max
+    discount = subtotal * (discount_percentage / 100)
+  else
+    # Ensure discount is not greater than subtotal
+    discount = [ discount_amount, subtotal ].min
+  end
+
+  # Save the discount in the session
+  session[:discount] = discount
+
+  # Recalculate totals
+  new_totals = calculate_cart_totals
+
+  render json: {
+    success: true,
+    discount: discount,
+    formatted_discount: "GS. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
+    formatted_subtotal: "GS. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
+    formatted_total: "GS. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
+    formatted_iva: "GS. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}"
   }
 end

@@ -1,0 +1,59 @@
+<turbo-frame id="discount_modal">
+  <div class="p-6" data-controller="discount">
+    <div class="mb-6">
+      <div class="flex space-x-4 mb-4">
+        <div class="flex items-center">
+          <input type="radio" 
+                id="amount_type_fixed" 
+                name="discount_type" 
+                value="fixed" 
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
+                checked
+                data-discount-target="fixedRadio"
+                data-action="change->discount#toggleSymbols">
+          <label for="amount_type_fixed" class="ml-2 block text-sm text-gray-700">Monto Fijo</label>
+        </div>
+        <div class="flex items-center">
+          <input type="radio" 
+                id="amount_type_percentage" 
+                name="discount_type" 
+                value="percentage" 
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                data-discount-target="percentageRadio"
+                data-action="change->discount#toggleSymbols">
+          <label for="amount_type_percentage" class="ml-2 block text-sm text-gray-700">Porcentaje (%)</label>
+        </div>
+      </div>
+      
+      <div class="relative mt-2">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span data-discount-target="symbol" class="text-gray-500 sm:text-sm">GS.</span>
+        </div>
+        <input type="number" 
+              id="discount_amount" 
+              name="discount_amount" 
+              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-12 pr-12 sm:text-sm border-gray-300 rounded-md" 
+              placeholder="0" 
+              min="0"
+              data-discount-target="amount">
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <span data-discount-target="percentageSymbol" class="text-gray-500 sm:text-sm hidden">%</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-end space-x-3">
+      <button type="button" 
+              class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              data-action="click->modal#close">
+        Cancelar
+      </button>
+      <button type="button" 
+              id="apply_discount_button"
+              class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              data-action="click->discount#apply">
+        Aplicar Descuento
+      </button>
+    </div>
+  </div>
+</turbo-frame>
