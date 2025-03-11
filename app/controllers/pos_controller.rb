@@ -136,8 +136,14 @@ class PosController < ApplicationController
       }
     end
 
+    # Recalculate discount if it's a percentage
+    adjust_discount_if_needed
+
     # Calculate new totals
     totals = calculate_cart_totals
+
+    # Update discount label
+    discount_label = session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
 
     respond_to do |format|
       format.turbo_stream {
@@ -150,14 +156,16 @@ class PosController < ApplicationController
           turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("discount-label", discount_label)
         ]
       }
       format.json {
         render json: {
           success: true,
           cart: session[:cart],
-          totals: totals
+          totals: totals,
+          discount_label: discount_label
         }
       }
     end
@@ -168,8 +176,19 @@ class PosController < ApplicationController
     # Reset the cart in the session
     session[:cart] = []
 
+    # Reset discount if cart is empty
+    session[:discount] = 0
+
+    # Keep percentage info if it exists for future calculations
+    if session[:discount_percentage]
+      session[:discount_percentage] = session[:discount_percentage]
+    end
+
     # Calculate new totals
     totals = calculate_cart_totals
+
+    # Update discount label
+    discount_label = session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
 
     respond_to do |format|
       format.turbo_stream {
@@ -182,14 +201,16 @@ class PosController < ApplicationController
           turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("discount-label", discount_label)
         ]
       }
       format.json {
         render json: {
           success: true,
           message: "Cart cleared successfully",
-          totals: totals
+          totals: totals,
+          discount_label: discount_label
         }
       }
     end
@@ -205,8 +226,14 @@ class PosController < ApplicationController
     # Remove the item from the cart
     session[:cart].reject! { |item| item["product_id"] == product_id }
 
+    # Recalculate discount if it's a percentage or if cart is empty
+    adjust_discount_if_needed
+
     # Calculate new totals
     totals = calculate_cart_totals
+
+    # Update discount label
+    discount_label = session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
 
     respond_to do |format|
       format.turbo_stream {
@@ -219,14 +246,16 @@ class PosController < ApplicationController
           turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
           turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("discount-label", discount_label)
         ]
       }
       format.json {
         render json: {
           success: true,
           cart: session[:cart],
-          totals: totals
+          totals: totals,
+          discount_label: discount_label
         }
       }
     end
@@ -317,6 +346,21 @@ class PosController < ApplicationController
   end
 
   private
+
+  # Helper method to adjust discount based on cart changes
+  def adjust_discount_if_needed
+    # If cart is empty, reset discount to 0
+    if session[:cart].blank?
+      session[:discount] = 0
+      return
+    end
+
+    # If percentage discount is applied, recalculate based on new subtotal
+    if session[:discount_percentage].present?
+      subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"].to_i }
+      session[:discount] = subtotal * (session[:discount_percentage].to_f / 100)
+    end
+  end
 
   def check_cash_register
     @cash_register = CashRegister.open.first
