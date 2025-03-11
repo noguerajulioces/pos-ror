@@ -72,10 +72,19 @@ export default class extends Controller {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        console.log("DATA ", data);
         // Update totals in the UI
         if (document.getElementById('cart-discount')) {
           document.getElementById('cart-discount').textContent = data.formatted_discount
+          
+          // Store the fixed discount amount in a data attribute for future reference
+          if (discountType === 'fixed') {
+            document.getElementById('cart-discount').dataset.fixedAmount = discountAmount
+          } else {
+            delete document.getElementById('cart-discount').dataset.fixedAmount
+          }
         }
+        
         document.getElementById('cart-total').textContent = data.formatted_total
         document.getElementById('cart-subtotal').textContent = data.formatted_subtotal
         document.getElementById('cart-iva').textContent = data.formatted_iva
@@ -83,6 +92,18 @@ export default class extends Controller {
         // Update the discount label if provided
         if (data.discount_label && document.getElementById('discount-label')) {
           document.getElementById('discount-label').textContent = data.discount_label
+          
+          // For fixed discount, we might want to show the original amount if it's different
+          if (discountType === 'fixed' && data.discount < discountAmount) {
+            const originalAmount = new Intl.NumberFormat('es-PY', { 
+              style: 'currency', 
+              currency: 'PYG',
+              currencyDisplay: 'narrowSymbol',
+              minimumFractionDigits: 0
+            }).format(discountAmount).replace('PYG', 'GS.');
+            
+            document.getElementById('discount-label').textContent = `Descuento (${originalAmount})`
+          }
         }
         
         // Close the modal

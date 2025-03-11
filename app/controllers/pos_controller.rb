@@ -176,19 +176,15 @@ class PosController < ApplicationController
     # Reset the cart in the session
     session[:cart] = []
 
-    # Reset discount if cart is empty
+    # Reset discount and discount percentage
     session[:discount] = 0
-
-    # Keep percentage info if it exists for future calculations
-    if session[:discount_percentage]
-      session[:discount_percentage] = session[:discount_percentage]
-    end
+    session[:discount_percentage] = nil
 
     # Calculate new totals
     totals = calculate_cart_totals
 
-    # Update discount label
-    discount_label = session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
+    # Update discount label (will be just "Descuento" since percentage is nil)
+    discount_label = "Descuento"
 
     respond_to do |format|
       format.turbo_stream {
@@ -320,9 +316,17 @@ class PosController < ApplicationController
       discount = subtotal * (discount_percentage / 100)
       # Store the percentage in the session
       session[:discount_percentage] = discount_percentage.to_i
+      session[:discount_fixed_amount] = nil
     else
-      # Ensure discount is not greater than subtotal
-      discount = [ discount_amount, subtotal ].min
+      # For fixed discount, if cart is empty, store the original amount for later use
+      if subtotal == 0
+        session[:discount_fixed_amount] = discount_amount
+        discount = 0
+      else
+        # Ensure discount is not greater than subtotal
+        discount = [ discount_amount, subtotal ].min
+        session[:discount_fixed_amount] = discount_amount
+      end
       # Clear the percentage from the session
       session[:discount_percentage] = nil
     end
@@ -355,10 +359,20 @@ class PosController < ApplicationController
       return
     end
 
+    # Calculate current subtotal
+    subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"].to_i }
+
     # If percentage discount is applied, recalculate based on new subtotal
     if session[:discount_percentage].present?
-      subtotal = session[:cart].sum { |item| item["price"].to_f * item["quantity"].to_i }
       session[:discount] = subtotal * (session[:discount_percentage].to_f / 100)
+    # If fixed discount amount was stored, apply it now that we have products
+    elsif session[:discount_fixed_amount].present?
+      session[:discount] = [ session[:discount_fixed_amount].to_f, subtotal ].min
+    else
+      # For fixed discount, ensure it doesn't exceed the subtotal
+      if session[:discount].to_f > subtotal
+        session[:discount] = subtotal
+      end
     end
   end
 
