@@ -77,7 +77,6 @@ class SidebarPresenter
   end
 
   def render_item(item)
-    # Nota: current_page? y link_to ahora funcionarán porque incluiste UrlHelper
     is_current = view_context.current_page?(item[:path])
     link_class = is_current ?
       "group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm/6 font-semibold text-indigo-600" :
