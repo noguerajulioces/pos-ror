@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [:show, :edit, :update, :destroy]
+  before_action :set_order, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @orders = Order.includes(:user, :payment_method, :customer).order(created_at: :desc)
@@ -27,7 +27,7 @@ class OrdersController < ApplicationController
     @order.user = current_user
 
     if @order.save
-      redirect_to @order, notice: 'Orden creada exitosamente.'
+      redirect_to @order, notice: "Orden creada exitosamente."
     else
       @payment_methods = PaymentMethod.active
       @customers = Customer.all
@@ -37,7 +37,7 @@ class OrdersController < ApplicationController
 
   def update
     if @order.update(order_params)
-      redirect_to @order, notice: 'Orden actualizada exitosamente.'
+      redirect_to @order, notice: "Orden actualizada exitosamente."
     else
       @payment_methods = PaymentMethod.active
       @customers = Customer.all
@@ -47,7 +47,7 @@ class OrdersController < ApplicationController
 
   def destroy
     @order.destroy
-    redirect_to orders_path, notice: 'Orden eliminada exitosamente.'
+    redirect_to orders_path, notice: "Orden eliminada exitosamente."
   end
 
   private
