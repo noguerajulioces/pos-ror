@@ -162,7 +162,7 @@
                 </span>
               </div>
               <div class="px-4 py-3 border-b border-gray-200">
-                <span class="text-gray-700">Descuento</span>
+                <span class="text-gray-700" id="discount-label">Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %></span>
                 <span class="float-right font-medium text-red-600" id="cart-discount">
                   GS. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
                 </span>

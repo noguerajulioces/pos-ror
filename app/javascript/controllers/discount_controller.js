@@ -49,22 +49,14 @@ export default class extends Controller {
   }
 
   apply() {
-    console.log("Apply method called")
     const discountAmount = this.amountTarget.value
     const discountType = this.fixedRadioTarget.checked ? 'fixed' : 'percentage'
     
-    console.log("Discount data:", {
-      amount: discountAmount,
-      type: discountType
-    })
-    
     if (!discountAmount || isNaN(discountAmount) || discountAmount < 0) {
-      console.warn("Invalid discount amount:", discountAmount)
       alert('Por favor ingrese un monto de descuento válido')
       return
     }
     
-    console.log("Sending discount data to server")
     // Send discount to server
     fetch('/pos/apply_discount', {
       method: 'POST',
@@ -77,47 +69,34 @@ export default class extends Controller {
         discount_type: discountType
       })
     })
-    .then(response => {
-      console.log("Server response status:", response.status)
-      return response.json()
-    })
+    .then(response => response.json())
     .then(data => {
-      console.log("Server response data:", data)
       if (data.success) {
         // Update totals in the UI
-        try {
-          if (document.getElementById('cart-discount')) {
-            document.getElementById('cart-discount').textContent = data.formatted_discount
-            console.log("Updated cart-discount element")
-          } else {
-            console.warn("cart-discount element not found")
-          }
-          document.getElementById('cart-total').textContent = data.formatted_total
-          document.getElementById('cart-subtotal').textContent = data.formatted_subtotal
-          document.getElementById('cart-iva').textContent = data.formatted_iva
-          console.log("Updated cart totals")
-        } catch (error) {
-          console.error("Error updating UI elements:", error)
+        if (document.getElementById('cart-discount')) {
+          document.getElementById('cart-discount').textContent = data.formatted_discount
+        }
+        document.getElementById('cart-total').textContent = data.formatted_total
+        document.getElementById('cart-subtotal').textContent = data.formatted_subtotal
+        document.getElementById('cart-iva').textContent = data.formatted_iva
+        
+        // Update the discount label if provided
+        if (data.discount_label && document.getElementById('discount-label')) {
+          document.getElementById('discount-label').textContent = data.discount_label
         }
         
         // Close the modal
-        try {
-          const modalController = this.application.getControllerForElementAndIdentifier(
-            document.querySelector('[data-controller="modal"]'),
-            'modal'
-          )
-          console.log("Modal controller found:", !!modalController)
-          if (modalController) modalController.close()
-        } catch (error) {
-          console.error("Error closing modal:", error)
-        }
+        const modalController = this.application.getControllerForElementAndIdentifier(
+          document.querySelector('[data-controller="modal"]'),
+          'modal'
+        )
+        if (modalController) modalController.close()
       } else {
-        console.error("Server reported error:", data.error)
         alert(data.error || 'Error al aplicar el descuento')
       }
     })
     .catch(error => {
-      console.error("Fetch error:", error)
+      console.error('Error:', error)
       alert('Error al procesar la solicitud')
     })
   }

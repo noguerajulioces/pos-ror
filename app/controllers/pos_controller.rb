@@ -276,41 +276,45 @@ class PosController < ApplicationController
     render partial: "discount_modal"
   end
 
+  def apply_discount
+    discount_amount = params[:discount_amount].to_f
+    discount_type = params[:discount_type]
 
-# Add these methods to your PosController
-def apply_discount
-  discount_amount = params[:discount_amount].to_f
-  discount_type = params[:discount_type]
+    # Get the current subtotal
+    cart_totals = calculate_cart_totals
+    subtotal = cart_totals[:subtotal]
 
-  # Get the current subtotal
-  cart_totals = calculate_cart_totals
-  subtotal = cart_totals[:subtotal]
+    # Calculate the discount
+    if discount_type == "percentage"
+      # Ensure percentage is valid (0-100)
+      discount_percentage = [ 0, [ discount_amount, 100 ].min ].max
+      discount = subtotal * (discount_percentage / 100)
+      # Store the percentage in the session
+      session[:discount_percentage] = discount_percentage.to_i
+    else
+      # Ensure discount is not greater than subtotal
+      discount = [ discount_amount, subtotal ].min
+      # Clear the percentage from the session
+      session[:discount_percentage] = nil
+    end
 
-  # Calculate the discount
-  if discount_type == "percentage"
-    # Ensure percentage is valid (0-100)
-    discount_percentage = [ 0, [ discount_amount, 100 ].min ].max
-    discount = subtotal * (discount_percentage / 100)
-  else
-    # Ensure discount is not greater than subtotal
-    discount = [ discount_amount, subtotal ].min
+    # Save the discount in the session
+    session[:discount] = discount
+
+    # Recalculate totals
+    new_totals = calculate_cart_totals
+
+    render json: {
+      success: true,
+      discount: discount,
+      discount_percentage: session[:discount_percentage],
+      formatted_discount: "GS. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
+      formatted_subtotal: "GS. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
+      formatted_total: "GS. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
+      formatted_iva: "GS. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}",
+      discount_label: session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
+    }
   end
-
-  # Save the discount in the session
-  session[:discount] = discount
-
-  # Recalculate totals
-  new_totals = calculate_cart_totals
-
-  render json: {
-    success: true,
-    discount: discount,
-    formatted_discount: "GS. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
-    formatted_subtotal: "GS. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
-    formatted_total: "GS. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
-    formatted_iva: "GS. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}"
-  }
-end
 
   private
 
@@ -337,8 +341,8 @@ end
     # Calculate IVA (10%)
     iva = subtotal * 0.10
 
-    # Get discount (for now it's 0, you can implement discount logic later)
-    discount = 0
+    # Get discount from session or default to 0
+    discount = session[:discount].to_f || 0
 
     # Calculate total
     # total = subtotal + iva - discount
