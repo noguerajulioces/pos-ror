@@ -63,4 +63,9 @@ Rails.application.routes.draw do
   post "pos/create_order", to: "pos#create_order"
   # Add this line to your existing routes
   resources :payment_methods
+  resources :orders do
+    member do
+      get :print
+    end
+  end
 end
