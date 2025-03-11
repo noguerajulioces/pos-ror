@@ -185,7 +185,10 @@
             </svg>
             Pagar
           </button>
-          <button class="bg-blue-500 hover:bg-blue-600 text-white py-4 font-medium border-r border-blue-600 focus:outline-none flex items-center justify-center">
+          <button 
+            class="bg-blue-500 hover:bg-blue-600 text-white py-4 font-medium border-r border-blue-600 focus:outline-none flex items-center justify-center"
+            data-controller="order"
+            data-action="order#createOnHold">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
             </svg>

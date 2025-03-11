@@ -26,8 +26,16 @@ class Order < ApplicationRecord
   belongs_to :payment_method
   has_many :order_items, dependent: :destroy
 
+  # Define order statuses
+  STATUSES = {
+    on_hold: "on_hold",
+    completed: "completed",
+    cancelled: "cancelled"
+  }
+
   validates :order_date, :total_amount, :status, presence: true
   validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
+  validates :status, inclusion: { in: STATUSES.values }
 
   def calculate_total
     order_items.inject(0) { |sum, item| sum + item.subtotal }

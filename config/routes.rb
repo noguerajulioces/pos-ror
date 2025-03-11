@@ -60,4 +60,5 @@ Rails.application.routes.draw do
   # Agrega estas rutas dentro del bloque de rutas existente
   get "pos/discount_modal", to: "pos#discount_modal"
   post "pos/apply_discount", to: "pos#apply_discount"
+  post "pos/create_order", to: "pos#create_order"
 end
