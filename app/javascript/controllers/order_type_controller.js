@@ -9,13 +9,15 @@ export default class extends Controller {
   
   selectType(event) {
     event.preventDefault()
-    const orderType = event.currentTarget.dataset.orderType
+    // Make sure we use the exact enum values from the Order model
+    const orderType = event.currentTarget.dataset.orderType === "Delivery" ? "delivery" : "in_store"
     console.log("Selected order type:", orderType)
     
     // Update the order type display in the POS view
     const orderTypeDisplay = document.getElementById("order-type-display")
     if (orderTypeDisplay) {
-      orderTypeDisplay.textContent = orderType
+      // Keep the display text user-friendly while sending the correct value to the backend
+      orderTypeDisplay.textContent = event.currentTarget.dataset.orderType
     } else {
       console.error("Could not find order-type-display element")
     }
