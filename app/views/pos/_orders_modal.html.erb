@@ -56,14 +56,14 @@
                   <%= order.user.name %>
                 </p>
                 <p class="font-medium">
-                  $<%= number_with_precision(order.total_amount, precision: 2) %>
+                  <%= number_to_currency(order.total_amount, unit: "₲s. ", precision: 0, delimiter: '.') %>
                 </p>
               </div>
             </div>
           <% end %>
         <% else %>
           <div class="text-center py-8 text-gray-500">
-            Nothing to display...
+            Nada para mostrar..
           </div>
         <% end %>
       </div>
