@@ -274,64 +274,14 @@ class PosController < ApplicationController
   end
 
   def create_order
-    # Get the current cart
-    cart = session[:cart] || []
+    result = Orders::CreateService.new(
+      cart: session[:cart],
+      params: params,
+      current_user: current_user,
+      session: session
+    ).call
 
-    # Check if cart is empty
-    if cart.empty?
-      render json: { success: false, error: "El carrito está vacío" }
-      return
-    end
-
-    # Get the current cash register
-    cash_register = CashRegister.open.first
-
-    # Check if cash register is open
-    if false # cash_register
-      render json: { success: false, error: "No hay caja abierta" }
-      return
-    end
-
-    # Get totals
-    totals = calculate_cart_totals
-
-    # Default payment method for on_hold orders (you might want to create a specific one)
-    payment_method = PaymentMethod.find_by(name: "Efectivo") || PaymentMethod.first
-
-    # Get customer
-    customer_id = session[:customer_id].presence || nil
-
-    # Create the order
-    order = Order.new(
-      order_date: Time.current,
-      status: params[:status] || Order::STATUSES[:on_hold],
-      total_amount: totals[:total],
-      user_id: current_user.id,
-      payment_method_id: payment_method.id,
-      customer_id: customer_id,
-      order_type: params[:order_type]
-    )
-
-    # Create order items
-    if order.save
-      cart.each do |item|
-        order.order_items.create(
-          product_id: item["product_id"],
-          quantity: item["quantity"],
-          price: item["price"],
-          subtotal: item["price"].to_f * item["quantity"].to_i
-        )
-      end
-
-      # Clear the cart
-      session[:cart] = []
-      session[:discount] = 0
-      session[:discount_percentage] = nil
-
-      render json: { success: true, order_id: order.id }
-    else
-      render json: { success: false, error: order.errors.full_messages.join(", ") }
-    end
+    render json: result
   end
 
   def search_products

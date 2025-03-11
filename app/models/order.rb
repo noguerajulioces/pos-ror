@@ -38,9 +38,16 @@ class Order < ApplicationRecord
     cancelled: "cancelled"
   }
 
+  # Define order types as enum
+  enum :order_type, {
+    in_store: "in_store",
+    delivery: "delivery"
+  }, default: "in_store"
+
   validates :order_date, :total_amount, :status, presence: true
   validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: STATUSES.values }
+  validates :order_type, inclusion: { in: order_types.keys }
 
   def calculate_total
     order_items.inject(0) { |sum, item| sum + item.subtotal }
