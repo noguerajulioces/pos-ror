@@ -25,18 +25,21 @@
         </div>
       </div>
       
-      <div class="relative mt-2">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <span data-discount-target="symbol" class="text-gray-500 sm:text-sm">GS.</span>
-          <span data-discount-target="percentageSymbol" class="text-gray-500 sm:text-sm hidden">%</span>
+      <div class="mt-2">
+        <label for="discount_amount" class="block text-sm/6 font-medium text-gray-900">Monto de descuento</label>
+        <div class="mt-2">
+          <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
+            <div class="shrink-0 text-base text-gray-500 select-none sm:text-sm/6" data-discount-target="symbol">₲s.</div>
+            <div class="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 hidden" data-discount-target="percentageSymbol">%</div>
+            <input type="number" 
+                  id="discount_amount" 
+                  name="discount_amount" 
+                  class="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 ml-4" 
+                  placeholder="0" 
+                  min="0"
+                  data-discount-target="amount">
+          </div>
         </div>
-        <input type="number" 
-              id="discount_amount" 
-              name="discount_amount" 
-              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-12 pr-12 sm:text-sm border-gray-300 rounded-md px-2 py-1.5" 
-              placeholder="0" 
-              min="0"
-              data-discount-target="amount">
       </div>
     </div>
     

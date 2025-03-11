@@ -88,7 +88,7 @@ export default class extends Controller {
             <div class="flex-grow">
               <h3 class="font-medium text-sm">${product.name}</h3>
               <div class="flex justify-between items-center mt-1">
-                <p class="text-green-600 font-bold">GS. ${formattedPrice}</p>
+                <p class="text-green-600 font-bold">₲s. ${formattedPrice}</p>
                 <span class="${stockClass} inline-flex rounded-full px-2 text-xs font-semibold leading-5">${stockText}</span>
               </div>
             </div>

@@ -4,7 +4,7 @@
       <tr>
         <td class="px-4 py-3"><%= item["name"] %></td>
         <td class="px-4 py-3"><%= item["quantity"] %></td>
-        <td class="px-4 py-3">GS. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
+        <td class="px-4 py-3">₲s. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
         <td class="px-4 py-3 text-center">
           <button 
             data-controller="cart-item" 

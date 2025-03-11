@@ -103,7 +103,7 @@
                 <tr>
                   <td class="px-4 py-3"><%= item["name"] %></td>
                   <td class="px-4 py-3"><%= item["quantity"] %></td>
-                  <td class="px-4 py-3">GS. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
+                  <td class="px-4 py-3">₲s. <%= number_with_delimiter(item["price"].to_i * item["quantity"], delimiter: '.') %></td>
                   <td class="px-4 py-3 text-center">
                     <button 
                       data-controller="cart-item" 
@@ -138,13 +138,13 @@
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700">IVA</span>
                 <span class="float-right font-medium" id="cart-iva">
-                  GS. <%= number_with_delimiter((calculate_cart_totals[:iva]).to_i, delimiter: '.') %>
+                  ₲s. <%= number_with_delimiter((calculate_cart_totals[:iva]).to_i, delimiter: '.') %>
                 </span>
               </div>
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700">Cliente:</span>
                 <span class="float-right font-medium" id="customer-info">
-                  <%= session[:customer_name] || "Sin cliente" %>
+                  <%= session[:customer_name] || "Cliente Generico" %>
                 </span>
                 <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
               </div>
@@ -158,19 +158,19 @@
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700">Sub Total</span>
                 <span class="float-right font-medium" id="cart-subtotal">
-                  GS. <%= number_with_delimiter((calculate_cart_totals[:subtotal]).to_i, delimiter: '.') %>
+                  ₲s. <%= number_with_delimiter((calculate_cart_totals[:subtotal]).to_i, delimiter: '.') %>
                 </span>
               </div>
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700" id="discount-label">Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %></span>
                 <span class="float-right font-medium text-red-600" id="cart-discount">
-                  GS. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
+                  ₲s. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
                 </span>
               </div>
               <div class="px-4 py-3 bg-green-50">
                 <span class="text-gray-700">Total</span>
                 <span class="float-right font-medium" id="cart-total">
-                  GS. <%= number_with_delimiter((calculate_cart_totals[:total]).to_i, delimiter: '.') %>
+                  ₲s. <%= number_with_delimiter((calculate_cart_totals[:total]).to_i, delimiter: '.') %>
                 </span>
               </div>
             </div>

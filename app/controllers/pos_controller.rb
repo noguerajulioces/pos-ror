@@ -153,10 +153,10 @@ class PosController < ApplicationController
             partial: "cart_items",
             locals: { cart_items: session[:cart] }
           ),
-          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-subtotal", "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
           turbo_stream.update("discount-label", discount_label)
         ]
       }
@@ -194,10 +194,10 @@ class PosController < ApplicationController
             partial: "cart_items",
             locals: { cart_items: [] }
           ),
-          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-subtotal", "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
           turbo_stream.update("discount-label", discount_label)
         ]
       }
@@ -239,10 +239,10 @@ class PosController < ApplicationController
             partial: "cart_items",
             locals: { cart_items: session[:cart] }
           ),
-          turbo_stream.update("cart-subtotal", "GS. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-iva", "GS. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-discount", "GS. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update("cart-total", "GS. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-subtotal", "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-iva", "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-discount", "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update("cart-total", "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
           turbo_stream.update("discount-label", discount_label)
         ]
       }
@@ -341,10 +341,10 @@ class PosController < ApplicationController
       success: true,
       discount: discount,
       discount_percentage: session[:discount_percentage],
-      formatted_discount: "GS. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
-      formatted_subtotal: "GS. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
-      formatted_total: "GS. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
-      formatted_iva: "GS. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}",
+      formatted_discount: "₲s. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
+      formatted_subtotal: "₲s. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
+      formatted_total: "₲s. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
+      formatted_iva: "₲s. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}",
       discount_label: session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : "Descuento"
     }
   end

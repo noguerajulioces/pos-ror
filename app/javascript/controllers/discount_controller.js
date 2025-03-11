@@ -100,7 +100,7 @@ export default class extends Controller {
               currency: 'PYG',
               currencyDisplay: 'narrowSymbol',
               minimumFractionDigits: 0
-            }).format(discountAmount).replace('PYG', 'GS.');
+            }).format(discountAmount).replace('PYG', '₲s.');
             
             document.getElementById('discount-label').textContent = `Descuento (${originalAmount})`
           }

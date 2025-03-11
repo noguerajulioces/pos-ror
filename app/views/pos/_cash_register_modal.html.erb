@@ -4,7 +4,7 @@
   <%= form_with(model: CashRegister.new, url: cash_registers_path, data: { controller: "cash-register", action: "submit->cash-register#open" }) do |form| %>
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="initial_amount">
-        Monto Inicial (GS.)
+        Monto Inicial (₲s.)
       </label>
       <%= form.number_field :initial_amount, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", required: true, min: 0, step: "1000" %>
     </div>
