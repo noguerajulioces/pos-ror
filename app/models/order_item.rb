@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  price      :decimal(, )
 #  quantity   :integer
+#  subtotal   :decimal(10, 2)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  order_id   :bigint           not null

@@ -287,7 +287,7 @@ class PosController < ApplicationController
     cash_register = CashRegister.open.first
 
     # Check if cash register is open
-    if false #cash_register
+    if false # cash_register
       render json: { success: false, error: "No hay caja abierta" }
       return
     end
@@ -295,10 +295,8 @@ class PosController < ApplicationController
     # Get totals
     totals = calculate_cart_totals
 
-    byebug
-    
     # Default payment method for on_hold orders (you might want to create a specific one)
-    payment_method = PaymentMethod.find_by(name: "Pendiente") || PaymentMethod.first
+    payment_method = PaymentMethod.find_by(name: "Efectivo") || PaymentMethod.first
 
     # Get customer
     customer_id = session[:customer_id].presence || nil

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_10_132157) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_11_191446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_10_132157) do
     t.decimal "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "subtotal", precision: 10, scale: 2
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
@@ -141,6 +142,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_10_132157) do
     t.bigint "payment_method_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "customer_id"
+    t.string "order_type"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
@@ -276,6 +280,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_10_132157) do
   add_foreign_key "inventory_movements", "products"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "customers"
   add_foreign_key "orders", "payment_methods"
   add_foreign_key "orders", "users"
   add_foreign_key "product_images", "products"
