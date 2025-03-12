@@ -12,7 +12,7 @@ class OrderPaymentsController < ApplicationController
   def new
     @order_payment = OrderPayment.new(order_id: params[:order_id])
     @payment_methods = PaymentMethod.all
-    
+
     # Calculate the remaining amount to be paid
     paid_amount = @order.order_payments.sum(:amount)
     @remaining_amount = @order.total_amount - paid_amount
@@ -52,7 +52,15 @@ class OrderPaymentsController < ApplicationController
     end
 
     def set_order
-      @order = Order.find(params[:order_id])
+      # Fix: Use params[:order_id] for the new action instead of order_payment_params
+      if params[:order_id]
+        @order = Order.find(params[:order_id])
+      elsif params[:order_payment] && params[:order_payment][:order_id].present?
+        @order = Order.find(params[:order_payment][:order_id])
+      else
+        # Handle the case where order_id is not available
+        redirect_to orders_path, alert: "No se especificó una orden válida."
+      end
     end
 
     def order_payment_params

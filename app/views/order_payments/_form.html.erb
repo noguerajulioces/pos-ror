@@ -11,7 +11,7 @@
           <h3 class="text-sm font-medium text-red-800">Se encontraron <%= order_payment.errors.count %> errores:</h3>
           <div class="mt-2 text-sm text-red-700">
             <ul class="list-disc space-y-1 pl-5">
-              <% order_payment.errors.full_messages.each do |message| %>
+              <% @order_payment.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
               <% end %>
             </ul>
@@ -36,7 +36,14 @@
       <div class="sm:col-span-3">
         <%= form.label :amount, "Monto", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.number_field :amount, step: "0.01", value: @remaining_amount, 
+          <%= form.number_field :amount,
+              data: {
+                  controller: "number-format",
+                  "number-format-target": "input",
+                  action: "input->number-format#formatNumber"
+                },
+              step: "0.01",
+              value: @remaining_amount, 
               class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
         <p class="mt-1 text-xs text-gray-500 font-semibold">Monto pendiente: ₲s. 

@@ -140,7 +140,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_180915) do
     t.datetime "payment_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "payment_method_id", null: false
+    t.string "reference_number"
+    t.text "notes"
     t.index ["order_id"], name: "index_order_payments_on_order_id"
+    t.index ["payment_method_id"], name: "index_order_payments_on_payment_method_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -290,6 +294,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_180915) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "order_payments", "orders"
+  add_foreign_key "order_payments", "payment_methods"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "payment_methods"
   add_foreign_key "orders", "users"
