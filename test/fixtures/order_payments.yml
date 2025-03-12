@@ -1,0 +1,30 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# == Schema Information
+#
+# Table name: order_payments
+#
+#  id           :bigint           not null, primary key
+#  amount       :decimal(, )
+#  payment_date :datetime
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  order_id     :bigint           not null
+#
+# Indexes
+#
+#  index_order_payments_on_order_id  (order_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (order_id => orders.id)
+#
+one:
+  order: one
+  amount: 9.99
+  payment_date: 2025-03-12 15:09:15
+
+two:
+  order: two
+  amount: 9.99
+  payment_date: 2025-03-12 15:09:15

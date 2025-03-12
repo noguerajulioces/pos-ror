@@ -46,8 +46,8 @@ class OrdersController < ApplicationController
   end
 
   def destroy
-    @order.destroy
-    redirect_to orders_path, notice: "Orden eliminada exitosamente."
+    @order.cancelled!
+    redirect_to orders_path, notice: "Orden cancelada exitosamente."
   end
 
   private

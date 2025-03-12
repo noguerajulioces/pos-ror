@@ -30,6 +30,7 @@ class Order < ApplicationRecord
   belongs_to :payment_method
   belongs_to :customer, optional: true
   has_many :order_items, dependent: :destroy
+  has_many :order_payments, dependent: :destroy
 
   # Define order statuses
   STATUSES = {
@@ -44,6 +45,8 @@ class Order < ApplicationRecord
     delivery: "delivery"
   }, default: "in_store"
 
+  enum :status, STATUSES
+
   validates :order_date, :total_amount, :status, presence: true
   validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: STATUSES.values }
@@ -51,5 +54,13 @@ class Order < ApplicationRecord
 
   def calculate_total
     order_items.inject(0) { |sum, item| sum + item.subtotal }
+  end
+
+  def total_paid
+    order_payments.sum(:amount)
+  end
+
+  def outstanding_balance
+    total_amount - total_paid
   end
 end

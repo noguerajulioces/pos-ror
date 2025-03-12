@@ -9,12 +9,6 @@
     </div>
   </div>
 
-  <% if notice.present? %>
-    <div class="mt-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-      <p><%= notice %></p>
-    </div>
-  <% end %>
-
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -70,7 +64,7 @@
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", order_path(order), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
                     <%= link_to "Editar", edit_order_path(order), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <%= link_to "Eliminar", order_path(order), 
+                    <%= link_to "Cancelar", order_path(order), 
                         data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
                         class: "text-red-600 hover:text-red-900" %>
                   </td>
