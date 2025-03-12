@@ -38,7 +38,7 @@ module Orders
       order_type = params[:order_type].presence || "in_store"
       # Validate that the order_type is one of the valid enum values
       order_type = "in_store" unless Order.order_types.keys.include?(order_type)
-      
+
       {
         order_date: Time.current,
         status: params[:status] || Order::STATUSES[:on_hold],

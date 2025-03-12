@@ -37,6 +37,6 @@
 </div>
 
 <div class="mt-4 justify-center flex">
-  <%= will_paginate @units %>
+  <%= will_paginate @units, renderer: TailwindPaginateRenderer %>
 </div>
 <turbo-frame id="modal"></turbo-frame>

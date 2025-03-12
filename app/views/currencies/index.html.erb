@@ -71,6 +71,6 @@
 
 <% if @currencies.respond_to?(:total_pages) %>
   <div class="mt-4 justify-center flex">
-    <%= will_paginate @currencies %>
+    <%= will_paginate @currencies, renderer: TailwindPaginateRenderer %>
   </div>
 <% end %>
