@@ -39,6 +39,8 @@ module Orders
       # Validate that the order_type is one of the valid enum values
       order_type = "in_store" unless Order.order_types.keys.include?(order_type)
 
+      byebug
+      
       {
         order_date: Time.current,
         status: params[:status] || Order::STATUSES[:on_hold],
@@ -46,7 +48,9 @@ module Orders
         user_id: current_user.id,
         payment_method_id: default_payment_method.id,
         customer_id: session[:customer_id].presence,
-        order_type: order_type
+        order_type: order_type,
+        discount_percentage: session[:discount_percentage],
+        discount_reason: session[:discount_reason]
       }
     end
 
@@ -65,6 +69,7 @@ module Orders
       session[:cart] = []
       session[:discount] = 0
       session[:discount_percentage] = nil
+      session[:discount_reason] = nil
     end
 
     def default_payment_method

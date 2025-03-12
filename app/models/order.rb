@@ -2,16 +2,18 @@
 #
 # Table name: orders
 #
-#  id                :bigint           not null, primary key
-#  order_date        :datetime
-#  order_type        :string
-#  status            :string
-#  total_amount      :decimal(, )
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  customer_id       :bigint
-#  payment_method_id :bigint           not null
-#  user_id           :bigint           not null
+#  id                  :bigint           not null, primary key
+#  discount_percentage :decimal(5, 2)
+#  discount_reason     :string
+#  order_date          :datetime
+#  order_type          :string
+#  status              :string
+#  total_amount        :decimal(, )
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  customer_id         :bigint
+#  payment_method_id   :bigint           not null
+#  user_id             :bigint           not null
 #
 # Indexes
 #
@@ -51,9 +53,28 @@ class Order < ApplicationRecord
   validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: STATUSES.values }
   validates :order_type, inclusion: { in: order_types.keys }
+  validates :discount_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_nil: true
 
   def calculate_total
+    subtotal = order_items.inject(0) { |sum, item| sum + item.subtotal }
+    if discount_percentage.present? && discount_percentage > 0
+      subtotal - calculate_discount(subtotal)
+    else
+      subtotal
+    end
+  end
+
+  def calculate_discount(amount)
+    return 0 unless discount_percentage.present? && discount_percentage > 0
+    (amount * discount_percentage / 100).round(2)
+  end
+
+  def subtotal_before_discount
     order_items.inject(0) { |sum, item| sum + item.subtotal }
+  end
+
+  def discount_amount
+    calculate_discount(subtotal_before_discount)
   end
 
   def total_paid

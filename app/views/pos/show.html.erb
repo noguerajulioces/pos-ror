@@ -152,6 +152,8 @@
                 <span class="text-gray-700">Tipo de Pedido:</span>
                 <span class="float-right font-medium" id="order-type-display"><%= @order_type || "N/A" %></span>
                 <input type="hidden" id="selected-order-type" value="<%= @order_type %>">
+                <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
+                <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
               </div>
             </div>
             <div>
@@ -162,7 +164,14 @@
                 </span>
               </div>
               <div class="px-4 py-3 border-b border-gray-200">
-                <span class="text-gray-700" id="discount-label">Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %></span>
+                <span class="text-gray-700" id="discount-label">
+                  Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
+                  <% if session[:discount_reason].present? %>
+                    <span class="text-xs text-gray-500 block" title="<%= session[:discount_reason] %>">
+                      <%= truncate(session[:discount_reason], length: 20) %>
+                    </span>
+                  <% end %>
+                </span>
                 <span class="float-right font-medium text-red-600" id="cart-discount">
                   ₲s. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
                 </span>
