@@ -68,4 +68,10 @@ Rails.application.routes.draw do
       get :print
     end
   end
+  # Add these routes for order payments
+  resources :order_payments, except: [:edit, :update]
+  # You can also nest them under orders if you prefer
+  # resources :orders do
+  #   resources :order_payments, shallow: true
+  # end
 end
