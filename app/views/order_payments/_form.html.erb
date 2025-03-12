@@ -29,23 +29,27 @@
         <%= form.label :payment_method_id, "Método de Pago", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.collection_select :payment_method_id, @payment_methods, :id, :name, {}, 
-              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
 
       <div class="sm:col-span-3">
         <%= form.label :amount, "Monto", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.number_field :amount, step: "0.01", value: @order.total_amount, 
-              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          <%= form.number_field :amount, step: "0.01", value: @remaining_amount, 
+              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
+        <p class="mt-1 text-xs text-gray-500 font-semibold">Monto pendiente: ₲s. 
+          <span class="text-red-400"><%= number_with_delimiter(@remaining_amount.to_i, delimiter: '.') %></span>
+        </p>
+      </div>
       </div>
 
       <div class="sm:col-span-3">
         <%= form.label :payment_date, "Fecha de Pago", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.datetime_field :payment_date, value: Time.current.strftime("%Y-%m-%dT%H:%M"), 
-              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
 
@@ -53,7 +57,7 @@
         <%= form.label :reference_number, "Número de Referencia", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_field :reference_number, 
-              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
         <p class="mt-1 text-xs text-gray-500">Número de transacción, cheque, etc.</p>
       </div>
@@ -62,7 +66,7 @@
         <%= form.label :notes, "Notas", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_area :notes, rows: 3, 
-              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-400 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
     </div>
