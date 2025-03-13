@@ -144,7 +144,24 @@
               <div class="px-4 py-3 border-b border-gray-200">
                 <span class="text-gray-700">Cliente:</span>
                 <span class="float-right font-medium" id="customer-info">
-                  <%= session[:customer_name] || "Cliente Generico" %>
+                  <% unless session[:customer_name].nil? %>
+                    <%= session[:customer_name] %>
+                  <% else %>
+                    <%=  
+                      link_to "Buscar Cliente", "#",
+                      class: 'underline decoration-dotted text-indigo-500 hover:text-indigo-700 focus:outline-none',
+                      data: {
+                        turbo_frame: "customer_search_modal",
+                        controller: "modal",
+                        action: "modal#open",
+                        modal_size: "max-w-2xl w-full",
+                        modal_title: "Buscar Cliente",
+                        modal_frame_id: "customer_search_modal",
+                        modal_frame_src: "/pos/customer_search_modal"
+                      },
+                      id: "customer_search_button" 
+                    %>
+                  <% end %>
                 </span>
                 <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
               </div>
@@ -177,7 +194,7 @@
                 </span>
               </div>
               <div class="px-4 py-3 bg-green-50">
-                <span class="text-gray-700">Total</span>
+                <span class="text-gray-700 font-bold">Total</span>
                 <span class="float-right font-medium" id="cart-total">
                   ₲s. <%= number_with_delimiter((calculate_cart_totals[:total]).to_i, delimiter: '.') %>
                 </span>

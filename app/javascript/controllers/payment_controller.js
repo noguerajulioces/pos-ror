@@ -106,7 +106,7 @@ export default class extends Controller {
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     
     if (amountReceived < totalAmount) {
-      evednt.preventDefault()
+      event.preventDefault()
       alert('El monto recibido debe ser mayor o igual al total a pagar')
       return
     }
