@@ -31,15 +31,9 @@ export default class extends Controller {
       const change = amountReceived - totalAmount
       document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
       this.changeAmountTarget.value = change
-      
-      // Update currency conversions
-      this.updateCurrencyConversions(change)
     } else {
       document.getElementById('change-amount').textContent = '₲s. 0'
       this.changeAmountTarget.value = 0
-      
-      // Reset currency conversions
-      this.updateCurrencyConversions(0)
     }
   }
 
