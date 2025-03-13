@@ -77,4 +77,5 @@ Rails.application.routes.draw do
   # Add this line with your other POS routes
   post "pos/process_payment", to: "pos#process_payment", as: :process_payment_pos
   get "pos/payment_modal", to: "pos#payment_modal"
+  get "print_message", to: "print#print_message"
 end
