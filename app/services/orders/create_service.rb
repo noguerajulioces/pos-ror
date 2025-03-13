@@ -39,8 +39,6 @@ module Orders
       # Validate that the order_type is one of the valid enum values
       order_type = "in_store" unless Order.order_types.keys.include?(order_type)
 
-      byebug
-      
       {
         order_date: Time.current,
         status: params[:status] || Order::STATUSES[:on_hold],
@@ -73,7 +71,10 @@ module Orders
     end
 
     def default_payment_method
-      PaymentMethod.find_by(name: "Efectivo") || PaymentMethod.first
+      PaymentMethod.find_or_create_by(name: "Efectivo") do |payment_method|
+        payment_method.description = "Pago en efectivo"
+        payment_method.active = true
+      end
     end
 
     def cash_register_open?

@@ -27,6 +27,8 @@ class OrderPayment < ApplicationRecord
   belongs_to :order
   belongs_to :payment_method
 
+  sanitize_numeric_attributes :amount
+
   validates :amount, numericality: { greater_than: 0 }
   validates :payment_method, presence: true
   validates :payment_date, presence: true

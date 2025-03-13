@@ -36,7 +36,7 @@
       <div class="sm:col-span-3">
         <%= form.label :amount, "Monto", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.number_field :amount,
+          <%= form.text_field :amount,
               data: {
                   controller: "number-format",
                   "number-format-target": "input",
@@ -54,7 +54,7 @@
       <div class="sm:col-span-3">
         <%= form.label :payment_date, "Fecha de Pago", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.datetime_field :payment_date, value: Time.current.strftime("%Y-%m-%dT%H:%M"), 
+          <%= form.datetime_field :payment_date, value: Time.now.strftime("%Y-%m-%dT%H:%M"), 
               class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
