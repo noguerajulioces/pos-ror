@@ -208,7 +208,7 @@ class PosController < ApplicationController
       format.json {
         render json: {
           success: true,
-          message: "Cart cleared successfully",
+          message: "Carrito borrado exitosamente",
           totals: totals,
           discount_label: discount_label
         }
