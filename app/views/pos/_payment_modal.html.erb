@@ -17,55 +17,61 @@
         </div>
         <div class="flex justify-between font-bold">
           <span>Total a Pagar:</span>
-          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
+          <span id="total-amount">₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
+          <input type="hidden" id="total-amount-value" value="<%= calculate_cart_totals[:total].to_i %>">
         </div>
       </div>
     </div>
 
-    <div class="mb-4">
-      <div class="text-lg font-medium mb-2">Método de Pago</div>
-      <div class="grid grid-cols-2 gap-2 mb-4">
-        <% PaymentMethod.where(active: true).each do |payment_method| %>
-          <div class="payment-method-option border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
-              data-payment-method-id="<%= payment_method.id %>"
-              data-controller="payment"
-              data-action="click->payment#selectMethod">
-            <div class="flex items-center">
-              <div class="w-4 h-4 rounded-full border border-gray-400 mr-2 flex items-center justify-center payment-radio">
-                <div class="w-2 h-2 rounded-full bg-indigo-600 hidden payment-radio-selected"></div>
+    <%= form_with url: process_payment_pos_path, method: :post, data: { controller: "payment" } do |f| %>
+      <div class="mb-4">
+        <div class="text-lg font-medium mb-2">Método de Pago</div>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <% PaymentMethod.where(active: true).each do |payment_method| %>
+            <div class="payment-method-option border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
+                data-payment-method-id="<%= payment_method.id %>"
+                data-action="click->payment#selectMethod">
+              <div class="flex items-center">
+                <div class="w-4 h-4 rounded-full border border-gray-400 mr-2 flex items-center justify-center payment-radio">
+                  <div class="w-2 h-2 rounded-full bg-indigo-600 hidden payment-radio-selected"></div>
+                </div>
+                <span><%= payment_method.name %></span>
               </div>
-              <span><%= payment_method.name %></span>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+          <%= f.hidden_field :payment_method_id, data: { payment_target: "methodId" } %>
+          <%= f.hidden_field :status, value: 'completed' %>
+          <%= f.hidden_field :customer_id, value: session[:customer_id] %>
+          <%= f.hidden_field :order_type, value: session[:order_type] %>
+        </div>
       </div>
-    </div>
 
-    <div class="mb-4">
-      <div class="text-lg font-medium mb-2">Monto Recibido</div>
-      <div class="flex items-center mb-4">
-        <span class="text-lg mr-2">₲s.</span>
-        <input type="text" id="amount-received" class="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-              placeholder="Ingrese el monto recibido"
-              data-controller="payment"
-              data-action="input->payment#calculateChange">
+      <div class="mb-4">
+        <div class="text-lg font-medium mb-2">Monto Recibido</div>
+        <div class="flex items-center mb-4">
+          <span class="text-lg mr-2">₲s.</span>
+          <%= f.text_field :amount_received, 
+                          id: "amount-received", 
+                          class: "flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", 
+                          placeholder: "Ingrese el monto recibido",
+                          data: { action: "input->payment#calculateChange", payment_target: "amountReceived" } %>
+        </div>
+        <div class="flex justify-between font-medium">
+          <span>Cambio:</span>
+          <span id="change-amount">₲s. 0</span>
+          <%= f.hidden_field :change_amount, data: { payment_target: "changeAmount" } %>
+        </div>
       </div>
-      <div class="flex justify-between font-medium">
-        <span>Cambio:</span>
-        <span id="change-amount">₲s. 0</span>
-      </div>
-    </div>
 
-    <div class="flex justify-end space-x-2 mt-6">
-      <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none"
-              data-action="click->modal#close">
-        Cancelar
-      </button>
-      <button type="button" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
-              data-controller="payment"
-              data-action="click->payment#processPayment">
-        Procesar Pago
-      </button>
-    </div>
+      <div class="flex justify-end space-x-2 mt-6">
+        <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none"
+                data-action="click->modal#close">
+          Cancelar
+        </button>
+        <%= f.submit "Procesar Pago", 
+                    class: "px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none",
+                    data: { action: "click->payment#validateBeforeSubmit" } %>
+      </div>
+    <% end %>
   </div>
 </turbo-frame>

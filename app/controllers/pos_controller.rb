@@ -364,6 +364,27 @@ class PosController < ApplicationController
     }
   end
 
+  def process_payment
+    result = Orders::CreateService.new(
+      cart: session[:cart],
+      params: payment_params,
+      current_user: current_user,
+      session: session
+    ).call
+
+    if result[:success]
+      # Clear the cart and other session data
+      session[:cart] = []
+      session[:discount] = 0
+      session[:discount_percentage] = nil
+      session[:discount_reason] = nil
+
+      redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada."
+    else
+      redirect_to pos_path, alert: result[:error] || "Error al procesar el pago"
+    end
+  end
+
   private
 
   # Helper method to adjust discount based on cart changes
@@ -427,5 +448,9 @@ class PosController < ApplicationController
       discount: discount,
       total: total
     }
+  end
+
+  def payment_params
+    params.permit(:payment_method_id, :status, :customer_id, :order_type, :amount_received, :change_amount)
   end
 end
