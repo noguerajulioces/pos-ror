@@ -86,7 +86,7 @@
                 <span>No hay métodos de pagos registrados aún, se tomará como pago en efectivo</span>
               </div>
             </div>
-            <%= f.hidden_field :payment_method_id, value: 1, data: { payment_target: "methodId" } %>
+            <%= f.hidden_field :payment_method_id, value: "", data: { payment_target: "methodId" } %>
           <% end %>
           <%= f.hidden_field :status, value: 'completed' %>
           <%= f.hidden_field :customer_id, value: session[:customer_id] %>

@@ -8,19 +8,63 @@ export default class extends Controller {
   }
 
   selectMethod(event) {
+    console.log("selectMethod called")
+    
     // Existing method selection code
     const methodId = event.currentTarget.dataset.paymentMethodId
-    this.methodIdTarget.value = methodId
+    console.log("Payment method ID:", methodId)
+    
+    try {
+      // Check if methodIdTarget exists before trying to access it
+      if (this.hasOwnProperty('methodIdTarget') && this.methodIdTarget) {
+        this.methodIdTarget.value = methodId
+        console.log("methodIdTarget value set to:", this.methodIdTarget.value)
+      } else {
+        console.error("methodIdTarget is not available", this)
+        // Fallback: try to find the element manually
+        const methodIdInput = document.querySelector('input[name="payment_method_id"]')
+        if (methodIdInput) {
+          methodIdInput.value = methodId
+          console.log("Set payment_method_id manually to:", methodId)
+        } else {
+          console.error("Could not find payment_method_id input element")
+        }
+      }
+    } catch (error) {
+      console.error("Error setting methodIdTarget value:", error)
+    }
 
     // Remove selected class from all options
+    console.log("Removing selected class from all options")
     document.querySelectorAll('.payment-method-option').forEach(option => {
-      option.classList.remove('bg-gray-50', 'border-indigo-500')
-      option.querySelector('.payment-radio-selected').classList.add('hidden')
+      try {
+        option.classList.remove('bg-gray-50', 'border-indigo-500')
+        const radioSelected = option.querySelector('.payment-radio-selected')
+        if (radioSelected) {
+          radioSelected.classList.add('hidden')
+        } else {
+          console.warn("Radio selected element not found in option", option)
+        }
+      } catch (error) {
+        console.error("Error removing classes:", error, option)
+      }
     })
 
     // Add selected class to clicked option
-    event.currentTarget.classList.add('bg-gray-50', 'border-indigo-500')
-    event.currentTarget.querySelector('.payment-radio-selected').classList.remove('hidden')
+    console.log("Adding selected class to clicked option")
+    try {
+      event.currentTarget.classList.add('bg-gray-50', 'border-indigo-500')
+      const radioSelected = event.currentTarget.querySelector('.payment-radio-selected')
+      if (radioSelected) {
+        radioSelected.classList.remove('hidden')
+      } else {
+        console.warn("Radio selected element not found in clicked option")
+      }
+    } catch (error) {
+      console.error("Error adding classes:", error)
+    }
+    
+    console.log("selectMethod completed")
   }
 
   calculateChange() {
