@@ -1,0 +1,15 @@
+<!-- app/views/orders/show.html.erb, por ejemplo -->
+
+<h1>Detalle del Pedido</h1>
+<p>Pedido #: <%= @order.id %></p>
+<p>Total: <%= number_to_currency(@order.total_amount, unit: "₲") %></p>
+
+<!-- Contenedor oculto con el contenido del ticket -->
+<div id="ticket-content" style="display: none;">
+  <h2>Ticket de Pago</h2>
+  <p><strong>Pedido:</strong> <%= @order.id %></p>
+  <p><strong>Total:</strong> <%= number_to_currency(@order.total_amount, unit: "₲") %></p>
+  <p><strong>Fecha:</strong> <%= l(@order.order_date, format: :short) %></p>
+  <!-- Agrega más detalles según necesites -->
+</div>
+

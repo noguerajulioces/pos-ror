@@ -364,5 +364,19 @@
     </div>
   </div>
 
-  <!-- Remove the products container from here as it's now inside the right column -->
+  <div id="ticket-content" style="display: none;">
+  <h2>Ticket de Pago</h2>
+  <p><strong>Pedido:</strong> <%#= @order %></p>
+  <p><strong>Total:</strong> <%#= number_to_currency(@order.total_amount, unit: "₲") %></p>
+  <p><strong>Fecha:</strong> <%#= l(@order.order_date, format: :short) %></p>
+  <!-- Agrega más detalles según necesites -->
+</div>
+
+  <!-- Botón para imprimir -->
+  <div class="mt-4 flex justify-center">
+    <button data-controller="print" data-action="click->print#print" class="rounded-md bg-indigo-600 px-3 py-2 text-white">
+      Imprimir Ticket
+    </button>
+  </div>
+    <!-- Remove the products container from here as it's now inside the right column -->
 </div>
