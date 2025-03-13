@@ -106,11 +106,28 @@ export default class extends Controller {
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     
     if (amountReceived < totalAmount) {
-      event.preventDefault()
+      evednt.preventDefault()
       alert('El monto recibido debe ser mayor o igual al total a pagar')
+      return
     }
     
-    if (!this.methodIdTarget.value) {
+    // Check if methodIdTarget exists before trying to access it
+    let methodIdValue = ""
+    try {
+      if (this.hasOwnProperty('methodIdTarget') && this.methodIdTarget) {
+        methodIdValue = this.methodIdTarget.value
+      } else {
+        // Fallback: try to find the element manually
+        const methodIdInput = document.querySelector('input[name="payment_method_id"]')
+        if (methodIdInput) {
+          methodIdValue = methodIdInput.value
+        }
+      }
+    } catch (error) {
+      console.error("Error accessing methodId:", error)
+    }
+    
+    if (!methodIdValue) {
       event.preventDefault()
       alert('Debe seleccionar un método de pago')
     }

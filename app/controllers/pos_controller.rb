@@ -180,6 +180,10 @@ class PosController < ApplicationController
     session[:discount] = 0
     session[:discount_percentage] = nil
 
+    # Reset Customers
+    session[:customer_name] = nil
+    session[:customer_id] = nil
+
     # Calculate new totals
     totals = calculate_cart_totals
 
@@ -379,9 +383,13 @@ class PosController < ApplicationController
       session[:discount_percentage] = nil
       session[:discount_reason] = nil
 
-      redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada."
+      respond_to do |format|
+        format.html { redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }
+      end
     else
-      redirect_to pos_path, alert: result[:error] || "Error al procesar el pago"
+      respond_to do |format|
+        format.html { redirect_to pos_path, alert: result[:error] || "Error al procesar el pago" }
+      end
     end
   end
 
@@ -432,15 +440,15 @@ class PosController < ApplicationController
     # Calculate subtotal
     subtotal = cart.sum { |item| item["price"].to_f * item["quantity"].to_i }
 
-    # Calculate IVA (10%)
-    iva = subtotal * 0.10
-
     # Get discount from session or default to 0
     discount = session[:discount].to_f || 0
 
     # Calculate total
-    # total = subtotal + iva - discount
+    # total = subtotal - discount
     total = subtotal - discount
+
+    # Calculate IVA (10%)
+    iva = total * 0.10
 
     {
       subtotal: subtotal,

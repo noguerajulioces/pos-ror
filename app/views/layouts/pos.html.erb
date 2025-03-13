@@ -24,6 +24,9 @@
   </head>
 
   <body class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="fixed top-50 left-0 right-0 z-50">
+      <%= render 'layouts/shared/notice' %>
+    </div>
     <%= yield %>
   </body>
   <turbo-frame id="modal">
