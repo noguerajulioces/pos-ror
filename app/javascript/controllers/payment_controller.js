@@ -4,80 +4,77 @@ export default class extends Controller {
   static targets = ["methodId", "amountReceived", "changeAmount"]
 
   connect() {
-    // Initialize any values if needed
+    console.log("Payment controller connected")
   }
 
   selectMethod(event) {
-    // Remove selection from all payment methods
+    // Existing method selection code
+    const methodId = event.currentTarget.dataset.paymentMethodId
+    this.methodIdTarget.value = methodId
+
+    // Remove selected class from all options
     document.querySelectorAll('.payment-method-option').forEach(option => {
-      option.classList.remove('bg-gray-100', 'border-indigo-500');
-      option.querySelector('.payment-radio-selected').classList.add('hidden');
-    });
-    
-    // Add selection to clicked payment method
-    const selectedOption = event.currentTarget;
-    selectedOption.classList.add('bg-gray-100', 'border-indigo-500');
-    selectedOption.querySelector('.payment-radio-selected').classList.remove('hidden');
-    
-    // Store the selected payment method ID in the hidden field
-    this.methodIdTarget.value = selectedOption.dataset.paymentMethodId;
+      option.classList.remove('bg-gray-50', 'border-indigo-500')
+      option.querySelector('.payment-radio-selected').classList.add('hidden')
+    })
+
+    // Add selected class to clicked option
+    event.currentTarget.classList.add('bg-gray-50', 'border-indigo-500')
+    event.currentTarget.querySelector('.payment-radio-selected').classList.remove('hidden')
   }
-  
+
   calculateChange() {
-    const totalAmount = parseFloat(document.getElementById('total-amount-value').value);
-    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.'));
+    const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
+    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
     
     if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
-      const change = amountReceived - totalAmount;
-      document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`;
-      this.changeAmountTarget.value = change;
+      const change = amountReceived - totalAmount
+      document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
+      this.changeAmountTarget.value = change
       
       // Update currency conversions
-      this.updateCurrencyConversions(change);
+      this.updateCurrencyConversions(change)
     } else {
-      document.getElementById('change-amount').textContent = '₲s. 0';
-      this.changeAmountTarget.value = 0;
+      document.getElementById('change-amount').textContent = '₲s. 0'
+      this.changeAmountTarget.value = 0
       
       // Reset currency conversions
-      this.updateCurrencyConversions(0);
+      this.updateCurrencyConversions(0)
     }
   }
 
   updateCurrencyConversions(changeAmount) {
-    const currencyElements = document.querySelectorAll('.currency-value');
+    const currencyElements = document.querySelectorAll('.currency-value')
     
     currencyElements.forEach(element => {
-      const rate = parseFloat(element.dataset.currencyRate);
-      const symbol = element.dataset.currencySymbol;
+      const rate = parseFloat(element.dataset.currencyRate)
+      const symbol = element.dataset.currencySymbol
       
       if (rate && !isNaN(rate) && rate > 0) {
-        const convertedAmount = (changeAmount / rate).toFixed(2);
-        element.textContent = `${symbol} ${this.formatNumber(convertedAmount)}`;
+        const convertedAmount = (changeAmount / rate).toFixed(2)
+        element.textContent = `${symbol} ${this.formatNumber(convertedAmount)}`
       } else {
-        element.textContent = `${symbol} 0`;
+        element.textContent = `${symbol} 0`
       }
-    });
+    })
   }
-  
+
+  formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  }
+
   validateBeforeSubmit(event) {
-    // Check if a payment method is selected
-    if (!this.methodIdTarget.value) {
-      event.preventDefault();
-      alert('Por favor seleccione un método de pago');
-      return;
+    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
+    const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
+    
+    if (amountReceived < totalAmount) {
+      event.preventDefault()
+      alert('El monto recibido debe ser mayor o igual al total a pagar')
     }
     
-    // Get the amount received
-    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/[^\d]/g, '')) || 0;
-    
-    // Get the total amount
-    const totalAmount = parseFloat(document.getElementById('total-amount-value').value) || 0;
-    
-    // Validate the amount received
-    if (amountReceived < totalAmount) {
-      event.preventDefault();
-      alert('El monto recibido debe ser mayor o igual al total a pagar');
-      return;
+    if (!this.methodIdTarget.value) {
+      event.preventDefault()
+      alert('Debe seleccionar un método de pago')
     }
   }
 }

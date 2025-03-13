@@ -94,23 +94,31 @@
         </div>
       </div>
 
+      <hr class="mb-4">
+
       <div class="mb-4">
-        <div class="text-lg font-medium mb-2">Monto Recibido</div>
-        <div class="flex items-center mb-4">
-          <span class="text-lg mr-2">₲s.</span>
-          <%= f.text_field :amount_received, 
-                          id: "amount-received", 
-                          class: "flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", 
-                          placeholder: "Ingrese el monto recibido",
-                          data: { action: "input->payment#calculateChange", payment_target: "amountReceived" } %>
-        </div>
-        <div class="flex justify-between font-medium">
-          <span>Cambio:</span>
-          <span id="change-amount">₲s. 0</span>
-          <%= f.hidden_field :change_amount, data: { payment_target: "changeAmount" } %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-lg font-medium mb-2">Monto Recibido</div>
+            <div class="flex items-center">
+              <span class="text-lg mr-2">₲s.</span>
+              <%= f.text_field :amount_received, 
+                              id: "amount-received", 
+                              class: "flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", 
+                              placeholder: "Ingrese el monto recibido",
+                              data: { action: "input->payment#calculateChange", payment_target: "amountReceived" } %>
+            </div>
+          </div>
+          
+          <div>
+            <div class="text-lg font-medium mb-2">Cambio</div>
+            <div class="flex items-center bg-gray-50 p-3 rounded-md h-[42px]">
+              <span id="change-amount" class="font-medium">₲s. 0</span>
+              <%= f.hidden_field :change_amount, data: { payment_target: "changeAmount" } %>
+            </div>
+          </div>
         </div>
       </div>
-
       <div class="flex justify-end space-x-2 mt-6">
         <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none"
                 data-action="click->modal#close">
