@@ -20,6 +20,8 @@ module Orders
         order = create_order
         create_order_items(order)
 
+        create_order_payment(order)
+
         # Reduce stock if the order is completed
         stock_service.reduce_stock(order) if order.status == Order::STATUSES[:completed]
 
@@ -70,6 +72,17 @@ module Orders
           subtotal: item["price"].to_f * item["quantity"].to_i
         )
       end
+    end
+
+    def create_order_payment(order)
+      OrderPayment.create!(
+        order: order,
+        payment_method_id: @params[:payment_method_id],
+        amount: order.total_amount,
+        payment_date: Time.current,
+        reference_number: @params[:reference_number],
+        notes: "Pago realizado desde POS"
+      )
     end
 
     def clear_session_data
