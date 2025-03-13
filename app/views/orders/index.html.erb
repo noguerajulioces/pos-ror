@@ -41,7 +41,7 @@
                     <%= order.customer&.full_name || "Cliente Genérico" %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= order.order_type || "N/A" %>
+                    <%= display_order_type(order.order_type) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
