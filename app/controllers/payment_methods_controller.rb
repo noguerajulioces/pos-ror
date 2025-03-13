@@ -34,7 +34,11 @@ class PaymentMethodsController < ApplicationController
   end
 
   def destroy
-    @payment_method.update(active: false)
+    if @payment_method.active?
+      @payment_method.update(active: false)
+    else
+      @payment_method.update(active: true)
+    end
     redirect_to payment_methods_path, notice: "Método de pago inactivo exitosamente."
   end
 
