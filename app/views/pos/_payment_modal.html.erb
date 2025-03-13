@@ -27,19 +27,31 @@
       <div class="mb-4">
         <div class="text-lg font-medium mb-2">Método de Pago</div>
         <div class="grid grid-cols-2 gap-2 mb-4">
-          <% PaymentMethod.where(active: true).each do |payment_method| %>
-            <div class="payment-method-option border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
-                data-payment-method-id="<%= payment_method.id %>"
-                data-action="click->payment#selectMethod">
-              <div class="flex items-center">
-                <div class="w-4 h-4 rounded-full border border-gray-400 mr-2 flex items-center justify-center payment-radio">
-                  <div class="w-2 h-2 rounded-full bg-indigo-600 hidden payment-radio-selected"></div>
+          <% payment_methods = PaymentMethod.where(active: true) %>
+          <% if payment_methods.any? %>
+            <% payment_methods.each do |payment_method| %>
+              <div class="payment-method-option border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
+                  data-payment-method-id="<%= payment_method.id %>"
+                  data-action="click->payment#selectMethod">
+                <div class="flex items-center">
+                  <div class="w-4 h-4 rounded-full border border-gray-400 mr-2 flex items-center justify-center payment-radio">
+                    <div class="w-2 h-2 rounded-full bg-indigo-600 hidden payment-radio-selected"></div>
+                  </div>
+                  <span><%= payment_method.name %></span>
                 </div>
-                <span><%= payment_method.name %></span>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="col-span-2 bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-md">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+                <span>No hay métodos de pagos registrados aún, se tomará como pago en efectivo</span>
               </div>
             </div>
+            <%= f.hidden_field :payment_method_id, value: 1, data: { payment_target: "methodId" } %>
           <% end %>
-          <%= f.hidden_field :payment_method_id, data: { payment_target: "methodId" } %>
           <%= f.hidden_field :status, value: 'completed' %>
           <%= f.hidden_field :customer_id, value: session[:customer_id] %>
           <%= f.hidden_field :order_type, value: session[:order_type] %>

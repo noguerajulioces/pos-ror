@@ -34,8 +34,8 @@ class PaymentMethodsController < ApplicationController
   end
 
   def destroy
-    @payment_method.destroy
-    redirect_to payment_methods_path, notice: "Método de pago eliminado exitosamente."
+    @payment_method.update(active: false)
+    redirect_to payment_methods_path, notice: "Método de pago inactivo exitosamente."
   end
 
   private
