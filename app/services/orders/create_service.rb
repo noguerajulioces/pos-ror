@@ -18,6 +18,10 @@ module Orders
       ActiveRecord::Base.transaction do
         order = create_order
         create_order_items(order)
+
+        # Reduce stock if the order is completed
+        reduce_stock(order) if order.status == Order::STATUSES[:completed]
+
         clear_session_data
         success_response(order.id)
       end
@@ -60,6 +64,19 @@ module Orders
           price: item["price"],
           subtotal: item["price"].to_f * item["quantity"].to_i
         )
+      end
+    end
+
+    # New method to reduce stock for completed orders
+    def reduce_stock(order)
+      order.order_items.each do |item|
+        product = Product.find(item.product_id)
+        new_stock = (product.stock || 0) - item.quantity
+
+        # Prevent negative stock (optional, remove if you want to allow negative stock)
+        new_stock = 0 if new_stock < 0
+
+        product.update!(stock: new_stock)
       end
     end
 
