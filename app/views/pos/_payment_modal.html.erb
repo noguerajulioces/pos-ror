@@ -2,24 +2,60 @@
   <div class="p-4">
     <div class="mb-4">
       <div class="text-lg font-medium mb-2">Resumen de la Orden</div>
-      <div class="bg-gray-50 p-3 rounded-md mb-4">
-        <div class="flex justify-between mb-2">
-          <span>Subtotal:</span>
-          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:subtotal].to_i, delimiter: '.') %></span>
+      
+      <% if session[:customer_id].present? && customer = Customer.find_by(id: session[:customer_id]) %>
+        <div class="bg-blue-50 p-3 rounded-md mb-4">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium">Cliente: <%= customer.full_name %></span>
+          </div>
         </div>
-        <div class="flex justify-between mb-2">
-          <span>IVA:</span>
-          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
+      <% end %>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-gray-50 p-3 rounded-md md:col-span-2">
+          <div class="flex justify-between mb-2">
+            <span>Subtotal:</span>
+            <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:subtotal].to_i, delimiter: '.') %></span>
+          </div>
+          <div class="flex justify-between mb-2">
+            <span>IVA:</span>
+            <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
+          </div>
+          <div class="flex justify-between mb-2">
+            <span>Descuento:</span>
+            <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:discount].to_i, delimiter: '.') %></span>
+          </div>
+          <div class="flex justify-between font-bold">
+            <span>Total a Pagar:</span>
+            <span id="total-amount">₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
+            <input type="hidden" id="total-amount-value" value="<%= calculate_cart_totals[:total].to_i %>">
+          </div>
         </div>
-        <div class="flex justify-between mb-2">
-          <span>Descuento:</span>
-          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:discount].to_i, delimiter: '.') %></span>
-        </div>
-        <div class="flex justify-between font-bold">
-          <span>Total a Pagar:</span>
-          <span id="total-amount">₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
-          <input type="hidden" id="total-amount-value" value="<%= calculate_cart_totals[:total].to_i %>">
-        </div>
+        
+        <% display_currencies = Currency.where(display: true) %>
+        <% if display_currencies.any? %>
+          <div class="bg-gray-50 p-3 rounded-md">
+            <div class="text-sm font-medium mb-2">Equivalencias de cambio:</div>
+            <div id="currency-conversions">
+              <% display_currencies.each do |currency| %>
+                <div class="flex justify-between text-sm mb-1 items-center">
+                  <span class="flex items-center">
+                    <% if currency.flag_url.present? %>
+                      <img src="<%= currency.flag_url %>" alt="<%= currency.name %> flag" class="h-4 w-6 mr-2 object-cover rounded-sm shadow-sm">
+                    <% end %>
+                    <%= currency.name %> (<%= currency.symbol %>):
+                  </span>
+                  <span class="currency-value" data-currency-rate="<%= currency.exchange_rate %>" data-currency-symbol="<%= currency.symbol %>">
+                    <%= currency.symbol %> <%= number_with_precision((calculate_cart_totals[:total].to_i / currency.exchange_rate.to_f), precision: 2, delimiter: ',') %>
+                  </span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
     </div>
 

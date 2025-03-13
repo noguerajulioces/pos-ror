@@ -23,19 +23,40 @@ export default class extends Controller {
     this.methodIdTarget.value = selectedOption.dataset.paymentMethodId;
   }
   
-  calculateChange(event) {
-    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/[^\d]/g, '')) || 0;
-    const totalAmount = parseFloat(document.getElementById('total-amount-value').value) || 0;
+  calculateChange() {
+    const totalAmount = parseFloat(document.getElementById('total-amount-value').value);
+    const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.'));
     
-    let change = amountReceived - totalAmount;
-    change = change > 0 ? change : 0;
+    if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
+      const change = amountReceived - totalAmount;
+      document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`;
+      this.changeAmountTarget.value = change;
+      
+      // Update currency conversions
+      this.updateCurrencyConversions(change);
+    } else {
+      document.getElementById('change-amount').textContent = '₲s. 0';
+      this.changeAmountTarget.value = 0;
+      
+      // Reset currency conversions
+      this.updateCurrencyConversions(0);
+    }
+  }
+
+  updateCurrencyConversions(changeAmount) {
+    const currencyElements = document.querySelectorAll('.currency-value');
     
-    // Format the change amount with thousands separator
-    const formattedChange = new Intl.NumberFormat('es-PY').format(change);
-    document.getElementById('change-amount').textContent = `₲s. ${formattedChange}`;
-    
-    // Store the change amount in the hidden field
-    this.changeAmountTarget.value = change;
+    currencyElements.forEach(element => {
+      const rate = parseFloat(element.dataset.currencyRate);
+      const symbol = element.dataset.currencySymbol;
+      
+      if (rate && !isNaN(rate) && rate > 0) {
+        const convertedAmount = (changeAmount / rate).toFixed(2);
+        element.textContent = `${symbol} ${this.formatNumber(convertedAmount)}`;
+      } else {
+        element.textContent = `${symbol} 0`;
+      }
+    });
   }
   
   validateBeforeSubmit(event) {
