@@ -74,4 +74,6 @@ Rails.application.routes.draw do
   # resources :orders do
   #   resources :order_payments, shallow: true
   # end
+  # Add this line with your other POS routes
+  get 'pos/payment_modal', to: 'pos#payment_modal'
 end

@@ -188,7 +188,13 @@
 
         <!-- Botones de acción al final (Pay, Hold, Discount, Void) -->
         <div class="mt-4 grid grid-cols-4 gap-0">
-          <button class="bg-green-500 hover:bg-green-600 text-white py-4 font-medium border-r border-green-600 focus:outline-none flex items-center justify-center">
+          <button class="bg-green-500 hover:bg-green-600 text-white py-4 font-medium border-r border-green-600 focus:outline-none flex items-center justify-center"
+                  data-controller="modal"
+                  data-action="modal#open"
+                  data-modal-title="Procesar Pago"
+                  data-modal-size="max-w-md w-full"
+                  data-modal-frame-id="payment_modal"
+                  data-modal-frame-src="/pos/payment_modal">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>

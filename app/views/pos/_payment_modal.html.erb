@@ -1,0 +1,71 @@
+<turbo-frame id="payment_modal">
+  <div class="p-4">
+    <div class="mb-4">
+      <div class="text-lg font-medium mb-2">Resumen de la Orden</div>
+      <div class="bg-gray-50 p-3 rounded-md mb-4">
+        <div class="flex justify-between mb-2">
+          <span>Subtotal:</span>
+          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:subtotal].to_i, delimiter: '.') %></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span>IVA:</span>
+          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span>Descuento:</span>
+          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:discount].to_i, delimiter: '.') %></span>
+        </div>
+        <div class="flex justify-between font-bold">
+          <span>Total a Pagar:</span>
+          <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="text-lg font-medium mb-2">Método de Pago</div>
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <% PaymentMethod.where(active: true).each do |payment_method| %>
+          <div class="payment-method-option border rounded-md p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
+              data-payment-method-id="<%= payment_method.id %>"
+              data-controller="payment"
+              data-action="click->payment#selectMethod">
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full border border-gray-400 mr-2 flex items-center justify-center payment-radio">
+                <div class="w-2 h-2 rounded-full bg-indigo-600 hidden payment-radio-selected"></div>
+              </div>
+              <span><%= payment_method.name %></span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="text-lg font-medium mb-2">Monto Recibido</div>
+      <div class="flex items-center mb-4">
+        <span class="text-lg mr-2">₲s.</span>
+        <input type="text" id="amount-received" class="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+              placeholder="Ingrese el monto recibido"
+              data-controller="payment"
+              data-action="input->payment#calculateChange">
+      </div>
+      <div class="flex justify-between font-medium">
+        <span>Cambio:</span>
+        <span id="change-amount">₲s. 0</span>
+      </div>
+    </div>
+
+    <div class="flex justify-end space-x-2 mt-6">
+      <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none"
+              data-action="click->modal#close">
+        Cancelar
+      </button>
+      <button type="button" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
+              data-controller="payment"
+              data-action="click->payment#processPayment">
+        Procesar Pago
+      </button>
+    </div>
+  </div>
+</turbo-frame>

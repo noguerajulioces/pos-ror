@@ -307,6 +307,10 @@ class PosController < ApplicationController
     render partial: "cash_register_modal"
   end
 
+  def payment_modal
+    render partial: "payment_modal"
+  end
+
   def discount_modal
     # Simple action to render the discount modal
     render partial: "discount_modal"
