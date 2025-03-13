@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <%= form_with url: process_payment_pos_path, method: :post, data: { controller: "payment" } do |f| %>
+    <%= form_with url: process_payment_pos_path, method: :post, data: { controller: "payment", turbo_frame: "_top" } do |f| %>
       <div class="mb-4">
         <div class="text-lg font-medium mb-2">Método de Pago</div>
         <div class="grid grid-cols-2 gap-2 mb-4">
