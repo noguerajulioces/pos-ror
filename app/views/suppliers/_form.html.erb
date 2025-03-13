@@ -20,12 +20,12 @@
     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       <div class="sm:col-span-3">
         <%= f.label :company_name, "Nombre de la Empresa", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.text_field :company_name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.text_field :company_name, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
       <div class="sm:col-span-3">
-        <%= f.label :document, "Documento", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.text_field :document, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.label :document, "RUC", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.text_field :document, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
       <div class="sm:col-span-3">
@@ -40,7 +40,7 @@
 
       <div class="sm:col-span-3">
         <%= f.label :phone, "Teléfono", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.telephone_field :phone, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.telephone_field :phone, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
       <div class="sm:col-span-6">
