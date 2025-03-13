@@ -126,6 +126,18 @@
                 -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) * @order.discount_percentage / 100).to_i, delimiter: '.') %>
               </td>
             </tr>
+          <% else %>
+            <tr>
+              <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">
+                Descuento (Monto):
+                <% if @order.discount_reason.present? %>
+                  <span class="text-xs text-gray-500 italic"><%= @order.discount_reason %></span>
+                <% end %>
+              </th>
+              <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-red-600">
+                -₲s. <%= number_with_delimiter((@order.total_amount - @order.order_items.sum(:subtotal)).to_i, delimiter: '.') %>
+              </td>
+            </tr>
           <% end %>
           <tr class="bg-gray-50">
             <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">Total:</th>
