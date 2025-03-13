@@ -7,6 +7,7 @@
 #  notes             :text
 #  payment_date      :datetime
 #  reference_number  :string
+#  status            :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  order_id          :bigint           not null
@@ -26,6 +27,15 @@ class OrderPayment < ApplicationRecord
   include NumericFormatter
   belongs_to :order
   belongs_to :payment_method
+
+  # Define enum for status
+  enum :status, {
+    completed: "completed",
+    pending: "pending",
+    cancelled: "cancelled",
+    refunded: "refunded",
+    failed: "failed"
+  }, default: "completed"
 
   sanitize_numeric_attributes :amount
 

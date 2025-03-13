@@ -80,7 +80,7 @@ module Orders
         payment_method_id: @params[:payment_method_id],
         amount: order.total_amount,
         payment_date: Time.current,
-        reference_number: @params[:reference_number],
+        reference_number: nil,
         notes: "Pago realizado desde POS"
       )
     end

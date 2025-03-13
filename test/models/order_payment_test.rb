@@ -7,6 +7,7 @@
 #  notes             :text
 #  payment_date      :datetime
 #  reference_number  :string
+#  status            :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  order_id          :bigint           not null
