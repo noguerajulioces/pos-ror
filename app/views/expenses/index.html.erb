@@ -21,7 +21,6 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Monto</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Proveedor</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Referencia</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -36,22 +35,23 @@
                     <%= index %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= l(expense.date, format: :short) %>
+                    <%= l(expense.expense_date) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= number_to_currency(expense.amount) %>
+                    <%= number_to_currency(expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.description %>
+                    <%= truncate(sanitize(expense.description), length: 100, separator: ' ', omission: '...', word_count: 20) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.category %>
+                    <% if expense.category.present? %>
+                      <%= t("activerecord.attributes.expense.categories.#{expense.category}", default: expense.category&.humanize) %>
+                    <% else %>
+                      <span class="text-gray-400">-</span>
+                    <% end %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.supplier&.company_name || "-" %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.payment_method %>
+                    <%= expense.payment_method&.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= expense.reference_number || "-" %>

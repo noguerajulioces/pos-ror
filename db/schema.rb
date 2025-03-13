@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_13_122402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,12 +93,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.decimal "amount"
     t.text "description"
     t.date "expense_date"
-    t.bigint "purchase_id", null: false
+    t.bigint "purchase_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "payment_method_id", null: false
+    t.bigint "payment_method_id"
+    t.string "category"
+    t.string "reference_number"
+    t.index ["category"], name: "index_expenses_on_category"
     t.index ["payment_method_id"], name: "index_expenses_on_payment_method_id"
     t.index ["purchase_id"], name: "index_expenses_on_purchase_id"
+    t.index ["reference_number"], name: "index_expenses_on_reference_number"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|

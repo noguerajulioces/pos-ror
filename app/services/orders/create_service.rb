@@ -2,8 +2,8 @@ module Orders
   class CreateService
     attr_reader :cart, :params, :current_user, :session, :payment_method_service, :stock_service
 
-    def initialize(cart:, params:, current_user:, session:, 
-                  payment_method_service: nil, 
+    def initialize(cart:, params:, current_user:, session:,
+                  payment_method_service: nil,
                   stock_service: nil)
       @cart = cart || []
       @params = params

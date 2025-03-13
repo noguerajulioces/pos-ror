@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   end
   resources :suppliers
   resources :users
-  resources :expenses
+  resources :expenses, except: [ :show ]
   resources :currencies
   resource :pos, only: [ :show ]
   patch "pos/update_order_type", to: "pos#update_order_type"
