@@ -78,6 +78,10 @@ class Product < ApplicationRecord
     price - current_purchase_price
   end
 
+  def current_purchase_price
+    manual_purchase_price.presence || average_cost || 0
+  end
+ 
   private
 
   def generate_barcode
@@ -94,9 +98,5 @@ class Product < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     [ "category", "images", "inventory_movements", "purchases", "product_images", "unit", "variants" ]
-  end
-
-  def current_purchase_price
-    manual_purchase_price.presence || average_cost || 0
   end
 end
