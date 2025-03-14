@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   end
   resources :products do
     resources :product_images, only: [ :destroy ]
+    resources :stock_adjustments, only: [:new, :create], module: 'products'
   end
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]

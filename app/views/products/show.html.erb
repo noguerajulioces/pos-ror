@@ -194,6 +194,7 @@
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Final</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -214,6 +215,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <%= movement.final_stock %>
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= truncate(movement.reason, length: 50) %>
+                    </td>
                   </tr>
                 <% end %>
               </tbody>
@@ -231,3 +235,4 @@
     </div>
   </div>
 </div>
+<%= link_to "Ajustar Stock", new_product_stock_adjustment_path(@product), class: "btn btn-primary" %>
