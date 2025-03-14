@@ -79,6 +79,21 @@
               <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost) %></dd>
             </div>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Precio de Compra Manual</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.manual_purchase_price) %></dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Margen de Ganancia</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                <span class="<%= @product&.profit_margin_percentage > 0 ? 'text-green-600' : 'text-red-600' %>">
+                  <%= number_to_percentage(@product&.profit_margin_percentage, precision: 2) %>
+                </span>
+                <span class="text-gray-500 ml-2">
+                  (<%= number_to_currency(@product&.profit_per_unit) %> por unidad)
+                </span>
+              </dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Estado</dt>
               <dd class="mt-1 sm:col-span-2 sm:mt-0">
                 <span class="<%= @product.active? ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">

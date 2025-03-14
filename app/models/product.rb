@@ -69,6 +69,15 @@ class Product < ApplicationRecord
     save
   end
 
+  def profit_margin_percentage
+    return 0 if current_purchase_price.zero?
+    ((price - current_purchase_price) / current_purchase_price * 100).round(2)
+  end
+
+  def profit_per_unit
+    price - current_purchase_price
+  end
+
   private
 
   def generate_barcode
@@ -89,14 +98,5 @@ class Product < ApplicationRecord
 
   def current_purchase_price
     manual_purchase_price.presence || average_cost || 0
-  end
-
-  def profit_margin_percentage
-    return 0 if current_purchase_price.zero?
-    ((price - current_purchase_price) / current_purchase_price * 100).round(2)
-  end
-
-  def profit_per_unit
-    price - current_purchase_price
   end
 end
