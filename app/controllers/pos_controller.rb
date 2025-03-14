@@ -378,7 +378,7 @@ class PosController < ApplicationController
 
     if result[:success]
 
-      PrintService.print_message("Orden ##{result[:order_id]} completada.")
+      PrintService.print_order(result[:order_id])
 
       # Clear the cart and other session data
       session[:cart] = []
