@@ -9,37 +9,52 @@
     </div>
   </div>
 
-  <%= search_form_for @q, class: "mt-8 mb-4 px-3 py-1.5" do |f| %>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div>
-        <%= f.label :id_eq, "Número", class: "block text-sm font-medium text-gray-700 px-3" %>
-        <%= f.search_field :id_eq, 
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-      </div>
+  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :id_eq, "Número", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :id_eq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
 
-      <div>
-        <%= f.label :customer_document_or_customer_first_name_or_customer_last_name_cont, "Cliente", class: "block text-sm font-medium text-gray-700 px-3" %>
-        <%= f.search_field :customer_document_or_customer_first_name_or_customer_last_name_cont, 
-            placeholder: "Buscar por documento, nombre o apellido",
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-      </div>
+          <div>
+            <%= f.label :customer_document_or_customer_first_name_or_customer_last_name_cont, "Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :customer_document_or_customer_first_name_or_customer_last_name_cont, 
+                placeholder: "Buscar por documento, nombre o apellido",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
 
-      <div>
-        <%= f.label :status_eq, "Estado", class: "block text-sm font-medium text-gray-700 px-3" %>
-        <%= f.select :status_eq, 
-            options_for_select([
-              ['Todos', ''],
-              ['Completado', Order::STATUSES[:completed]],
-              ['En Espera', Order::STATUSES[:on_hold]],
-              ['Cancelado', Order::STATUSES[:cancelled]]
-            ]), 
-            {}, 
-            class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-      </div>
+          <div>
+            <%= f.label :status_eq, "Estado", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.select :status_eq, 
+                options_for_select([
+                  ['Todos', ''],
+                  ['Completado', Order::STATUSES[:completed]],
+                  ['En Espera', Order::STATUSES[:on_hold]],
+                  ['Cancelado', Order::STATUSES[:cancelled]]
+                ]), 
+                {}, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
 
-      <div class="flex items-end space-x-2 px-3">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", orders_path, class: "rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+          <div>
+            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :order_date_gteq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :order_date_lteq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", orders_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
