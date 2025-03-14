@@ -72,15 +72,15 @@
           <dl>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Precio</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.price) %></dd>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.price, delimiter: '.', precision: 0, unit: '₲s. ') %></dd>
             </div>
             <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Costo Promedio</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost) %></dd>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost, delimiter: '.', precision: 0, unit: '₲s. ') %></dd>
             </div>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Precio de Compra Manual</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.manual_purchase_price) %></dd>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.manual_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %></dd>
             </div>
             <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Margen de Ganancia</dt>
@@ -89,7 +89,7 @@
                   <%= number_to_percentage(@product&.profit_margin_percentage, precision: 2) %>
                 </span>
                 <span class="text-gray-500 ml-2">
-                  (<%= number_to_currency(@product&.profit_per_unit) %> por unidad)
+                  (<%= number_to_currency(@product&.profit_per_unit, delimiter: '.', precision: 0, unit: '₲s. ') %>) por unidad)
                 </span>
               </dd>
             </div>
