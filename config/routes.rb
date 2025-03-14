@@ -78,4 +78,5 @@ Rails.application.routes.draw do
   post "pos/process_payment", to: "pos#process_payment", as: :process_payment_pos
   get "pos/payment_modal", to: "pos#payment_modal"
   get "print_message", to: "print#print_message"
+  resources :purchases
 end
