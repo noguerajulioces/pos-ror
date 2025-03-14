@@ -2,7 +2,8 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[show edit update destroy]
 
   def index
-    @products = Product.includes(:category).paginate(page: params[:page])
+    @q = Product.ransack(params[:q])
+    @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
   end
 
   def show
@@ -36,8 +37,9 @@ class ProductsController < ApplicationController
   end
 
   def destroy
-    @product.destroy
-    redirect_to products_path, notice: "Producto eliminado exitosamente."
+    @product.status = "inactive"
+    @product.save!
+    redirect_to products_path, notice: "Producto inactivado exitosamente."
   end
 
   private

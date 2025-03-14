@@ -8,6 +8,45 @@
       <%= link_to "Nuevo Producto", new_product_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
     </div>
   </div>
+
+
+<%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :name_or_sku_cont, "Nombre, SKU", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :name_or_sku_cont, 
+                placeholder: "Buscar por nombre",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.collection_select :category_id_eq,
+                Category.all,
+                :id,
+                :name,
+                { include_blank: "Todas las categorías" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :stock_lteq, "Stock mínimo", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.number_field :stock_lteq,
+                placeholder: "Stock menor o igual a",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", products_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
+  
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -66,7 +105,7 @@
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Eliminar", product_path(product), 
+                    <%= link_to "Inactivar", product_path(product), 
                         data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
                         class: "ml-2 text-red-600 hover:text-red-900" %>
                   </td>
