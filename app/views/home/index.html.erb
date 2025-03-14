@@ -82,7 +82,7 @@
               <dt class="text-sm font-medium text-gray-500 truncate">Método de Pago más Usado</dt>
               <dd class="flex items-baseline">
                 <div class="text-2xl font-semibold text-gray-900">
-                  <%= Order.group(:payment_method_id).count.max_by { |_, count| count }.first.then { |id| PaymentMethod.find(id).name } rescue "N/A" %>
+                  <%= Order.unscoped.group(:payment_method_id).count.max_by { |_, count| count }.first.then { |id| PaymentMethod.find(id).name } rescue "N/A" %>
                 </div>
               </dd>
             </dl>
@@ -172,6 +172,7 @@
                     <div class="text-2xl font-semibold text-gray-900">
                       <%= Customer.joins(:orders)
                               .where(orders: { status: 'completed' })
+                              .unscoped
                               .group('customers.id')
                               .order('count_all DESC')
                               .count
