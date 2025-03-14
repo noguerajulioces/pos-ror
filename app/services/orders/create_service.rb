@@ -23,7 +23,10 @@ module Orders
         create_order_payment(order)
 
         # Reduce stock if the order is completed
-        stock_service.reduce_stock(order) if order.status == Order::STATUSES[:completed]
+        if order.status == Order::STATUSES[:completed]
+          create_inventory_movements(order)
+          stock_service.reduce_stock(order)
+        end
 
         clear_session_data
         success_response(order.id)
@@ -33,6 +36,18 @@ module Orders
     end
 
     private
+
+    def create_inventory_movements(order)
+      order.order_items.each do |item|
+        InventoryMovement.create!(
+          product: item.product,
+          movement_type: 'sale',
+          quantity: -item.quantity,
+          reason: "Venta ##{order.id}",
+          skip_stock_update: true 
+        )
+      end
+    end
 
     def create_order
       order = Order.new(order_attributes)
@@ -77,12 +92,16 @@ module Orders
     def create_order_payment(order)
       OrderPayment.create!(
         order: order,
-        payment_method_id: @params[:payment_method_id],
+        payment_method_id: payment_method_id,  # Use the existing payment_method_id method
         amount: order.total_amount,
         payment_date: Time.current,
         reference_number: nil,
         notes: "Pago realizado desde POS"
       )
+    end
+
+    def payment_method_id
+      @params[:payment_method_id].presence || PaymentMethod.first.id
     end
 
     def clear_session_data
