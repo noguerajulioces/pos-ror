@@ -22,4 +22,12 @@ class Purchase < ApplicationRecord
   has_many :purchase_items, dependent: :destroy
   accepts_nested_attributes_for :purchase_items, allow_destroy: true
   has_many :products, through: :purchase_items
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "purchase_date", "total_amount", "created_at", "updated_at"]
+  end
+  
+  def self.ransackable_associations(auth_object = nil)
+    ["supplier"]
+  end
 end
