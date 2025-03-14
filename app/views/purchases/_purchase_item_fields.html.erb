@@ -2,7 +2,10 @@
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-5">
       <%= f.label :product_id, "Producto", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :product_id, Product.all, :id, :name, 
+      <%= f.collection_select :product_id, 
+          Product.all, 
+          :id, 
+          ->(product) { "#{product.name} (Stock Actual: #{product.stock})" },
           { include_blank: 'Seleccione un producto' }, 
           class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
     </div>

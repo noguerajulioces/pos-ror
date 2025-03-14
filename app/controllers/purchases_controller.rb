@@ -1,5 +1,5 @@
 class PurchasesController < ApplicationController
-  before_action :set_purchase, only: [:show, :edit, :update, :destroy]
+  before_action :set_purchase, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @purchases = Purchase.all.order(purchase_date: :desc)
@@ -17,7 +17,7 @@ class PurchasesController < ApplicationController
     @purchase = Purchase.new(purchase_params)
 
     if @purchase.save
-      redirect_to @purchase, notice: 'Compra creada exitosamente.'
+      redirect_to @purchase, notice: "Compra creada exitosamente."
     else
       render :new
     end
@@ -28,7 +28,7 @@ class PurchasesController < ApplicationController
 
   def update
     if @purchase.update(purchase_params)
-      redirect_to @purchase, notice: 'Compra actualizada exitosamente.'
+      redirect_to @purchase, notice: "Compra actualizada exitosamente."
     else
       render :edit
     end
@@ -36,7 +36,7 @@ class PurchasesController < ApplicationController
 
   def destroy
     @purchase.destroy
-    redirect_to purchases_path, notice: 'Compra eliminada exitosamente.'
+    redirect_to purchases_path, notice: "Compra eliminada exitosamente."
   end
 
   private
@@ -46,6 +46,11 @@ class PurchasesController < ApplicationController
   end
 
   def purchase_params
-    params.require(:purchase).permit(:purchase_date, :supplier_id, :total_amount)
+    params.require(:purchase).permit(
+      :purchase_date,
+      :supplier_id,
+      :total_amount,
+      purchase_items_attributes: [ :id, :product_id, :quantity, :unit_price, :total_price, :_destroy ]
+    )
   end
 end

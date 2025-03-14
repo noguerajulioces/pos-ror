@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_14_020920) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_104351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -233,11 +233,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_020920) do
   end
 
   create_table "purchases", force: :cascade do |t|
-    t.string "supplier"
     t.date "purchase_date"
     t.decimal "total_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "supplier_id"
+    t.index ["supplier_id"], name: "index_purchases_on_supplier_id"
   end
 
   create_table "sale_items", force: :cascade do |t|
@@ -320,6 +321,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_020920) do
   add_foreign_key "products", "units"
   add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
+  add_foreign_key "purchases", "suppliers"
   add_foreign_key "sale_items", "products"
   add_foreign_key "sale_items", "sales"
 end
