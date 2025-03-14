@@ -20,6 +20,14 @@
             Editar
           </div>
         <% end %>
+        <%= link_to new_product_stock_adjustment_path(@product), class: "rounded-md bg-yellow-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500" do %>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Ajustar Stock
+          </div>
+        <% end %>
         <%= link_to products_path, class: "rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,4 +243,3 @@
     </div>
   </div>
 </div>
-<%= link_to "Ajustar Stock", new_product_stock_adjustment_path(@product), class: "btn btn-primary" %>
