@@ -1,4 +1,8 @@
-<%= form_with(model: purchase, class: "space-y-6", data: { controller: 'nested-form', nested_form_wrapper_selector_value: '.nested-form-wrapper' }) do |form| %>
+<%= form_with(model: purchase, class: "space-y-6", 
+    data: { 
+      controller: 'nested-form purchase-calculator',
+      nested_form_wrapper_selector_value: '.nested-form-wrapper' 
+    }) do |form| %>
   <% if purchase.errors.any? %>
     <div class="bg-red-50 p-4 rounded-md">
       <div class="flex">
@@ -96,38 +100,4 @@
   </div>
 <% end %>
 
-<script>
-  document.addEventListener('turbo:load', function() {
-    // Function to calculate totals
-    function calculateTotals() {
-      let grandTotal = 0;
-      
-      // Loop through all purchase item rows
-      document.querySelectorAll('.nested-fields').forEach(function(item) {
-        const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
-        const unitPrice = parseFloat(item.querySelector('.item-unit-price').value) || 0;
-        const totalPrice = quantity * unitPrice;
-        
-        // Update the total price field
-        item.querySelector('.item-total-price').value = totalPrice.toFixed(2);
-        
-        // Add to grand total
-        grandTotal += totalPrice;
-      });
-      
-      // Update the purchase total amount
-      document.getElementById('purchase_total_amount').value = grandTotal.toFixed(2);
-    }
-    
-    // Add event listener to the document for dynamically added elements
-    document.addEventListener('change', function(event) {
-      if (event.target.classList.contains('item-quantity') || 
-          event.target.classList.contains('item-unit-price')) {
-        calculateTotals();
-      }
-    });
-    
-    // Initial calculation
-    calculateTotals();
-  });
-</script>
+<!-- Remove the script tag since we're using Stimulus -->

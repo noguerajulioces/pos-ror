@@ -11,19 +11,20 @@
       <%= f.label :quantity, "Cantidad", class: "block text-sm font-medium text-gray-700" %>
       <%= f.number_field :quantity, min: 1, 
           class: "item-quantity block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
-          data: { action: "change->nested-form#calculateTotals" } %>
+          data: { action: "input->purchase-calculator#calculate" } %>
     </div>
     
     <div class="col-span-2">
       <%= f.label :unit_price, "Precio Unitario", class: "block text-sm font-medium text-gray-700" %>
       <%= f.text_field :unit_price, 
           class: "item-unit-price block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
-          data: { action: "change->nested-form#calculateTotals" } %>
+          data: { action: "input->purchase-calculator#calculate" } %>
     </div>
     
     <div class="col-span-2">
       <%= f.label :total_price, "Subtotal", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.text_field :total_price, readonly: true, class: "item-total-price block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6" %>
+      <%= f.text_field :total_price, readonly: true, 
+          class: "item-total-price block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6" %>
     </div>
     
     <div class="col-span-1 flex items-end">
