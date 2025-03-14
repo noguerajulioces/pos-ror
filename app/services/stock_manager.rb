@@ -4,9 +4,9 @@ class StockManager
 
     InventoryMovement.create!(
       product: product,
-      movement_type: 'adjustment',
+      movement_type: "adjustment",
       quantity: product.stock,
-      reason: 'Stock inicial',
+      reason: "Stock inicial",
       skip_stock_update: true
     )
   end
@@ -33,25 +33,25 @@ class StockManager
 
   def update_stock_from_purchase
     @document.purchase_items.each do |item|
-      create_inventory_movement(item, item.quantity, 'purchase')
+      create_inventory_movement(item, item.quantity, "purchase")
     end
   end
 
   def revert_stock_from_purchase
     @document.purchase_items.each do |item|
-      create_inventory_movement(item, -item.quantity, 'adjustment')
+      create_inventory_movement(item, -item.quantity, "adjustment")
     end
   end
 
   def update_stock_from_order
     @document.order_items.each do |item|
-      create_inventory_movement(item, -item.quantity, 'sale')
+      create_inventory_movement(item, -item.quantity, "sale")
     end
   end
 
   def revert_stock_from_order
     @document.order_items.each do |item|
-      create_inventory_movement(item, item.quantity, 'adjustment')
+      create_inventory_movement(item, item.quantity, "adjustment")
     end
   end
 
@@ -71,11 +71,11 @@ class StockManager
     document_id = @document.id
 
     case movement_type
-    when 'purchase'
+    when "purchase"
       "Compra ##{document_id}"
-    when 'sale'
+    when "sale"
       "Venta ##{document_id}"
-    when 'adjustment'
+    when "adjustment"
       if quantity.positive?
         "Reversión Venta ##{document_id}"
       else

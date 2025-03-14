@@ -17,7 +17,7 @@ module Products
       if result[:success]
         redirect_to @product, notice: result[:message]
       else
-        redirect_to new_product_stock_adjustment_path(@product), 
+        redirect_to new_product_stock_adjustment_path(@product),
                     alert: result[:error]
       end
     end

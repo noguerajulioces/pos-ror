@@ -41,10 +41,10 @@ module Orders
       order.order_items.each do |item|
         InventoryMovement.create!(
           product: item.product,
-          movement_type: 'sale',
+          movement_type: "sale",
           quantity: -item.quantity,
           reason: "Venta ##{order.id}",
-          skip_stock_update: true 
+          skip_stock_update: true
         )
       end
     end

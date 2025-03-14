@@ -81,7 +81,7 @@ class Product < ApplicationRecord
   def current_purchase_price
     manual_purchase_price.presence || average_cost || 0
   end
- 
+
   private
 
   def generate_barcode

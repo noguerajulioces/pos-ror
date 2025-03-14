@@ -24,10 +24,10 @@ class Purchase < ApplicationRecord
   has_many :products, through: :purchase_items
 
   def self.ransackable_attributes(auth_object = nil)
-    ["id", "purchase_date", "total_amount", "created_at", "updated_at"]
+    [ "id", "purchase_date", "total_amount", "created_at", "updated_at" ]
   end
-  
+
   def self.ransackable_associations(auth_object = nil)
-    ["supplier"]
+    [ "supplier" ]
   end
 end

@@ -14,7 +14,6 @@ class ProductsController < ApplicationController
   end
 
   def create
-
     byebug
 
     @product = Product.new(product_params)
@@ -23,7 +22,7 @@ class ProductsController < ApplicationController
       if @product.save
 
         byebug
-        
+
         StockManager.create_initial_stock(@product)
         attach_image if params[:product][:image].present?
         redirect_to @product, notice: "Producto creado exitosamente."

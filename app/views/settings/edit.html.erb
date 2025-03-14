@@ -1,0 +1,43 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Configuración del Sistema</h1>
+      <p class="mt-2 text-sm text-gray-700">Administre la configuración general del sistema</p>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-300 sm:rounded-lg">
+    <div class="p-6">
+      <%= form_tag update_all_settings_path, method: :patch do %>
+        <div class="space-y-6 divide-y divide-gray-200">
+          <div class="space-y-6">
+            <% @settings.each do |setting| %>
+              <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
+                <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                  <%= setting.label %>
+                  <p class="mt-1 text-xs text-gray-500"><%= setting.description %></p>
+                </label>
+                <div class="mt-1 sm:col-span-2 sm:mt-0">
+                  <% if setting.boolean? %>
+                    <%= check_box_tag "settings[#{setting.key}]", '1', setting.value == '1', 
+                        class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
+                  <% else %>
+                    <%= text_field_tag "settings[#{setting.key}]", setting.value,
+                        class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="pt-6 flex items-center justify-end gap-x-6">
+            <%= link_to "Cancelar", root_path, class: "text-sm font-semibold leading-6 text-gray-900" %>
+            <%= button_tag type: 'submit', class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
+              Guardar Cambios
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
