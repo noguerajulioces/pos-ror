@@ -41,11 +41,11 @@ class Setting < ApplicationRecord
   def description
     # You can add descriptions in a hash if needed
     descriptions = {
-      'company_name' => 'Nombre de la empresa que aparecerá en los recibos',
-      'company_owner' => 'Nombre del propietario de la empresa',
-      'company_address' => 'Dirección completa de la empresa',
-      'company_ruc' => 'RUC de la empresa',
-      'receipt_final_message' => 'Mensaje que aparece al final de cada recibo'
+      "company_name" => "Nombre de la empresa que aparecerá en los recibos",
+      "company_owner" => "Nombre del propietario de la empresa",
+      "company_address" => "Dirección completa de la empresa",
+      "company_ruc" => "RUC de la empresa",
+      "receipt_final_message" => "Mensaje que aparece al final de cada recibo"
     }
     descriptions[var] || var.humanize
   end

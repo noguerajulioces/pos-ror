@@ -27,11 +27,15 @@ class ReportsController < ApplicationController
   end
 
   def expenses
-    @expenses = Expense.includes(:expense_category)
-                      .order(date: :desc)
+    @q = Expense.ransack(params[:q])
+    @expenses = @q.result.includes(:payment_method)
+                        .order(expense_date: :desc)
+                        .paginate(page: params[:page], per_page: 15)
+  
+    @total = @expenses.sum(:amount)
+  
     respond_to do |format|
       format.html
-      format.xlsx
       format.pdf
     end
   end
