@@ -1,0 +1,81 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Detalle del Gasto</h1>
+      <p class="mt-2 text-sm text-gray-700">Información detallada del gasto.</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <%= link_to "Volver a Gastos", expenses_path, class: "rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <%= link_to "Editar", edit_expense_path(@expense), class: "ml-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-lg">
+    <dl class="divide-y divide-gray-200">
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Fecha</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0"><%= l(@expense.expense_date) %></dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Monto</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <%= number_to_currency(@expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
+        </dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Descripción</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0"><%= @expense.description %></dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Categoría</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <% if @expense.category.present? %>
+            <%= t("activerecord.attributes.expense.categories.#{@expense.category}", default: @expense.category&.humanize) %>
+          <% else %>
+            <span class="text-gray-400">-</span>
+          <% end %>
+        </dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Método de Pago</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <%= @expense.payment_method&.name || "-" %>
+        </dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Número de Referencia</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <%= @expense.reference_number || "-" %>
+        </dd>
+      </div>
+
+      <% if @expense.purchase.present? %>
+        <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-900">Compra Asociada</dt>
+          <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <%= link_to "Ver compra", purchase_path(@expense.purchase), class: "text-indigo-600 hover:text-indigo-900" %>
+          </dd>
+        </div>
+      <% end %>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Fecha de Creación</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <%= l(@expense.created_at, format: :long) %>
+        </dd>
+      </div>
+
+      <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-900">Última Actualización</dt>
+        <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+          <%= l(@expense.updated_at, format: :long) %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>

@@ -2,7 +2,8 @@ class ExpensesController < ApplicationController
   before_action :set_expense, only: %i[show edit update destroy]
 
   def index
-    @expenses = Expense.paginate(page: params[:page], per_page: 10)
+    @q = Expense.ransack(params[:q])
+    @expenses = @q.result(distinct: true).includes(:payment_method).paginate(page: params[:page], per_page: 10)
   end
 
   def show; end

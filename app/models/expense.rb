@@ -47,4 +47,12 @@ class Expense < ApplicationRecord
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :expense_date, presence: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["amount", "category", "description", "expense_date", "payment_method_id", "reference_number"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["payment_method"]
+  end
 end
