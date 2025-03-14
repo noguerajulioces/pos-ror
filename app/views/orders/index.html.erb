@@ -39,7 +39,7 @@
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= order.customer&.full_name || "Cliente Genérico" %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-semibold">
                     ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
@@ -61,7 +61,7 @@
                     <div class="flex justify-end space-x-2">
                       <%= link_to "Ver", order_path(order), class: "text-indigo-600 hover:text-indigo-900" %>
                       <%= link_to "Imprimir", print_message_path(order_id: order.id), data: { turbo_prefetch: false }, class: "text-indigo-600 hover:text-green-900", form: { class: "inline" }, form_class: "inline" %>
-                      <%= link_to "Pago", new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900" %>
+                      <%#= link_to "Pago", new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900" %>
                       <%= link_to "Cancelar", order_path(order), 
                           data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
                           class: "text-red-600 hover:text-red-900" %>

@@ -2,7 +2,7 @@ class PurchasesController < ApplicationController
   before_action :set_purchase, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @purchases = Purchase.all.order(purchase_date: :desc)
+    @purchases = Purchase.all.order(purchase_date: :desc).paginate(page: params[:page], per_page: 10)
   end
 
   def show
