@@ -86,4 +86,12 @@ class Order < ApplicationRecord
   def outstanding_balance
     total_amount - total_paid
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["created_at", "customer_id", "discount_percentage", "discount_reason", "id", "order_date", "order_type", "payment_method_id", "status", "total_amount", "updated_at", "user_id"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["customer", "order_items", "order_payments", "payment_method", "user"]
+  end
 end
