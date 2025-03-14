@@ -2,7 +2,8 @@ class CustomersController < ApplicationController
   before_action :set_customer, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @customers = Customer.all.paginate(page: params[:page], per_page: 10)
+    @q = Customer.ransack(params[:q])
+    @customers = @q.result(distinct: true).paginate(page: params[:page], per_page: 10)
   end
 
   def show
