@@ -20,7 +20,7 @@
             <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Órdenes Hoy</dt>
               <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
+                <div class="text-2xl font-semibold text-gray-900 mt-2">
                   <%= Order.where(order_date: Time.current.beginning_of_day..Time.current.end_of_day).count %>
                 </div>
               </dd>
@@ -52,7 +52,7 @@
             <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Productos Bajo Stock</dt>
               <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
+                <div class="text-2xl font-semibold text-gray-900 mt-2">
                   <%= Product.where('stock <= min_stock').count %>
                 </div>
               </dd>
@@ -81,7 +81,7 @@
             <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Método de Pago más Usado</dt>
               <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
+                <div class="text-2xl font-semibold text-gray-900 mt-2">
                   <%= Order.unscoped.group(:payment_method_id).count.max_by { |_, count| count }.first.then { |id| PaymentMethod.find(id).name } rescue "N/A" %>
                 </div>
               </dd>
@@ -110,7 +110,7 @@
             <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Gastos Última Semana</dt>
               <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
+                <div class="text-2xl font-semibold text-gray-900 mt-2">
                   <%= number_to_currency(Expense.where(expense_date: 1.week.ago..Time.current).sum(:amount), delimiter: '.', precision: 0, unit: '₲s. ') %>
                 </div>
               </dd>
@@ -139,7 +139,7 @@
             <dl>
               <dt class="text-sm font-medium text-gray-500 truncate">Ventas del Mes</dt>
               <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
+                <div class="text-2xl font-semibold text-gray-900 mt-2">
                   <%= number_to_currency(Order.where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).sum(:total_amount), delimiter: '.', precision: 0, unit: '₲s. ') %>
                 </div>
               </dd>
@@ -169,7 +169,7 @@
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">Cliente más Frecuente</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">
+                    <div class="text-2xl font-semibold text-gray-900 mt-2">
                       <%= Customer.joins(:orders)
                               .where(orders: { status: 'completed' })
                               .unscoped
