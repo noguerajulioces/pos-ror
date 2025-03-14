@@ -79,3 +79,4 @@ gem "mini_magick", "~> 5.2"
 gem "friendly_id", "~> 5.5.1"
 gem "ransack"
 gem 'to_words'
+gem 'paranoia'

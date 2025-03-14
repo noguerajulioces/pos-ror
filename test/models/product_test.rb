@@ -5,6 +5,7 @@
 #  id           :bigint           not null, primary key
 #  average_cost :decimal(, )
 #  barcode      :string
+#  deleted_at   :datetime
 #  description  :text
 #  min_stock    :integer
 #  name         :string
@@ -21,6 +22,7 @@
 # Indexes
 #
 #  index_products_on_category_id  (category_id)
+#  index_products_on_deleted_at   (deleted_at)
 #  index_products_on_slug         (slug) UNIQUE
 #  index_products_on_unit_id      (unit_id)
 #

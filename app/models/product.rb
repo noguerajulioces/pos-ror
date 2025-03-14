@@ -5,6 +5,7 @@
 #  id           :bigint           not null, primary key
 #  average_cost :decimal(, )
 #  barcode      :string
+#  deleted_at   :datetime
 #  description  :text
 #  min_stock    :integer
 #  name         :string
@@ -21,6 +22,7 @@
 # Indexes
 #
 #  index_products_on_category_id  (category_id)
+#  index_products_on_deleted_at   (deleted_at)
 #  index_products_on_slug         (slug) UNIQUE
 #  index_products_on_unit_id      (unit_id)
 #
@@ -30,6 +32,7 @@
 #  fk_rails_...  (unit_id => units.id)
 #
 class Product < ApplicationRecord
+  acts_as_paranoid
   include NumericFormatter
   extend FriendlyId
   friendly_id :name, use: :slugged

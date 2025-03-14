@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: settings
+#
+#  id         :bigint           not null, primary key
+#  value      :text
+#  var        :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 class Setting < ApplicationRecord
   validates :var, presence: true, uniqueness: true
 

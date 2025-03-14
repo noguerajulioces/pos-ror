@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_14_013608) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_020920) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -213,7 +213,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_013608) do
     t.decimal "average_cost"
     t.bigint "unit_id"
     t.string "slug"
+    t.datetime "deleted_at"
     t.index ["category_id"], name: "index_products_on_category_id"
+    t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["slug"], name: "index_products_on_slug", unique: true
     t.index ["unit_id"], name: "index_products_on_unit_id"
   end
