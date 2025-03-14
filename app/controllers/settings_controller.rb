@@ -4,8 +4,8 @@ class SettingsController < ApplicationController
   end
 
   def update_all
-    settings_params.each do |key, value|
-      setting = Setting.find_by(key: key)
+    settings_params.each do |var, value|
+      setting = Setting.find_by(var: var)
       setting&.update(value: value)
     end
 

@@ -19,10 +19,10 @@
                 </label>
                 <div class="mt-1 sm:col-span-2 sm:mt-0">
                   <% if setting.boolean? %>
-                    <%= check_box_tag "settings[#{setting.key}]", '1', setting.value == '1', 
+                    <%= check_box_tag "settings[#{setting.var}]", '1', setting.value == '1', 
                         class: "h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" %>
                   <% else %>
-                    <%= text_field_tag "settings[#{setting.key}]", setting.value,
+                    <%= text_field_tag "settings[#{setting.var}]", setting.value,
                         class: "block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" %>
                   <% end %>
                 </div>

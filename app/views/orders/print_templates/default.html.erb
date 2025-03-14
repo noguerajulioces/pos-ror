@@ -1,11 +1,11 @@
 <%# app/views/orders/print_templates/default.html.erb %>
 <% line_width = 48 %>
 
-<%= "PICCOLA ITALIA".center(line_width) %>
-<%= "JUAN CARLOS BARAN W".center(line_width) %>
-<%= "RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION".center(line_width) %>
+<%= Setting.company_name.center(line_width) %>
+<%= Setting.company_owner.center(line_width) %>
+<%= Setting.company_address.center(line_width) %>
 
-<%= "RUC: 855052-2".center(line_width) %>
+<%= "RUC: #{Setting.company_ruc}".center(line_width) %>
 
 <%= "=" * line_width %>
 
