@@ -1,0 +1,62 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Reportes</h1>
+      <p class="mt-2 text-sm text-gray-700">Lista de reportes disponibles en el sistema</p>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <%= link_to products_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+      <div class="flex-shrink-0">
+        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        <p class="text-sm font-medium text-gray-900">Reporte de Productos</p>
+        <p class="text-sm text-gray-500">Inventario y precios</p>
+      </div>
+    <% end %>
+
+    <%= link_to orders_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+      <div class="flex-shrink-0">
+        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        <p class="text-sm font-medium text-gray-900">Reporte de Órdenes</p>
+        <p class="text-sm text-gray-500">Ventas y facturación</p>
+      </div>
+    <% end %>
+
+    <%= link_to root_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+      <div class="flex-shrink-0">
+        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        <p class="text-sm font-medium text-gray-900">Reporte de Stock</p>
+        <p class="text-sm text-gray-500">Movimientos de inventario</p>
+      </div>
+    <% end %>
+
+    <%= link_to root_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+      <div class="flex-shrink-0">
+        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        <p class="text-sm font-medium text-gray-900">Reporte de Gastos</p>
+        <p class="text-sm text-gray-500">Gastos y categorías</p>
+      </div>
+    <% end %>
+  </div>
+</div>

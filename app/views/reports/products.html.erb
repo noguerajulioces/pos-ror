@@ -1,0 +1,175 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Reporte de Productos</h1>
+      <p class="mt-2 text-sm text-gray-700">Análisis detallado del inventario y rendimiento de productos</p>
+    </div>
+    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none space-x-3">
+      <%= link_to reports_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
+        </svg>
+        Volver
+      <% end %>
+      <%= link_to products_reports_path(format: :pdf), class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+        Exportar PDF
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Productos</dt>
+              <dd class="flex items-baseline">
+                <div class="text-md font-semibold text-gray-900"><%= @products.count %></div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Bajo Stock</dt>
+              <dd class="flex items-baseline">
+                <div class="text-md font-semibold text-gray-900">
+                  <%= @products.where('stock <= min_stock').count %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Productos Activos</dt>
+              <dd class="flex items-baseline">
+                <div class="text-md font-semibold text-gray-900">
+                  <%= @products.active.count %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Valor Total Inventario</dt>
+              <dd class="flex items-baseline">
+                <div class="text-md font-semibold text-gray-900">
+                  <%= number_to_currency(@products.sum('stock * average_cost'), unit: 'Gs. ', precision: 0, delimiter: '.') %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-300 sm:rounded-lg">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-300">
+        <thead>
+          <tr>
+            <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Producto</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Costo Promedio</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Margen</th>
+            <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @products.each do |product| %>
+            <tr>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
+                <div class="flex items-center">
+                  <div>
+                    <div class="font-medium text-gray-900"><%= product.name %></div>
+                    <div class="text-gray-500"><%= product.sku %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <%= product.category.name %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm">
+                <div class="flex items-center">
+                  <span class="<%= product.stock <= product.min_stock ? 'text-red-600' : 'text-gray-900' %>">
+                    <%= product.stock %> <%= product.unit.name %>
+                  </span>
+                </div>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                <%= number_to_currency(product.price, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                <%= number_to_currency(product.average_cost, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm">
+                <span class="<%= product.profit_margin_percentage > 0 ? 'text-green-600' : 'text-red-600' %>">
+                  <%= number_to_percentage(product.profit_margin_percentage, precision: 2) %>
+                </span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm">
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                  <%= case product.status
+                      when 'active' then 'bg-green-100 text-green-800'
+                      when 'inactive' then 'bg-gray-100 text-gray-800'
+                      when 'out_of_stock' then 'bg-red-100 text-red-800'
+                      end %>">
+                  <%= product.status.humanize %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

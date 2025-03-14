@@ -83,4 +83,12 @@ Rails.application.routes.draw do
   resource :settings, only: [ :edit ] do
     patch :update_all, on: :collection
   end
+  resources :reports, only: [:index] do
+    collection do
+      get :products
+      get :orders
+      get :stocks
+      get :expenses
+    end
+  end
 end

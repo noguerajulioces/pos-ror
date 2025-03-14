@@ -1,0 +1,16 @@
+<%- headers = ['Nombre', 'SKU', 'Categoría', 'Unidad', 'Stock', 'Stock Mínimo', 'Precio', 'Costo Promedio', 'Margen', 'Estado'] -%>
+<%= CSV.generate_line headers %>
+<%- @products.each do |product| -%>
+<%= CSV.generate_line([
+  product.name,
+  product.sku,
+  product.category.name,
+  product.unit.name,
+  product.stock,
+  product.min_stock,
+  product.price,
+  product.average_cost,
+  "#{number_to_percentage(product.profit_margin_percentage, precision: 2)}",
+  product.status.humanize
+]) %>
+<%- end -%>

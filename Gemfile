@@ -80,3 +80,5 @@ gem "friendly_id", "~> 5.5.1"
 gem "ransack"
 gem "to_words"
 gem "paranoia"
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
