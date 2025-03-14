@@ -2,22 +2,23 @@
 #
 # Table name: products
 #
-#  id           :bigint           not null, primary key
-#  average_cost :decimal(, )
-#  barcode      :string
-#  deleted_at   :datetime
-#  description  :text
-#  min_stock    :integer
-#  name         :string
-#  price        :decimal(, )
-#  sku          :string
-#  slug         :string
-#  status       :string
-#  stock        :integer
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  category_id  :bigint           not null
-#  unit_id      :bigint
+#  id                    :bigint           not null, primary key
+#  average_cost          :decimal(, )
+#  barcode               :string
+#  deleted_at            :datetime
+#  description           :text
+#  manual_purchase_price :decimal(, )
+#  min_stock             :integer
+#  name                  :string
+#  price                 :decimal(, )
+#  sku                   :string
+#  slug                  :string
+#  status                :string
+#  stock                 :integer
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  category_id           :bigint           not null
+#  unit_id               :bigint
 #
 # Indexes
 #

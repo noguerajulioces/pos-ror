@@ -24,4 +24,12 @@
 class PurchaseItem < ApplicationRecord
   belongs_to :product
   belongs_to :purchase
+
+  after_create :update_product_average_cost
+
+  private
+
+  def update_product_average_cost
+    product.update_average_cost(unit_price, quantity)
+  end
 end

@@ -2,22 +2,23 @@
 #
 # Table name: products
 #
-#  id           :bigint           not null, primary key
-#  average_cost :decimal(, )
-#  barcode      :string
-#  deleted_at   :datetime
-#  description  :text
-#  min_stock    :integer
-#  name         :string
-#  price        :decimal(, )
-#  sku          :string
-#  slug         :string
-#  status       :string
-#  stock        :integer
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  category_id  :bigint           not null
-#  unit_id      :bigint
+#  id                    :bigint           not null, primary key
+#  average_cost          :decimal(, )
+#  barcode               :string
+#  deleted_at            :datetime
+#  description           :text
+#  manual_purchase_price :decimal(, )
+#  min_stock             :integer
+#  name                  :string
+#  price                 :decimal(, )
+#  sku                   :string
+#  slug                  :string
+#  status                :string
+#  stock                 :integer
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  category_id           :bigint           not null
+#  unit_id               :bigint
 #
 # Indexes
 #
@@ -37,7 +38,8 @@ class Product < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
-  sanitize_numeric_attributes :price
+  # Add manual_purchase_price to sanitized attributes
+  sanitize_numeric_attributes :price, :manual_purchase_price
 
   belongs_to :category
   belongs_to :unit
@@ -61,7 +63,7 @@ class Product < ApplicationRecord
   scope :in_stock, -> { where(stock: 0..) }
 
   def update_average_cost(new_unit_price, new_quantity)
-    total_cost = (average_cost * stock) + (new_unit_price * new_quantity)
+    total_cost = (average_cost || 0 * stock) + (new_unit_price * new_quantity)
     new_stock = stock + new_quantity
     self.average_cost = total_cost / new_stock
     save
@@ -83,5 +85,18 @@ class Product < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     [ "category", "images", "inventory_movements", "purchases", "product_images", "unit", "variants" ]
+  end
+
+  def current_purchase_price
+    manual_purchase_price.presence || average_cost || 0
+  end
+
+  def profit_margin_percentage
+    return 0 if current_purchase_price.zero?
+    ((price - current_purchase_price) / current_purchase_price * 100).round(2)
+  end
+
+  def profit_per_unit
+    price - current_purchase_price
   end
 end
