@@ -1,4 +1,4 @@
-<%= form_with(model: purchase, class: "space-y-6") do |form| %>
+<%= form_with(model: purchase, class: "space-y-6", data: { controller: 'nested-form', nested_form_wrapper_selector_value: '.nested-form-wrapper' }) do |form| %>
   <% if purchase.errors.any? %>
     <div class="bg-red-50 p-4 rounded-md">
       <div class="flex">
@@ -42,10 +42,48 @@
             <%= form.label :supplier_id, "Proveedor", class: "block text-sm font-medium text-gray-700" %>
             <%= form.collection_select :supplier_id, Supplier.all, :id, :company_name, { include_blank: 'Seleccione un proveedor' }, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+      <div class="mt-5 md:mt-0 md:col-span-3">
+        <template data-nested-form-target="template">
+          <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
+            <%= render 'purchase_item_fields', f: item_form %>
+          <% end %>
+        </template>
+
+        <%= form.fields_for :purchase_items do |item_form| %>
+          <%= render 'purchase_item_fields', f: item_form %>
+        <% end %>
+
+        <!-- Inserted elements will be injected before that target -->
+        <div data-nested-form-target="target"></div>
+
+        <div class="mt-4">
+          <button type="button" 
+                  data-action="nested-form#add"
+                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Agregar Producto
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+      <div class="md:col-span-1">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Total</h3>
+      </div>
+      <div class="mt-5 md:mt-0 md:col-span-2">
+        <div class="grid grid-cols-6 gap-6">
           <div class="col-span-6 sm:col-span-3">
             <%= form.label :total_amount, "Monto Total", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.text_field :total_amount, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= form.text_field :total_amount, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6", id: "purchase_total_amount" %>
           </div>
         </div>
       </div>
@@ -57,3 +95,39 @@
     <%= form.submit purchase.new_record? ? "Crear Compra" : "Actualizar Compra", class: "rounded-md bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    // Function to calculate totals
+    function calculateTotals() {
+      let grandTotal = 0;
+      
+      // Loop through all purchase item rows
+      document.querySelectorAll('.nested-fields').forEach(function(item) {
+        const quantity = parseFloat(item.querySelector('.item-quantity').value) || 0;
+        const unitPrice = parseFloat(item.querySelector('.item-unit-price').value) || 0;
+        const totalPrice = quantity * unitPrice;
+        
+        // Update the total price field
+        item.querySelector('.item-total-price').value = totalPrice.toFixed(2);
+        
+        // Add to grand total
+        grandTotal += totalPrice;
+      });
+      
+      // Update the purchase total amount
+      document.getElementById('purchase_total_amount').value = grandTotal.toFixed(2);
+    }
+    
+    // Add event listener to the document for dynamically added elements
+    document.addEventListener('change', function(event) {
+      if (event.target.classList.contains('item-quantity') || 
+          event.target.classList.contains('item-unit-price')) {
+        calculateTotals();
+      }
+    });
+    
+    // Initial calculation
+    calculateTotals();
+  });
+</script>
