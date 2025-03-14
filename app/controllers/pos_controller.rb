@@ -34,7 +34,7 @@ class PosController < ApplicationController
   end
 
   def orders_modal
-    @orders = Order.order(created_at: :desc)
+    @orders = Order.on_hold.order(created_at: :desc)
     render partial: "orders_modal"
   end
 

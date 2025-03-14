@@ -18,7 +18,7 @@ CI/RUC: <%= order&.customer&.document || "00000000000" %>
 Cliente: <%= order&.customer&.full_name || "Cliente Genérico" %>
 
 <%= "=" * line_width %>
-Cant.   Descripción                  P.U.  P.T.
+Cant.   Descripcion                  P.U.  P.T.
 <%= "=" * line_width %>
 
 <% order.order_items.each do |item| %>
