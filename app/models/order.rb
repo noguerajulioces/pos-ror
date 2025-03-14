@@ -34,6 +34,8 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :order_payments, dependent: :destroy
 
+  default_scope { order(order_date: :desc) }
+
   # Define order statuses
   STATUSES = {
     on_hold: "on_hold",

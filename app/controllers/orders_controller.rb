@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
   before_action :set_order, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @orders = Order.includes(:user, :payment_method, :customer).order(created_at: :desc)
+    @orders = Order.includes(:user, :payment_method, :customer).paginate(page: params[:page], per_page: 15)
   end
 
   def show

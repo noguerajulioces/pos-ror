@@ -19,7 +19,6 @@
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cliente</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Total</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
@@ -32,16 +31,13 @@
               <% @orders.each do |order| %>
                 <tr>
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    <%= order.id %>
+                    #0<%= order.id %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= order.order_date.strftime("%d/%m/%Y %H:%M") %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= order.customer&.full_name || "Cliente Genérico" %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= display_order_type(order.order_type) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
@@ -80,3 +76,9 @@
     </div>
   </div>
 </div>
+
+<% if @orders.respond_to?(:total_pages) %>
+  <div class="mt-4 justify-center flex">
+    <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
+  </div>
+<% end %>
