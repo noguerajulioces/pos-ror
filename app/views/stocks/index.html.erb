@@ -8,6 +8,43 @@
       <%= link_to "Nuevo Producto", new_product_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
     </div>
   </div>
+
+  <%= search_form_for @q, url: stocks_path, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :name_cont, "Nombre", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :name_cont, 
+                placeholder: "Buscar por nombre",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.collection_select :category_id_eq,
+                Category.all,
+                :id,
+                :name,
+                { include_blank: "Todas las categorías" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :stock_lteq, "Stock menor o igual a", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.number_field :stock_lteq,
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", stocks_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
+  
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
