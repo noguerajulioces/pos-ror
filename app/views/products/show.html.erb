@@ -194,11 +194,10 @@
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Final</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notas</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <% @product.inventory_movements.order(created_at: :desc).limit(5).each do |movement| %>
+                <% @product.inventory_movements.order(created_at: :desc).limit(10).each do |movement| %>
                   <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <%= l movement.created_at, format: :short %>
@@ -214,9 +213,6 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <%= movement.final_stock %>
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                      <%= movement %>
                     </td>
                   </tr>
                 <% end %>
