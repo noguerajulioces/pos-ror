@@ -17,8 +17,8 @@ class PrintService
     # Construye el comando para invocar el script Node.js
     require "shellwords"
     script_path = Rails.root.join("scripts", "print.js").to_s
-    command = [ "sudo", "env", "PATH=#{ENV['PATH']}", "/home/user/.nvm/versions/node/v18.20.7/bin/node", script_path, temp_file.to_s ].shelljoin
-    Rails.logger.info "Ejecutando comando de impresión: #{command}"
+    command = [ "node", script_path, temp_file.to_s ].shelljoin
+
     pid = Process.spawn(command)
     Process.detach(pid)
     Rails.logger.info "Proceso de impresión iniciado en segundo plano (PID: #{pid})"
