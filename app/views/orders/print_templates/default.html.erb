@@ -1,11 +1,11 @@
 <%# app/views/orders/print_templates/default.html.erb %>
 <% line_width = 48 %>
 
-<%= Setting.company_name.center(line_width) %>
-<%= Setting.company_owner.center(line_width) %>
-<%= Setting.company_address.center(line_width) %>
+<%= Setting.get('company_name').to_s.center(line_width) %>
+<%= Setting.get('company_owner').to_s.center(line_width) %>
+<%= Setting.get('company_address').to_s.center(line_width) %>
 
-<%= "RUC: #{Setting.company_ruc}".center(line_width) %>
+<%= "RUC: #{Setting.get('company_ruc')}".center(line_width) %>
 
 <%= "=" * line_width %>
 
