@@ -10,7 +10,7 @@ class SubcategoriesController < ApplicationController
     if @subcategory.save
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.append('subcategory_list', partial: 'subcategories/subcategory', locals: { subcategory: @subcategory })
+          render turbo_stream: turbo_stream.append("subcategory_list", partial: "subcategories/subcategory", locals: { subcategory: @subcategory })
         end
         format.html { redirect_to categories_path, notice: "Subcategoría creada exitosamente." }
       end
