@@ -288,6 +288,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_130651) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at", precision: nil
+    t.index ["deleted_at"], name: "index_units_on_deleted_at"
   end
 
   create_table "users", force: :cascade do |t|
