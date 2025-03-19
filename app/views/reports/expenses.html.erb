@@ -1,0 +1,55 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center pb-5">
+    <h1 class="text-xl font-semibold">Reporte de Gastos</h1>
+  </div>
+
+  <!-- Filtro Simple -->
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <%= search_form_for @q, url: expenses_reports_path, class: "flex gap-4" do |f| %>
+      <%= f.date_field :expense_date_gteq, class: "rounded border-gray-300" %>
+      <%= f.date_field :expense_date_lteq, class: "rounded border-gray-300" %>
+      <%= f.submit "Filtrar", class: "px-4 py-2 bg-gray-100 rounded border" %>
+    <% end %>
+  </div>
+
+  <!-- Total -->
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <span class="text-gray-600">Total Gastos:</span>
+    <span class="text-xl font-bold ml-2">
+      <%= number_to_currency(@total, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+    </span>
+  </div>
+
+  <!-- Lista de Gastos -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Fecha</th>
+          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Categoría</th>
+          <th class="px-6 py-3 text-right text-sm font-medium text-gray-500">Monto</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @expenses.each do |expense| %>
+          <tr>
+            <td class="px-6 py-4 text-sm text-gray-900">
+              <%= l(expense.expense_date, format: :short) %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-900">
+              <%= expense.category %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-900 text-right">
+              <%= number_to_currency(expense.amount, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div class="mt-4">
+    <%= will_paginate @expenses %>
+  </div>
+</div>

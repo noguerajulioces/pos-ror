@@ -9,6 +9,56 @@
     </div>
   </div>
 
+  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :id_eq, "Número", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :id_eq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :customer_document_or_customer_first_name_or_customer_last_name_cont, "Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :customer_document_or_customer_first_name_or_customer_last_name_cont, 
+                placeholder: "Buscar por documento, nombre o apellido",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :status_eq, "Estado", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.select :status_eq, 
+                options_for_select([
+                  ['Todos', ''],
+                  ['Completado', Order::STATUSES[:completed]],
+                  ['En Espera', Order::STATUSES[:on_hold]],
+                  ['Cancelado', Order::STATUSES[:cancelled]]
+                ]), 
+                {}, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :order_date_gteq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :order_date_lteq, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", orders_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -19,7 +69,6 @@
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cliente</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Total</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
@@ -32,7 +81,7 @@
               <% @orders.each do |order| %>
                 <tr>
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    <%= order.id %>
+                    #0<%= order.id %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= order.order_date.strftime("%d/%m/%Y %H:%M") %>
@@ -40,10 +89,7 @@
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= order.customer&.full_name || "Cliente Genérico" %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= order.order_type || "N/A" %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-semibold">
                     ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
@@ -62,12 +108,14 @@
                     <%= order.payment_method.name %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", order_path(order), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <%= link_to "Editar", edit_order_path(order), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <%= link_to "Pago", new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900 mr-2" %>
-                    <%= link_to "Cancelar", order_path(order), 
-                        data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                        class: "text-red-600 hover:text-red-900" %>
+                    <div class="flex justify-end space-x-2">
+                      <%= link_to "Ver", order_path(order), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Imprimir", print_message_path(order_id: order.id), data: { turbo_prefetch: false }, class: "text-indigo-600 hover:text-green-900", form: { class: "inline" }, form_class: "inline" %>
+                      <%#= link_to "Pago", new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900" %>
+                      <%= link_to "Cancelar", order_path(order), 
+                          data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
+                          class: "text-red-600 hover:text-red-900" %>
+                    </div>
                   </td>
                 </tr>
               <% end %>
@@ -78,3 +126,9 @@
     </div>
   </div>
 </div>
+
+<% if @orders.respond_to?(:total_pages) %>
+  <div class="mt-4 justify-center flex">
+    <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
+  </div>
+<% end %>

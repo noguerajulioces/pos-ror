@@ -9,6 +9,55 @@
     </div>
   </div>
 
+  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :description_cont, "Descripción", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :description_cont, 
+                placeholder: "Buscar por descripción",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :category_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.select :category_eq,
+              Expense.categories.keys.map { |k| [I18n.t("activerecord.attributes.expense.categories.#{k}", default: k.humanize), k] },
+                { include_blank: "Todas las categorías" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :payment_method_id_eq, "Método de Pago", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.collection_select :payment_method_id_eq,
+                PaymentMethod.all,
+                :id,
+                :name,
+                { include_blank: "Todos los métodos" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :expense_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :expense_date_gteq,
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :expense_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :expense_date_lteq,
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", expenses_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -21,7 +70,6 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Monto</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Proveedor</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Referencia</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -36,28 +84,28 @@
                     <%= index %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= l(expense.date, format: :short) %>
+                    <%= l(expense.expense_date) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= number_to_currency(expense.amount) %>
+                    <%= number_to_currency(expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.description %>
+                    <%= truncate(sanitize(expense.description), length: 100, separator: ' ', omission: '...', word_count: 20) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.category %>
+                    <% if expense.category.present? %>
+                      <%= t("activerecord.attributes.expense.categories.#{expense.category}", default: expense.category&.humanize) %>
+                    <% else %>
+                      <span class="text-gray-400">-</span>
+                    <% end %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.supplier&.company_name || "-" %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.payment_method %>
+                    <%= expense.payment_method&.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <%= expense.reference_number || "-" %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", expense_path(expense), class: "text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Editar", edit_expense_path(expense), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Eliminar", expense_path(expense), 
                         data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 

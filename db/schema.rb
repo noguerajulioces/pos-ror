@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_130651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,12 +93,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.decimal "amount"
     t.text "description"
     t.date "expense_date"
-    t.bigint "purchase_id", null: false
+    t.bigint "purchase_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "payment_method_id", null: false
+    t.bigint "payment_method_id"
+    t.string "category"
+    t.string "reference_number"
+    t.index ["category"], name: "index_expenses_on_category"
     t.index ["payment_method_id"], name: "index_expenses_on_payment_method_id"
     t.index ["purchase_id"], name: "index_expenses_on_purchase_id"
+    t.index ["reference_number"], name: "index_expenses_on_reference_number"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -143,6 +147,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.bigint "payment_method_id", null: false
     t.string "reference_number"
     t.text "notes"
+    t.string "status"
     t.index ["order_id"], name: "index_order_payments_on_order_id"
     t.index ["payment_method_id"], name: "index_order_payments_on_payment_method_id"
   end
@@ -208,7 +213,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.decimal "average_cost"
     t.bigint "unit_id"
     t.string "slug"
+    t.datetime "deleted_at"
+    t.decimal "manual_purchase_price"
     t.index ["category_id"], name: "index_products_on_category_id"
+    t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["slug"], name: "index_products_on_slug", unique: true
     t.index ["unit_id"], name: "index_products_on_unit_id"
   end
@@ -226,11 +234,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
   end
 
   create_table "purchases", force: :cascade do |t|
-    t.string "supplier"
     t.date "purchase_date"
     t.decimal "total_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "supplier_id"
+    t.index ["supplier_id"], name: "index_purchases_on_supplier_id"
   end
 
   create_table "sale_items", force: :cascade do |t|
@@ -249,6 +258,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.decimal "total_amount"
     t.string "payment_method"
     t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.string "var"
+    t.text "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -272,6 +288,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at", precision: nil
+    t.index ["deleted_at"], name: "index_units_on_deleted_at"
   end
 
   create_table "users", force: :cascade do |t|
@@ -306,6 +324,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_12_215830) do
   add_foreign_key "products", "units"
   add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
+  add_foreign_key "purchases", "suppliers"
   add_foreign_key "sale_items", "products"
   add_foreign_key "sale_items", "sales"
 end

@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   root "home#index"
-  devise_for :users
+  devise_for :users, skip: [ :registrations, :passwords ], path_names: { sign_in: "login", sign_out: "logout" }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -18,17 +18,19 @@ Rails.application.routes.draw do
   end
   resources :products do
     resources :product_images, only: [ :destroy ]
+    resources :stock_adjustments, only: [ :new, :create ], module: "products"
   end
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]
   resources :customers do
     collection do
-      get "search"
+      get :search
+      post :create_form
     end
   end
   resources :suppliers
   resources :users
-  resources :expenses
+  resources :expenses, except: [ :show ]
   resources :currencies
   resource :pos, only: [ :show ]
   patch "pos/update_order_type", to: "pos#update_order_type"
@@ -74,4 +76,20 @@ Rails.application.routes.draw do
   # resources :orders do
   #   resources :order_payments, shallow: true
   # end
+  # Add this line with your other POS routes
+  post "pos/process_payment", to: "pos#process_payment", as: :process_payment_pos
+  get "pos/payment_modal", to: "pos#payment_modal"
+  get "print_message", to: "print#print_message"
+  resources :purchases
+  resource :settings, only: [ :edit ] do
+    patch :update_all, on: :collection
+  end
+  resources :reports, only: [ :index ] do
+    collection do
+      get :products
+      get :orders
+      get :stocks
+      get :expenses
+    end
+  end
 end

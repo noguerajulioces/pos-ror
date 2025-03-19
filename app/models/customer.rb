@@ -22,6 +22,7 @@
 #  index_customers_on_email  (email) UNIQUE
 #
 class Customer < ApplicationRecord
+  has_many :orders, dependent: :destroy
   # Validaciones para asegurar la integridad de los datos
   validates :first_name, :last_name, presence: true
   validates :document, presence: true, uniqueness: true

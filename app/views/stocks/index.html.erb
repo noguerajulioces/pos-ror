@@ -8,6 +8,43 @@
       <%= link_to "Nuevo Producto", new_product_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
     </div>
   </div>
+
+  <%= search_form_for @q, url: stocks_path, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :name_cont, "Nombre", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :name_cont, 
+                placeholder: "Buscar por nombre",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.collection_select :category_id_eq,
+                Category.all,
+                :id,
+                :name,
+                { include_blank: "Todas las categorías" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :stock_lteq, "Stock menor o igual a", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.number_field :stock_lteq,
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", stocks_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
+  
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -22,7 +59,7 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Min</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Acciones</span>
                 </th>
@@ -30,43 +67,38 @@
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <% @stocks.each.with_index(1) do |product, index| %>
-                <tr>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                <tr class="<%= stock_status_class(product) %>">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= product.stock <= product.min_stock ? 'text-red-900' : 'text-gray-900' %> sm:pl-6">
                     <%= index %>
                   </td>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= product.stock <= product.min_stock ? 'text-red-900' : 'text-gray-900' %> sm:pl-6">
                     <% if product.images.any? && product.images.first.image.attached? %>
                       <%= image_tag product.images.first.image.variant(resize_to_fill: [100, 100]), alt: product.name, class: 'shadow-md rounded-md' %>
                     <% else %>
                       <span>-</span>
                     <% end %>
                   </td>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= product.stock <= product.min_stock ? 'text-red-900' : 'text-gray-900' %> sm:pl-6">
                     <%= product.sku %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
                     <%= product.name %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
                     <%= product.category.name %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
                     <%= number_to_currency(product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-semibold <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
                     <%= product.stock %>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm">
-                    <span class="<%= product.status == 'active' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                      <%= product.status == 'active' ? 'Activo' : 'Inactivo' %>
-                    </span>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
+                    <%= product.min_stock %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Eliminar", product_path(product), 
-                        data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                        class: "ml-2 text-red-600 hover:text-red-900" %>
                   </td>
                 </tr>
               <% end %>

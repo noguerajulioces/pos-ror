@@ -4,17 +4,21 @@
 #
 #  id                :bigint           not null, primary key
 #  amount            :decimal(, )
+#  category          :string
 #  description       :text
 #  expense_date      :date
+#  reference_number  :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  payment_method_id :bigint           not null
-#  purchase_id       :bigint           not null
+#  payment_method_id :bigint
+#  purchase_id       :bigint
 #
 # Indexes
 #
+#  index_expenses_on_category           (category)
 #  index_expenses_on_payment_method_id  (payment_method_id)
 #  index_expenses_on_purchase_id        (purchase_id)
+#  index_expenses_on_reference_number   (reference_number)
 #
 # Foreign Keys
 #

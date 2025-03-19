@@ -2,7 +2,8 @@ class ProductsController < ApplicationController
   before_action :set_product, only: %i[show edit update destroy]
 
   def index
-    @products = Product.includes(:category).paginate(page: params[:page])
+    @q = Product.ransack(params[:q])
+    @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
   end
 
   def show
@@ -15,11 +16,14 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
 
-    if @product.save
-      attach_image if params[:product][:image].present?
-      redirect_to @product, notice: "Producto creado exitosamente."
-    else
-      render :new, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      if @product.save
+        StockManager.create_initial_stock(@product)
+        attach_image if params[:product][:image].present?
+        redirect_to @product, notice: "Producto creado exitosamente."
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 
@@ -36,8 +40,9 @@ class ProductsController < ApplicationController
   end
 
   def destroy
-    @product.destroy
-    redirect_to products_path, notice: "Producto eliminado exitosamente."
+    @product.status = "inactive"
+    @product.save!
+    redirect_to products_path, notice: "Producto inactivado exitosamente."
   end
 
   private
@@ -51,6 +56,7 @@ class ProductsController < ApplicationController
   def product_params
     params.require(:product).permit(
       :name, :sku, :category_id, :unit_id, :price, :stock, :min_stock, :description,
+      :manual_purchase_price, :average_cost, :barcode,
       variants_attributes: [ :id, :name, :sku, :price, :stock, :_destroy ]
     )
   end

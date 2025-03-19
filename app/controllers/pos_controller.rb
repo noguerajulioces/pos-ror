@@ -34,7 +34,7 @@ class PosController < ApplicationController
   end
 
   def orders_modal
-    @orders = Order.order(created_at: :desc)
+    @orders = Order.on_hold.order(created_at: :desc)
     render partial: "orders_modal"
   end
 
@@ -180,6 +180,10 @@ class PosController < ApplicationController
     session[:discount] = 0
     session[:discount_percentage] = nil
 
+    # Reset Customers
+    session[:customer_name] = nil
+    session[:customer_id] = nil
+
     # Calculate new totals
     totals = calculate_cart_totals
 
@@ -204,7 +208,7 @@ class PosController < ApplicationController
       format.json {
         render json: {
           success: true,
-          message: "Cart cleared successfully",
+          message: "Carrito borrado exitosamente",
           totals: totals,
           discount_label: discount_label
         }
@@ -307,6 +311,10 @@ class PosController < ApplicationController
     render partial: "cash_register_modal"
   end
 
+  def payment_modal
+    render partial: "payment_modal"
+  end
+
   def discount_modal
     # Simple action to render the discount modal
     render partial: "discount_modal"
@@ -360,6 +368,36 @@ class PosController < ApplicationController
     }
   end
 
+  def process_payment
+    result = Orders::CreateService.new(
+      cart: session[:cart],
+      params: payment_params,
+      current_user: current_user,
+      session: session
+    ).call
+
+    if result[:success]
+
+      PrintService.print_order(result[:order_id])
+
+      # Clear the cart and other session data
+      session[:cart] = []
+      session[:discount] = 0
+      session[:discount_percentage] = nil
+      session[:discount_reason] = nil
+      session[:customer_id] = nil
+      session[:customer_name] = nil
+
+      respond_to do |format|
+        format.html { redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to pos_path, alert: result[:error] || "Error al procesar el pago" }
+      end
+    end
+  end
+
   private
 
   # Helper method to adjust discount based on cart changes
@@ -407,15 +445,15 @@ class PosController < ApplicationController
     # Calculate subtotal
     subtotal = cart.sum { |item| item["price"].to_f * item["quantity"].to_i }
 
-    # Calculate IVA (10%)
-    iva = subtotal * 0.10
-
     # Get discount from session or default to 0
     discount = session[:discount].to_f || 0
 
     # Calculate total
-    # total = subtotal + iva - discount
+    # total = subtotal - discount
     total = subtotal - discount
+
+    # Calculate IVA (10%)
+    iva = total * 0.10
 
     {
       subtotal: subtotal,
@@ -423,5 +461,9 @@ class PosController < ApplicationController
       discount: discount,
       total: total
     }
+  end
+
+  def payment_params
+    params.permit(:payment_method_id, :status, :customer_id, :order_type, :amount_received, :change_amount)
   end
 end

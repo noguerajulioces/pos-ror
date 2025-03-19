@@ -14,7 +14,7 @@ class SuppliersController < ApplicationController
   def create
     @supplier = Supplier.new(supplier_params)
     if @supplier.save
-      redirect_to @supplier, notice: "Proveedor creado exitosamente."
+      redirect_to suppliers_path, notice: "Proveedor creado exitosamente."
     else
       render :new, status: :unprocessable_entity
     end

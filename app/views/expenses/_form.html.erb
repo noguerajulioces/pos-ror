@@ -19,13 +19,19 @@
   <div class="px-4 py-6 sm:p-8">
     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       <div class="sm:col-span-3">
-        <%= f.label :date, "Fecha", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.date_field :date, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.label :expense_date, "Fecha", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= f.date_field :expense_date, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
       <div class="sm:col-span-3">
         <%= f.label :amount, "Monto", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.number_field :amount, step: '0.01', class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.text_field :amount, 
+        data: {
+                  controller: "number-format",
+                  "number-format-target": "input",
+                  action: "input->number-format#formatNumber"
+                },
+        class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
       <div class="sm:col-span-6">
@@ -33,36 +39,20 @@
         <%= f.text_area :description, rows: 3, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
-      <div class="sm:col-span-3">
+      <div class="sm:col-span-2">
         <%= f.label :category, "Categoría", class: "block text-sm/6 font-medium text-gray-900" %>
         <%= f.select :category, 
-            [
-              ['Suministros de Oficina', 'Suministros de Oficina'],
-              ['Servicios Públicos', 'Servicios Públicos'],
-              ['Alquiler', 'Alquiler'],
-              ['Salarios', 'Salarios'],
-              ['Mantenimiento', 'Mantenimiento'],
-              ['Publicidad', 'Publicidad'],
-              ['Transporte', 'Transporte'],
-              ['Otros', 'Otros']
-            ],
+            Expense.categories.keys.map { |k| [I18n.t("activerecord.attributes.expense.categories.#{k}", default: k.humanize), k] },
             { include_blank: 'Seleccione una categoría' },
             class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
-      <div class="sm:col-span-3">
-        <%= f.label :supplier_id, "Proveedor", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.collection_select :supplier_id, Supplier.all, :id, :company_name, 
-            { include_blank: 'Seleccione un proveedor' },
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-      </div>
-
-      <div class="sm:col-span-3">
+      <div class="sm:col-span-2">
         <%= f.label :payment_method_id, "Método de Pago", class: "block text-sm/6 font-medium text-gray-900" %>
         <%= f.collection_select :payment_method_id, PaymentMethod.active, :id, :name, { include_blank: 'Seleccione un método de pago' }, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
-      <div class="sm:col-span-3">
+      <div class="sm:col-span-2">
         <%= f.label :reference_number, "Número de Referencia", class: "block text-sm/6 font-medium text-gray-900" %>
         <%= f.text_field :reference_number, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>

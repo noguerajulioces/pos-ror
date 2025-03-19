@@ -25,14 +25,14 @@
     <div>
       <%= form.label :name, "Nombre", class: "block text-sm font-medium text-gray-700" %>
       <div class="mt-2">
-        <%= form.text_field :name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= form.text_field :name, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
     </div>
 
     <div>
       <%= form.label :code, "Código", class: "block text-sm font-medium text-gray-700" %>
       <div class="mt-2">
-        <%= form.text_field :code, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= form.text_field :code, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
       <p class="mt-1 text-xs text-gray-500">Ejemplo: USD, EUR, PYG</p>
     </div>
@@ -40,7 +40,7 @@
     <div>
       <%= form.label :symbol, "Símbolo", class: "block text-sm font-medium text-gray-700" %>
       <div class="mt-2">
-        <%= form.text_field :symbol, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= form.text_field :symbol, required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
       <p class="mt-1 text-xs text-gray-500">Ejemplo: $, €, ₲</p>
     </div>
@@ -48,7 +48,7 @@
     <div>
       <%= form.label :exchange_rate, "Tipo de Cambio", class: "block text-sm font-medium text-gray-700" %>
       <div class="mt-2">
-        <%= form.number_field :exchange_rate, step: "0.01", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= form.number_field :exchange_rate, step: "0.01", required: true, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
       <p class="mt-1 text-xs text-gray-500">Valor en Guaraníes (PYG)</p>
     </div>
@@ -56,7 +56,7 @@
     <div>
       <%= form.label :flag_url, "URL de la Bandera", class: "block text-sm font-medium text-gray-700" %>
       <div class="mt-2">
-        <%= form.text_field :flag_url, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= form.text_field :flag_url, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6", required: true %>
       </div>
       <p class="mt-1 text-xs text-gray-500">Ejemplo: https://flagcdn.com/w20/us.png</p>
     </div>

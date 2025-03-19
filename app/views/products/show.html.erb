@@ -1,41 +1,144 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Detalles del Producto</h1>
-      <p class="mt-2 text-sm text-gray-700">Información detallada del producto y su inventario</p>
-    </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Editar", edit_product_path(@product), class: "rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-      <%= link_to "Volver", products_path, class: "ml-4 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50" %>
+  <!-- Header Info -->
+  <div class="mb-8">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900"><%= @product.name %></h1>
+        <div class="mt-2 flex items-center gap-4">
+          <span class="<%= @product.active? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> px-3 py-1 rounded-full text-sm font-medium">
+            <%= @product.status.humanize %>
+          </span>
+          <span class="text-sm text-gray-500">SKU: <%= @product.sku %></span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <%= link_to edit_product_path(@product), class: "rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" do %>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Editar
+          </div>
+        <% end %>
+        <%= link_to new_product_stock_adjustment_path(@product), class: "rounded-md bg-yellow-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500" do %>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Ajustar Stock
+          </div>
+        <% end %>
+        <%= link_to products_path, class: "rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Volver
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
-  <!-- General Information -->
-  <div class="mt-8">
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-6 sm:px-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Información General</h3>
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column: Image and Details -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Product Image -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <% if @product.images.any? %>
+          <%= image_tag @product.images.first.image, class: "w-full h-auto object-contain p-4" %>
+        <% else %>
+          <div class="aspect-[3/2] flex items-center justify-center bg-gray-100">
+            <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        <% end %>
       </div>
-      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Column 1 -->
-          <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Nombre</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
-            </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">SKU</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.sku %></dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Código de Barras</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.barcode %></dd>
-            </div>
-          </dl>
+    </div>
 
-          <!-- Column 2 -->
+    <!-- Right Column: Metrics and Charts -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Key Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Price Card -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-gray-500">Precio de Venta</div>
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-gray-900">
+            <%= number_to_currency(@product.price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+          </div>
+        </div>
+
+        <!-- Cost Card -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-gray-500">Costo Actual</div>
+            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-gray-900">
+            <%= number_to_currency(@product.current_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            <%= @product.manual_purchase_price.present? ? "Precio manual" : "Costo promedio" %>
+          </div>
+        </div>
+
+        <!-- Profit Card -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-gray-500">Ganancia por Unidad</div>
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <div class="mt-2">
+            <span class="text-2xl font-bold <%= @product.profit_per_unit > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_currency(@product.profit_per_unit, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            </span>
+          </div>
+          <div class="mt-1">
+            <span class="text-sm <%= @product.profit_margin_percentage > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_percentage(@product.profit_margin_percentage, precision: 2) %>
+            </span>
+          </div>
+        </div>
+
+        <!-- Stock Card -->
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-gray-500">Stock Actual</div>
+            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-gray-900">
+            <%= @product.stock %>
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            Mínimo: <%= @product.min_stock %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <!-- Additional Details -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Product Details -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-5 sm:px-6">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Detalles del Producto</h3>
+        </div>
+        <div class="border-t border-gray-200">
           <dl>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Categoría</dt>
@@ -49,93 +152,98 @@
             </div>
             <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Unidad</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.unit.name %></dd>
+              <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+                <% if @product&.unit.present? %>
+                  <span class="text-gray-900"><%= @product.unit.name %></span>
+                <% else %>
+                  <span class="text-red-600 font-medium">No tinen asignado una unidad</span>
+                <% end %>
+              </dd>
             </div>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Código de Barras</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                <div class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <%= @product.barcode %>
+                </div>
+              </dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Descripción</dt>
               <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.description %></dd>
             </div>
           </dl>
         </div>
       </div>
-  </div>
 
-  <!-- Inventory Information -->
-  <div class="mt-8">
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-6 sm:px-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Información de Inventario</h3>
-      </div>
-      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Column 1 -->
-          <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Precio</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.price) %></dd>
-            </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Costo Promedio</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.average_cost) %></dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Estado</dt>
-              <dd class="mt-1 sm:col-span-2 sm:mt-0">
-                <span class="<%= @product.active? ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                  <%= @product.status.humanize %>
-                </span>
-              </dd>
-            </div>
-          </dl>
-
-          <!-- Column 2 -->
-          <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Stock Actual</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.stock %></dd>
-            </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt class="text-sm font-medium text-gray-500">Stock Mínimo</dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0"><%= @product.min_stock %></dd>
-            </div>
-          </dl>
+      <!-- Stock History Chart Placeholder -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Historial de Stock</h3>
+        <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+          <!-- Add your chart component here -->
+          <div class="text-gray-500 text-sm">
+            Aquí puedes integrar un gráfico de movimientos de stock
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Images Information -->
+  <!-- Recent Movements -->
   <div class="mt-8">
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-6 sm:px-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Imágenes del Producto</h3>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Movimientos Recientes</h3>
+        <span class="text-sm text-gray-500">Últimos 30 días</span>
       </div>
-      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-        <% if @product.images.any? %>
-          <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            <% @product.images.order(position: :asc).each do |product_image| %>
-              <div class="relative group">
-                <%= image_tag product_image.image, 
-                    class: "h-48 w-full object-cover rounded-lg",
-                    alt: product_image.alt_text %>
-                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
-                  <div class="text-white text-sm">
-                    <%= product_image.alt_text %>
-                  </div>
-                </div>
-                <%= button_to product_product_image_path(@product, product_image), 
-                    method: :delete, 
-                    form: { data: { turbo_confirm: "¿Estás seguro de que deseas eliminar esta imagen?" } },
-                    class: "absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 shadow-md hover:bg-red-700 focus:outline-none" do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+      <div class="border-t border-gray-200">
+        <% if @product.inventory_movements.any? %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Final</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <% @product.inventory_movements.order(created_at: :desc).limit(10).each do |movement| %>
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= l movement.created_at, format: :short %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        <%= movement.quantity.positive? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                        <%= movement.quantity.positive? ? 'Entrada' : 'Salida' %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= movement.quantity.abs %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= movement.final_stock %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= truncate(movement.reason, length: 50) %>
+                    </td>
+                  </tr>
                 <% end %>
-              </div>
-            <% end %>
+              </tbody>
+            </table>
           </div>
         <% else %>
-          <p class="text-sm text-gray-500">No hay imágenes disponibles para este producto.</p>
+          <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p class="mt-2 text-sm text-gray-500">No hay movimientos registrados</p>
+          </div>
         <% end %>
       </div>
     </div>

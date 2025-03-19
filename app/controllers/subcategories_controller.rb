@@ -9,11 +9,25 @@ class SubcategoriesController < ApplicationController
     @subcategory = @category.subcategories.new(subcategory_params)
     if @subcategory.save
       respond_to do |format|
-        format.turbo_stream
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.append('subcategory_list', partial: 'subcategories/subcategory', locals: { subcategory: @subcategory })
+        end
         format.html { redirect_to categories_path, notice: "Subcategoría creada exitosamente." }
       end
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @subcategory = @category.subcategories.find(params[:id])
+    @subcategory.destroy
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove(@subcategory)
+      end
+      format.html { redirect_to categories_path, notice: "Subcategoría eliminada exitosamente." }
     end
   end
 

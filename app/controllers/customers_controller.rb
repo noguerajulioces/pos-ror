@@ -2,7 +2,8 @@ class CustomersController < ApplicationController
   before_action :set_customer, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @customers = Customer.all.paginate(page: params[:page], per_page: 10)
+    @q = Customer.ransack(params[:q])
+    @customers = @q.result(distinct: true).paginate(page: params[:page], per_page: 10)
   end
 
   def show
@@ -46,6 +47,18 @@ class CustomersController < ApplicationController
         }
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def create_form
+    @customer = Customer.new(customer_params)
+
+    respond_to do |format|
+      if @customer.save
+        format.html { redirect_to customer_url(@customer), notice: "Cliente creado con éxito." }
+      else
+        format.html { render :new, status: :unprocessable_entity }
       end
     end
   end

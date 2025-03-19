@@ -21,4 +21,8 @@ class Supplier < ApplicationRecord
   validates :company_name, :document, presence: true
   validates :document, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    [ "address", "company_name", "contact_name", "created_at", "document", "email", "id", "id_value", "notes", "phone", "updated_at" ]
+  end
 end

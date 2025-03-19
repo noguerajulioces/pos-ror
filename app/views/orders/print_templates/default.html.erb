@@ -1,0 +1,49 @@
+<%# app/views/orders/print_templates/default.html.erb %>
+<% line_width = 48 %>
+
+<%= Setting.get('company_name').to_s.center(line_width) %>
+<%= Setting.get('company_owner').to_s.center(line_width) %>
+<%= Setting.get('company_address').to_s.center(line_width) %>
+
+<%= "RUC: #{Setting.get('company_ruc')}".center(line_width) %>
+
+<%= "=" * line_width %>
+
+<%= "RECIBO DE DINERO".center(line_width) %>
+
+Fecha: <%= order.order_date.strftime("%d/%m/%Y") %>  Hora: <%= order.order_date.strftime("%H:%M") %>
+
+<%= "=" * line_width %>
+CI/RUC: <%= order&.customer&.document || "00000000000" %>
+Cliente: <%= order&.customer&.full_name || "Cliente Genérico" %>
+
+<%= "=" * line_width %>
+Cant.   Descripcion                  P.U.  P.T.
+<%= "=" * line_width %>
+
+<% order.order_items.each do |item| %>
+  <% desc = item.product.name[0,25].ljust(25) %>
+  <% cant = item.quantity.to_s.ljust(5) %>
+  <% pu   = sprintf("%.0f", item.price).rjust(6) %>
+  <% pt   = sprintf("%.0f", item.quantity * item.price).rjust(6) %>
+  <%= "#{cant} #{desc} #{number_to_currency(pu, unit: "Gs. ", precision: 0, delimiter: '.')} #{number_to_currency(pt, unit: "Gs. ", precision: 0, delimiter: '.')}\n" %>
+<% end %>
+
+<%= "=" * line_width %>
+Total a Abonar: <%= number_to_currency(order.total_amount, unit: "Gs. ", precision: 0, delimiter: '.') %>
+<%= "=" * line_width %>
+Total Grav. 10% : <%= number_to_currency(order.total_amount * 0.1, unit: "Gs. ", precision: 0, delimiter: '.', separator: ',') %>
+<%= "=" * line_width %>
+
+Atendido por: <%= order.user.name %>
+<%= "=" * line_width %>
+
+<% Currency.where(display: true).each do |currency| %>
+  <%= currency.name %> (<%= currency.symbol %>): <%= number_to_currency(currency.convert_from_guarani(order.total_amount), unit: "#{currency.symbol} ", precision: 2, delimiter: '.') %>
+<% end %>
+
+<%= "=" * line_width %>
+
+<%= "***¡Gracias por su compra!***".center(line_width) %>
+<%= "=" * line_width %>
+

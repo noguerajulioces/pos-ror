@@ -31,8 +31,19 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-    @category.destroy
-    redirect_to categories_path, notice: "Categoría eliminada con éxito."
+    begin
+      if @category.subcategories.any?
+        redirect_to categories_path, alert: "No se puede eliminar una categoría con subcategorías."
+      elsif @category.products.any?
+        redirect_to categories_path, alert: "No se puede eliminar una categoría con productos asociados."
+      else
+        @category.destroy
+        redirect_to categories_path, notice: "Categoría eliminada con éxito."
+      end
+    rescue => e
+      Rails.logger.error("Error al eliminar categoría: #{e.message}")
+      redirect_to categories_path, alert: "No se pudo eliminar la categoría. #{e.message}"
+    end
   end
 
   private

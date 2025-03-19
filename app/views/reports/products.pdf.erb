@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .stats-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
+    .stat-box { 
+      padding: 15px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      width: 23%;
+    }
+    .stat-label { color: #6b7280; font-size: 14px; }
+    .stat-value { font-size: 18px; font-weight: bold; margin-top: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th { 
+      background-color: #4f46e5;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+    td { 
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .product-name { font-weight: bold; }
+    .product-sku { color: #6b7280; font-size: 12px; }
+    .low-stock { color: #dc2626; }
+    .positive-margin { color: #059669; }
+    .negative-margin { color: #dc2626; }
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+    }
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-inactive { background: #f3f4f6; color: #374151; }
+    .status-out_of_stock { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Reporte de Productos</h1>
+    <p>Generado el <%= l(Date.current, format: :long) %></p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-label">Total Productos</div>
+      <div class="stat-value"><%= @products.count %></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Bajo Stock</div>
+      <div class="stat-value"><%= @products.where('stock <= min_stock').count %></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Productos Activos</div>
+      <div class="stat-value"><%= @products.active.count %></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Valor Total Inventario</div>
+      <div class="stat-value">
+        <%= number_to_currency(@products.sum('stock * average_cost'), unit: 'Gs. ', precision: 0, delimiter: '.') %>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Categoría</th>
+        <th>Stock</th>
+        <th>Precio</th>
+        <th>Costo Promedio</th>
+        <th>Margen</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td>
+            <div class="product-name"><%= product.name %></div>
+            <div class="product-sku"><%= product.sku %></div>
+          </td>
+          <td><%= product.category.name %></td>
+          <td class="<%= 'low-stock' if product.stock <= product.min_stock %>">
+            <%= product.stock %> <%= product.unit.name %>
+          </td>
+          <td>
+            <%= number_to_currency(product.price, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+          </td>
+          <td>
+            <%= number_to_currency(product.average_cost, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+          </td>
+          <td class="<%= product.profit_margin_percentage > 0 ? 'positive-margin' : 'negative-margin' %>">
+            <%= number_to_percentage(product.profit_margin_percentage, precision: 2) %>
+          </td>
+          <td>
+            <span class="status-badge status-<%= product.status %>">
+              <%= product.status.humanize %>
+            </span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>
+</html>

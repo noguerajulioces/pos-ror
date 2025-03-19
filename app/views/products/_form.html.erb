@@ -31,14 +31,14 @@
       </div>
 
       <div class="col-span-1">
-        <%= form.label :unit_id, "Unidad de Medida", class: "block text-sm font-medium text-gray-900" %>
+        <%= form.label :unit_id, "Unidad de Medida", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.collection_select :unit_id, Unit.all, :id, :name, { prompt: "Selecciona una unidad" },
-              class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-2.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
 
-      <div class="col-span-1" data-controller="image-preview">
+      <div class="col-span-2" data-controller="image-preview">
         <label for="product_image" class="block text-sm font-medium text-gray-900">
           Imagen de Producto
         </label>
@@ -94,7 +94,7 @@
         <div class="mt-2">
           <%= form.collection_select :category_id, Category.where.not(parent_id: nil), :id, :name, 
               { prompt: "Selecciona una categoría" }, 
-              class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+              class: "block w-full rounded-md bg-white px-3 py-2.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
 
@@ -107,7 +107,22 @@
                   "number-format-target": "input",
                   action: "input->number-format#formatNumber"
                 },
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6", required: true%>
+        </div>
+      </div>
+
+      <div class="col-span-1">
+        <%= form.label :manual_purchase_price, "Precio de Compra Manual", class: "block text-sm/6 font-medium text-gray-900" %>
+        <div class="mt-2">
+          <%= form.text_field :manual_purchase_price,
+            data: {
+                  controller: "number-format",
+                  "number-format-target": "input",
+                  action: "input->number-format#formatNumber"
+                },
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+            required: true
+             %>
         </div>
       </div>
 

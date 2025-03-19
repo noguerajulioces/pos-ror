@@ -1,0 +1,61 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Ajuste de Stock</h1>
+    </div>
+    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+      <%= link_to product_path(@product), class: "rounded-md bg-white text-sm font-semibold leading-6 text-gray-900" do %>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-300 sm:rounded-lg">
+    <div class="p-6">
+      <div class="flex items-center gap-x-4 mb-6 bg-indigo-50 p-4 rounded-lg">
+        <div class="flex-shrink-0">
+          <svg class="w-12 h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-medium text-gray-900"><%= @product.name %></h2>
+          <p class="text-gray-500">Stock Actual: <span class="font-medium"><%= @current_stock %></span></p>
+        </div>
+      </div>
+
+      <%= form_tag product_stock_adjustments_path(@product), method: :post do %>
+        <div class="space-y-6 divide-y divide-gray-200">
+          <div class="space-y-6">
+            <div>
+              <%= label_tag :quantity, "Cantidad de Ajuste", class: "block text-sm font-medium text-gray-700" %>
+              <%= number_field_tag :quantity, nil, 
+                  class: "mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6", 
+                  placeholder: "Use números negativos para reducir stock" %>
+            </div>
+
+            <div>
+              <%= label_tag :reason, "Razón del Ajuste", class: "block text-sm font-medium text-gray-700" %>
+              <%= text_area_tag :reason, nil, 
+                  class: "mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6", 
+                  rows: 3, 
+                  placeholder: "Explique la razón del ajuste" %>
+            </div>
+          </div>
+
+          <div class="pt-6 flex items-center justify-end gap-x-6">
+            <%= link_to "Cancelar", product_path(@product), class: "text-sm font-semibold leading-6 text-gray-900" %>
+            <%= button_tag type: 'submit', class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
+              Ajustar Stock
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
