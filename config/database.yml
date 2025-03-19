@@ -22,6 +22,7 @@ default: &default
 
 development:
   <<: *default
+  host: 127.0.0.1
   database: pos_ror_development
   username: admin
   password: admin
