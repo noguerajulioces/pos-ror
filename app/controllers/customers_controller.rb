@@ -51,6 +51,18 @@ class CustomersController < ApplicationController
     end
   end
 
+  def create_form
+    @customer = Customer.new(customer_params)
+
+    respond_to do |format|
+      if @customer.save
+        format.html { redirect_to customer_url(@customer), notice: "Cliente creado con éxito." }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def update
     if @customer.update(customer_params)
       redirect_to @customer, notice: "Cliente actualizado exitosamente."
