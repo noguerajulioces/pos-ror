@@ -56,13 +56,26 @@ class InventoryMovement < ApplicationRecord
     current_stock = product.stock || 0
     new_stock = current_stock + quantity
 
+    # First update the stock value
     product.update_columns(stock: new_stock)
+
+    # Then update the status based on the new stock value
+    update_product_status(new_stock)
 
     if purchase? && quantity.positive?
       product.update_average_cost(
         product.current_purchase_price,
         quantity
       )
+    end
+  end
+
+  def update_product_status(new_stock)
+    if new_stock <= 0
+      product.update_columns(status: "out_of_stock")
+    elsif product.status != "inactive"
+      # Only change to active if it's not already set to inactive
+      product.update_columns(status: "active")
     end
   end
 end
