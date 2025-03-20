@@ -21,7 +21,7 @@
                 </th>
               </tr>
             </thead>
-            <tbody id="subcategory_list" class="divide-y divide-gray-200 bg-white">
+            <tbody class="divide-y divide-gray-200 bg-white">
               <% @categories.each do |category| %>
                 <tr>
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
@@ -33,9 +33,11 @@
                     <%= button_to "Eliminar", category_path(category), method: :delete, form: { data: { turbo_confirm: "¿Estás seguro?" } }, class: "ml-2 text-red-600 hover:text-red-900 bg-transparent border-0 p-0 inline cursor-pointer" %>
                   </td>
                 </tr>
-                <% category.subcategories.each do |subcategory| %>
-                  <%= render partial: "subcategories/subcategory", locals: { subcategory: subcategory } %>
-                <% end %>
+                <tbody id="subcategory_list_<%= category.id %>" class="bg-white">
+                  <% category.subcategories.each do |subcategory| %>
+                    <%= render partial: "subcategories/subcategory", locals: { subcategory: subcategory } %>
+                  <% end %>
+                </tbody>
               <% end %>
             </tbody>
           </table>
