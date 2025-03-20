@@ -4,10 +4,13 @@ class ReportsController < ApplicationController
 
   def products
     @products = Product.includes(:category, :unit)
+                      .paginate(page: params[:page], per_page: 15)
 
     respond_to do |format|
       format.html
       format.pdf do
+        # For PDF we don't want pagination, so we get all products
+        @products_for_pdf = Product.includes(:category, :unit)
         render pdf: "productos_reporte_#{Date.current}",
                layout: "pdf",
                template: "reports/products",

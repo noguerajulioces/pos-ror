@@ -136,12 +136,12 @@
                 </div>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <%= product.category.name %>
+                <%= product.category&.name %>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm">
                 <div class="flex items-center">
                   <span class="<%= product.stock <= product.min_stock ? 'text-red-600' : 'text-gray-900' %>">
-                    <%= product.stock %> <%= product.unit.name %>
+                    <%= product.stock %> <%= product.unit&.name %>
                   </span>
                 </div>
               </td>
@@ -172,4 +172,8 @@
       </table>
     </div>
   </div>
+</div>
+
+<div class="mt-4 justify-center flex">
+  <%= will_paginate @products, renderer: TailwindPaginateRenderer %>
 </div>
