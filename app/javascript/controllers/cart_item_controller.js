@@ -1,45 +1,53 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = {
-    productId: Number
-  }
+  static values = { productId: String }
 
-  connect() {
-    console.log("Cart item controller connected for product ID:", this.productIdValue);
-  }
-
-  remove() {
-    console.log("Removing product ID:", this.productIdValue);
+  remove(event) {
+    event.preventDefault()
     
-    // Get CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    
-    // Send request to remove item from cart
-    fetch('/pos/remove_from_cart', {
+    fetch(`/pos/remove_from_cart?product_id=${this.productIdValue}`, {
       method: 'DELETE',
       headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
         'Accept': 'text/vnd.turbo-stream.html'
-      },
-      body: JSON.stringify({
-        product_id: this.productIdValue
-      })
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      Turbo.renderStreamMessage(html)
+    })
+  }
+  
+  updateQuantity(event) {
+    const newQuantity = parseInt(event.target.value, 10)
+    
+    if (newQuantity < 1 || isNaN(newQuantity)) {
+      event.target.value = 1
+      return
+    }
+    
+    fetch(`/pos/update_quantity?product_id=${this.productIdValue}&quantity=${newQuantity}`, {
+      method: 'PATCH',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'text/vnd.turbo-stream.html'
+      }
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok')
       }
-      return response.text();
+      return response.text()
     })
     .then(html => {
-      console.log('Product removed from cart successfully');
-      
       Turbo.renderStreamMessage(html)
     })
     .catch(error => {
-      console.error('Error removing product from cart:', error);
-    });
+      console.error('Error updating quantity:', error)
+      // Reset to previous value if there was an error
+      event.target.value = event.target.defaultValue
+    })
   }
 }

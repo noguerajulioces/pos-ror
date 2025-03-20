@@ -77,6 +77,8 @@ Rails.application.routes.draw do
   #   resources :order_payments, shallow: true
   # end
   # Add this line with your other POS routes
+  # Add this to your routes.rb file
+  patch 'pos/update_quantity', to: 'pos#update_quantity'
   post "pos/process_payment", to: "pos#process_payment", as: :process_payment_pos
   get "pos/payment_modal", to: "pos#payment_modal"
   get "print_message", to: "print#print_message"

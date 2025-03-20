@@ -398,6 +398,32 @@ class PosController < ApplicationController
     end
   end
 
+  # Add this method to your PosController
+  def update_quantity
+    product_id = params[:product_id]
+    quantity = params[:quantity].to_i
+    
+    if session[:cart].present?
+      item_index = session[:cart].find_index { |item| item["product_id"].to_s == product_id.to_s }
+      
+      if item_index
+        session[:cart][item_index]["quantity"] = quantity
+      end
+    end
+    
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace("cart-items-body", partial: "pos/cart_items", locals: { cart_items: session[:cart] }),
+          turbo_stream.replace("cart-iva", partial: "pos/cart_iva"),
+          turbo_stream.replace("cart-subtotal", partial: "pos/cart_subtotal"),
+          turbo_stream.replace("cart-discount", partial: "pos/cart_discount"),
+          turbo_stream.replace("cart-total", partial: "pos/cart_total")
+        ]
+      end
+    end
+  end
+
   private
 
   # Helper method to adjust discount based on cart changes
