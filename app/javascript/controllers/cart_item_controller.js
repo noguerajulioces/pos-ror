@@ -51,11 +51,13 @@ export default class extends Controller {
     })
   }
 
+  // Add these methods to your existing controller if they don't exist yet
+  
   applyItemDiscount(event) {
     const productId = this.productIdValue
     const discountPercentage = event.target.value
     
-    // Validar que el descuento esté entre 0 y 100
+    // Validate discount is between 0 and 100
     if (discountPercentage < 0 || discountPercentage > 100) {
       event.target.value = discountPercentage < 0 ? 0 : 100
       return
@@ -82,12 +84,6 @@ export default class extends Controller {
     })
   }
 
-  incrementQuantity(event) {
-    const input = this.element.closest('tr').querySelector('input[type="number"]')
-    input.value = parseInt(input.value) + 1
-    input.dispatchEvent(new Event('change'))
-  }
-
   decrementQuantity(event) {
     const input = this.element.closest('tr').querySelector('input[type="number"]')
     const newValue = parseInt(input.value) - 1
@@ -95,5 +91,11 @@ export default class extends Controller {
       input.value = newValue
       input.dispatchEvent(new Event('change'))
     }
+  }
+
+  incrementQuantity(event) {
+    const input = this.element.closest('tr').querySelector('input[type="number"]')
+    input.value = parseInt(input.value) + 1
+    input.dispatchEvent(new Event('change'))
   }
 }

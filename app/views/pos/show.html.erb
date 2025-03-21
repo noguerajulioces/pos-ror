@@ -100,7 +100,7 @@
                 <th class="px-2 py-2 text-center font-medium text-gray-700"></th>
               </tr>
             </thead>
-            <tbody id="cart-items-body" class="divide-y divide-gray-200">
+            <tbody id="cart-items-body" class="divide-y divide-gray-200 text-xs">
               <% if session[:cart].present? %>
                 <% session[:cart].each do |item| %>
                   <tr class="hover:bg-gray-50 transition-colors duration-150">
@@ -137,7 +137,7 @@
                           type="number" 
                           min="1" 
                           value="<%= item["quantity"] %>" 
-                          class="w-8 h-6 px-1 py-0 border-t border-b border-gray-300 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          class="min-w-8 max-w-16 h-6 px-0 py-0 border-t border-b border-gray-300 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           data-controller="cart-item"
                           data-action="change->cart-item#updateQuantity"
                           data-cart-item-product-id-value="<%= item["product_id"] %>"
