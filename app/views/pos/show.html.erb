@@ -154,7 +154,7 @@
                         </button>
                       </div>
                     </td>
-                    <td class="px-2 py-2 text-gray-700 whitespace-nowrap">₲<%= number_with_delimiter(item["price"].to_i, delimiter: '.') %></td>
+                    <td class="px-2 py-2 text-gray-700 whitespace-nowrap">₲s. <%= number_with_delimiter(item["price"].to_i, delimiter: '.') %></td>
                     <td class="px-2 py-2">
                       <div class="flex items-center">
                         <input 
@@ -194,9 +194,9 @@
                         item_total = item_subtotal - item_discount
                       %>
                       <% if discount_percentage.to_i > 0 %>
-                        <div class="text-xxs text-gray-500 line-through">₲<%= number_with_delimiter(item_subtotal, delimiter: '.') %></div>
+                        <div class="text-xxs text-gray-500 line-through">₲s. <%= number_with_delimiter(item_subtotal, delimiter: '.') %></div>
                       <% end %>
-                      <div class="text-gray-800">₲<%= number_with_delimiter(item_total, delimiter: '.') %></div>
+                      <div class="text-gray-800">₲s. <%= number_with_delimiter(item_total, delimiter: '.') %></div>
                     </td>
                     <td class="px-2 py-2 text-center">
                       <button 
