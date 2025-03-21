@@ -82,3 +82,4 @@ gem "to_words"
 gem "paranoia"
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
+gem 'rdoc', '6.12.0'
