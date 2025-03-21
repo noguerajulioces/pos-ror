@@ -18,7 +18,7 @@ class ExpensesController < ApplicationController
     @expense = Expense.new(expense_params)
 
     if @expense.save
-      redirect_to @expense, notice: "Gasto creado exitosamente."
+      redirect_to @expense, notice: 'Gasto creado exitosamente.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -26,7 +26,7 @@ class ExpensesController < ApplicationController
 
   def update
     if @expense.update(expense_params)
-      redirect_to @expense, notice: "Gasto actualizado exitosamente."
+      redirect_to @expense, notice: 'Gasto actualizado exitosamente.'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -34,7 +34,7 @@ class ExpensesController < ApplicationController
 
   def destroy
     @expense.destroy
-    redirect_to expenses_url, notice: "Gasto eliminado exitosamente."
+    redirect_to expenses_url, notice: 'Gasto eliminado exitosamente.'
   end
 
   private

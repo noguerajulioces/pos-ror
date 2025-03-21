@@ -11,11 +11,11 @@ class SubcategoriesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.append("subcategory_list_#{@category.id}", partial: "subcategories/subcategory", locals: { subcategory: @subcategory }),
-            turbo_stream.update("modal", "")
+            turbo_stream.append("subcategory_list_#{@category.id}", partial: 'subcategories/subcategory', locals: { subcategory: @subcategory }),
+            turbo_stream.update('modal', '')
           ]
         end
-        format.html { redirect_to categories_path, notice: "Subcategoría creada exitosamente." }
+        format.html { redirect_to categories_path, notice: 'Subcategoría creada exitosamente.' }
       end
     else
       render :new, status: :unprocessable_entity
@@ -30,7 +30,7 @@ class SubcategoriesController < ApplicationController
       format.turbo_stream do
         render turbo_stream: turbo_stream.remove(@subcategory)
       end
-      format.html { redirect_to categories_path, notice: "Subcategoría eliminada exitosamente." }
+      format.html { redirect_to categories_path, notice: 'Subcategoría eliminada exitosamente.' }
     end
   end
 

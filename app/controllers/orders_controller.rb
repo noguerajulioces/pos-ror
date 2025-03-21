@@ -31,7 +31,7 @@ class OrdersController < ApplicationController
     @order.user = current_user
 
     if @order.save
-      redirect_to @order, notice: "Orden creada exitosamente."
+      redirect_to @order, notice: 'Orden creada exitosamente.'
     else
       @payment_methods = PaymentMethod.active
       @customers = Customer.all
@@ -41,7 +41,7 @@ class OrdersController < ApplicationController
 
   def update
     if @order.update(order_params)
-      redirect_to @order, notice: "Orden actualizada exitosamente."
+      redirect_to @order, notice: 'Orden actualizada exitosamente.'
     else
       @payment_methods = PaymentMethod.active
       @customers = Customer.all
@@ -51,7 +51,7 @@ class OrdersController < ApplicationController
 
   def destroy
     @order.cancelled!
-    redirect_to orders_path, notice: "Orden cancelada exitosamente."
+    redirect_to orders_path, notice: 'Orden cancelada exitosamente.'
   end
 
   private

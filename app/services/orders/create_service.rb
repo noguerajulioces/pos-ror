@@ -14,7 +14,7 @@ module Orders
     end
 
     def call
-      return failure_response("El carrito está vacío") if cart.empty?
+      return failure_response('El carrito está vacío') if cart.empty?
 
       ActiveRecord::Base.transaction do
         order = create_order
@@ -41,7 +41,7 @@ module Orders
       order.order_items.each do |item|
         InventoryMovement.create!(
           product: item.product,
-          movement_type: "sale",
+          movement_type: 'sale',
           quantity: -item.quantity,
           reason: "Venta ##{order.id}",
           skip_stock_update: true
@@ -51,7 +51,7 @@ module Orders
 
     def create_order
       order = Order.new(order_attributes)
-      raise order.errors.full_messages.join(", ") unless order.save
+      raise order.errors.full_messages.join(', ') unless order.save
       order
     end
 
@@ -70,8 +70,8 @@ module Orders
     end
 
     def order_type
-      type = params[:order_type].presence || "in_store"
-      Order.order_types.keys.include?(type) ? type : "in_store"
+      type = params[:order_type].presence || 'in_store'
+      Order.order_types.keys.include?(type) ? type : 'in_store'
     end
 
     def payment_method_id
@@ -81,10 +81,10 @@ module Orders
     def create_order_items(order)
       cart.each do |item|
         order.order_items.create!(
-          product_id: item["product_id"],
-          quantity: item["quantity"],
-          price: item["price"],
-          subtotal: item["price"].to_f * item["quantity"].to_i
+          product_id: item['product_id'],
+          quantity: item['quantity'],
+          price: item['price'],
+          subtotal: item['price'].to_f * item['quantity'].to_i
         )
       end
     end
@@ -96,7 +96,7 @@ module Orders
         amount: order.total_amount,
         payment_date: Time.current,
         reference_number: nil,
-        notes: "Pago realizado desde POS"
+        notes: 'Pago realizado desde POS'
       )
     end
 

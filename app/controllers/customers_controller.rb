@@ -19,7 +19,7 @@ class CustomersController < ApplicationController
   def search
     @q = Customer.ransack(first_name_or_last_name_or_document_or_phone_cont: params[:query])
     @customers = @q.result(distinct: true)
-    render partial: "customers/search_results", locals: { customers: @customers }
+    render partial: 'customers/search_results', locals: { customers: @customers }
   end
 
   def create
@@ -30,18 +30,18 @@ class CustomersController < ApplicationController
         # Close the modal and update customer info in the POS view
         format.turbo_stream {
           render turbo_stream: [
-            turbo_stream.remove("modal"),
-            turbo_stream.update("customer-info", @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
-            turbo_stream.update("selected-customer-id", @customer.id)
+            turbo_stream.remove('modal'),
+            turbo_stream.update('customer-info', @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
+            turbo_stream.update('selected-customer-id', @customer.id)
           ]
         }
-        format.html { redirect_back fallback_location: customer_url(@customer), notice: "Cliente creado con éxito." }
+        format.html { redirect_back fallback_location: customer_url(@customer), notice: 'Cliente creado con éxito.' }
         format.json { render json: { success: true, customer: @customer } }
       else
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
-            "new_customer_form",
-            partial: "customers/modal_form",
+            'new_customer_form',
+            partial: 'customers/modal_form',
             locals: { customer: @customer }
           )
         }
@@ -56,7 +56,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to customer_url(@customer), notice: "Cliente creado con éxito." }
+        format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -65,7 +65,7 @@ class CustomersController < ApplicationController
 
   def update
     if @customer.update(customer_params)
-      redirect_to @customer, notice: "Cliente actualizado exitosamente."
+      redirect_to @customer, notice: 'Cliente actualizado exitosamente.'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -73,7 +73,7 @@ class CustomersController < ApplicationController
 
   def destroy
     @customer.destroy
-    redirect_to customers_url, notice: "Cliente eliminado exitosamente."
+    redirect_to customers_url, notice: 'Cliente eliminado exitosamente.'
   end
 
   private

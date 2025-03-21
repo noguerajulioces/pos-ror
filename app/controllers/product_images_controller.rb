@@ -4,7 +4,7 @@ class ProductImagesController < ApplicationController
 
   def destroy
     @product_image.destroy
-    redirect_to product_path(@product), notice: "Imagen eliminada correctamente"
+    redirect_to product_path(@product), notice: 'Imagen eliminada correctamente'
   end
 
   private

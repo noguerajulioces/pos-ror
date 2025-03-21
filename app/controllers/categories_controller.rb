@@ -12,7 +12,7 @@ class CategoriesController < ApplicationController
   def create
     @category = Category.new(category_params)
     if @category.save
-      redirect_to categories_path, notice: "Categoría creada con éxito."
+      redirect_to categories_path, notice: 'Categoría creada con éxito.'
     else
       render :new
     end
@@ -24,7 +24,7 @@ class CategoriesController < ApplicationController
 
   def update
     if @category.update(category_params)
-      redirect_to categories_path, notice: "Categoría actualizada con éxito."
+      redirect_to categories_path, notice: 'Categoría actualizada con éxito.'
     else
       render :edit
     end
@@ -33,12 +33,12 @@ class CategoriesController < ApplicationController
   def destroy
     begin
       if @category.subcategories.any?
-        redirect_to categories_path, alert: "No se puede eliminar una categoría con subcategorías."
+        redirect_to categories_path, alert: 'No se puede eliminar una categoría con subcategorías.'
       elsif @category.products.any?
-        redirect_to categories_path, alert: "No se puede eliminar una categoría con productos asociados."
+        redirect_to categories_path, alert: 'No se puede eliminar una categoría con productos asociados.'
       else
         @category.destroy
-        redirect_to categories_path, notice: "Categoría eliminada con éxito."
+        redirect_to categories_path, notice: 'Categoría eliminada con éxito.'
       end
     rescue => e
       Rails.logger.error("Error al eliminar categoría: #{e.message}")

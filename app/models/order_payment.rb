@@ -30,12 +30,12 @@ class OrderPayment < ApplicationRecord
 
   # Define enum for status
   enum :status, {
-    completed: "completed",
-    pending: "pending",
-    cancelled: "cancelled",
-    refunded: "refunded",
-    failed: "failed"
-  }, default: "completed"
+    completed: 'completed',
+    pending: 'pending',
+    cancelled: 'cancelled',
+    refunded: 'refunded',
+    failed: 'failed'
+  }, default: 'completed'
 
   sanitize_numeric_attributes :amount
 

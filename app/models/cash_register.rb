@@ -28,10 +28,10 @@ class CashRegister < ApplicationRecord
   validates :final_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Un scope para obtener la caja abierta
-  scope :open, -> { where(status: "open") }
+  scope :open, -> { where(status: 'open') }
 
   # Método para cerrar la caja
   def close!(final_amount)
-    update(close_at: Time.current, final_amount: final_amount, status: "closed")
+    update(close_at: Time.current, final_amount: final_amount, status: 'closed')
   end
 end

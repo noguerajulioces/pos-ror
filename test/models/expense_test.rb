@@ -25,7 +25,7 @@
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #  fk_rails_...  (purchase_id => purchases.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class ExpenseTest < ActiveSupport::TestCase
   # test "the truth" do

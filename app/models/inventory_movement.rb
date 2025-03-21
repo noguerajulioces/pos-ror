@@ -24,11 +24,11 @@ class InventoryMovement < ApplicationRecord
 
   # Define movement types
   enum :movement_type, {
-    purchase: "purchase",      # Compra de producto
-    sale: "sale",             # Venta de producto
-    adjustment: "adjustment",  # Ajuste manual
-    return: "return",         # Devolución
-    transfer: "transfer"      # Transferencia
+    purchase: 'purchase',      # Compra de producto
+    sale: 'sale',             # Venta de producto
+    adjustment: 'adjustment',  # Ajuste manual
+    return: 'return',         # Devolución
+    transfer: 'transfer'      # Transferencia
   }
 
   # Validations
@@ -40,11 +40,11 @@ class InventoryMovement < ApplicationRecord
 
   # Scopes
   scope :recent, -> { order(created_at: :desc).limit(30) }
-  scope :incoming, -> { where("quantity > 0") }
-  scope :outgoing, -> { where("quantity < 0") }
+  scope :incoming, -> { where('quantity > 0') }
+  scope :outgoing, -> { where('quantity < 0') }
 
   def final_stock
-    previous_movements = product.inventory_movements.where("created_at <= ?", created_at)
+    previous_movements = product.inventory_movements.where('created_at <= ?', created_at)
     previous_movements.sum(:quantity)
   end
 
@@ -72,10 +72,10 @@ class InventoryMovement < ApplicationRecord
 
   def update_product_status(new_stock)
     if new_stock <= 0
-      product.update_columns(status: "out_of_stock")
-    elsif product.status != "inactive"
+      product.update_columns(status: 'out_of_stock')
+    elsif product.status != 'inactive'
       # Only change to active if it's not already set to inactive
-      product.update_columns(status: "active")
+      product.update_columns(status: 'active')
     end
   end
 end

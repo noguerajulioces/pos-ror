@@ -5,7 +5,7 @@ module PosHelper
 
     if session[:cart].present?
       session[:cart].each do |item|
-        subtotal += item["price"].to_i * item["quantity"]
+        subtotal += item['price'].to_i * item['quantity']
       end
     end
 

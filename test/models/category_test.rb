@@ -8,7 +8,7 @@
 #  updated_at :datetime         not null
 #  parent_id  :integer
 #
-require "test_helper"
+require 'test_helper'
 
 class CategoryTest < ActiveSupport::TestCase
   # test "the truth" do

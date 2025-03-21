@@ -23,7 +23,7 @@ class OrderPaymentsController < ApplicationController
 
     respond_to do |format|
       if @order_payment.save
-        format.html { redirect_to order_path(@order_payment.order), notice: "Pago registrado correctamente." }
+        format.html { redirect_to order_path(@order_payment.order), notice: 'Pago registrado correctamente.' }
         format.json { render :show, status: :created, location: @order_payment }
       else
         @payment_methods = PaymentMethod.all
@@ -41,7 +41,7 @@ class OrderPaymentsController < ApplicationController
     @order_payment.destroy
 
     respond_to do |format|
-      format.html { redirect_to order_path(order), notice: "Pago eliminado correctamente." }
+      format.html { redirect_to order_path(order), notice: 'Pago eliminado correctamente.' }
       format.json { head :no_content }
     end
   end
@@ -59,7 +59,7 @@ class OrderPaymentsController < ApplicationController
         @order = Order.find(params[:order_payment][:order_id])
       else
         # Handle the case where order_id is not available
-        redirect_to orders_path, alert: "No se especificó una orden válida."
+        redirect_to orders_path, alert: 'No se especificó una orden válida.'
       end
     end
 

@@ -9,10 +9,10 @@ module NumericFormatter
         define_method("#{attribute}=") do |value|
           if value.is_a?(String) && !value.blank?
             # Elimina los puntos que se usan como separadores de miles
-            cleaned_value = value.gsub(".", "")
+            cleaned_value = value.gsub('.', '')
             # Asigna el valor convertido a entero o a float, según convenga
-            converted_value = cleaned_value.include?(",") ?
-              cleaned_value.gsub(",", ".").to_f :
+            converted_value = cleaned_value.include?(',') ?
+              cleaned_value.gsub(',', '.').to_f :
               cleaned_value.to_i
 
             super(converted_value)

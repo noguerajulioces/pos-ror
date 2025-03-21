@@ -3,7 +3,7 @@ class CashRegistersController < ApplicationController
     @cash_register = CashRegister.new(cash_register_params)
     @cash_register.user = current_user
     @cash_register.open_at = Time.current
-    @cash_register.status = "open"
+    @cash_register.status = 'open'
 
     if @cash_register.save
       render json: { success: true }

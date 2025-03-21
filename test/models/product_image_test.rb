@@ -17,7 +17,7 @@
 #
 #  fk_rails_...  (product_id => products.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class ProductImageTest < ActiveSupport::TestCase
   # test "the truth" do

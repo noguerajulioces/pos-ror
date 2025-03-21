@@ -9,7 +9,7 @@ class SettingsController < ApplicationController
       setting&.update(value: value)
     end
 
-    redirect_to edit_settings_path, notice: "Configuración actualizada exitosamente"
+    redirect_to edit_settings_path, notice: 'Configuración actualizada exitosamente'
   end
 
   private

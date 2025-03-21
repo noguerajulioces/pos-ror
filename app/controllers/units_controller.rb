@@ -18,7 +18,7 @@ class UnitsController < ApplicationController
     respond_to do |format|
       if @unit.save
         format.turbo_stream
-        format.html { redirect_to units_path, notice: "Unidad creada exitosamente." }
+        format.html { redirect_to units_path, notice: 'Unidad creada exitosamente.' }
       else
         render :new, status: :unprocessable_entity
       end
@@ -29,7 +29,7 @@ class UnitsController < ApplicationController
     respond_to do |format|
       if @unit.update(unit_params)
         format.turbo_stream
-        format.html { redirect_to units_path, notice: "Unidad actualizada exitosamente." }
+        format.html { redirect_to units_path, notice: 'Unidad actualizada exitosamente.' }
       else
         render :edit, status: :unprocessable_entity
       end
@@ -38,7 +38,7 @@ class UnitsController < ApplicationController
 
   def destroy
     @unit.destroy
-    redirect_to units_path, notice: "Unidad eliminada exitosamente."
+    redirect_to units_path, notice: 'Unidad eliminada exitosamente.'
   end
 
   private

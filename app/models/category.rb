@@ -10,8 +10,8 @@
 #
 class Category < ApplicationRecord
   has_many :products
-  belongs_to :parent, class_name: "Category", optional: true
-  has_many :subcategories, class_name: "Category", foreign_key: "parent_id"
+  belongs_to :parent, class_name: 'Category', optional: true
+  has_many :subcategories, class_name: 'Category', foreign_key: 'parent_id'
 
   validates :name, presence: true
   before_destroy :ensure_no_products
@@ -20,7 +20,7 @@ class Category < ApplicationRecord
 
   def ensure_no_products
     if products.exists?
-      errors.add(:base, "No puedes eliminar una categoría con productos asociados")
+      errors.add(:base, 'No puedes eliminar una categoría con productos asociados')
       throw(:abort) # Evita que se elimine la categoría
     end
   end

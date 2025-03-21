@@ -13,7 +13,7 @@ class CurrenciesController < ApplicationController
     @currency = Currency.new(currency_params)
 
     if @currency.save
-      redirect_to currencies_path, notice: "Moneda creada exitosamente."
+      redirect_to currencies_path, notice: 'Moneda creada exitosamente.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -25,7 +25,7 @@ class CurrenciesController < ApplicationController
 
   def update
     if @currency.update(currency_params)
-      redirect_to currencies_path, notice: "Moneda actualizada exitosamente."
+      redirect_to currencies_path, notice: 'Moneda actualizada exitosamente.'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class CurrenciesController < ApplicationController
 
   def destroy
     @currency.destroy
-    redirect_to currencies_path, notice: "Moneda eliminada exitosamente."
+    redirect_to currencies_path, notice: 'Moneda eliminada exitosamente.'
   end
 
   def show; end

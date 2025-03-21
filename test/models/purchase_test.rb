@@ -17,7 +17,7 @@
 #
 #  fk_rails_...  (supplier_id => suppliers.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class PurchaseTest < ActiveSupport::TestCase
   # test "the truth" do

@@ -14,7 +14,7 @@ class SuppliersController < ApplicationController
   def create
     @supplier = Supplier.new(supplier_params)
     if @supplier.save
-      redirect_to suppliers_path, notice: "Proveedor creado exitosamente."
+      redirect_to suppliers_path, notice: 'Proveedor creado exitosamente.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -24,7 +24,7 @@ class SuppliersController < ApplicationController
 
   def update
     if @supplier.update(supplier_params)
-      redirect_to @supplier, notice: "Proveedor actualizado exitosamente."
+      redirect_to @supplier, notice: 'Proveedor actualizado exitosamente.'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class SuppliersController < ApplicationController
 
   def destroy
     @supplier.destroy
-    redirect_to suppliers_path, notice: "Proveedor eliminado exitosamente."
+    redirect_to suppliers_path, notice: 'Proveedor eliminado exitosamente.'
   end
 
   private

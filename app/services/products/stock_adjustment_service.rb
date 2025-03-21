@@ -10,8 +10,8 @@ module Products
     end
 
     def call
-      return failure_response("Cantidad inválida") if quantity.zero?
-      return failure_response("Razón requerida") if reason.blank?
+      return failure_response('Cantidad inválida') if quantity.zero?
+      return failure_response('Razón requerida') if reason.blank?
 
       ActiveRecord::Base.transaction do
         create_inventory_movement
@@ -26,14 +26,14 @@ module Products
     def create_inventory_movement
       InventoryMovement.create!(
         product: product,
-        movement_type: "adjustment",
+        movement_type: 'adjustment',
         quantity: quantity,
         reason: "Ajuste manual de (#{user.name}): #{reason}"
       )
     end
 
     def success_response
-      { success: true, message: "Stock ajustado correctamente" }
+      { success: true, message: 'Stock ajustado correctamente' }
     end
 
     def failure_response(error)

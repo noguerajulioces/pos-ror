@@ -19,7 +19,7 @@ class PurchasesController < ApplicationController
       @purchase = Purchase.new(purchase_params)
       if @purchase.save
         StockManager.update_stock_from_purchase(@purchase)
-        redirect_to @purchase, notice: "Compra creada exitosamente."
+        redirect_to @purchase, notice: 'Compra creada exitosamente.'
       else
         render :new
       end
@@ -37,7 +37,7 @@ class PurchasesController < ApplicationController
     ActiveRecord::Base.transaction do
       if @purchase.update(purchase_params)
         StockManager.update_stock_from_purchase(@purchase)
-        redirect_to @purchase, notice: "Compra actualizada exitosamente."
+        redirect_to @purchase, notice: 'Compra actualizada exitosamente.'
       else
         render :edit
       end
@@ -51,7 +51,7 @@ class PurchasesController < ApplicationController
       StockManager.revert_stock_from_purchase(@purchase)
       @purchase.destroy!
     end
-    redirect_to purchases_path, notice: "Compra eliminada exitosamente."
+    redirect_to purchases_path, notice: 'Compra eliminada exitosamente.'
   rescue ActiveRecord::RecordInvalid, StandardError => e
     redirect_to purchases_path, alert: "No se pudo eliminar la compra: #{e.message}"
   end

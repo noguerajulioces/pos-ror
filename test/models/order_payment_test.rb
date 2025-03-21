@@ -23,7 +23,7 @@
 #  fk_rails_...  (order_id => orders.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class OrderPaymentTest < ActiveSupport::TestCase
   # test "the truth" do

@@ -14,7 +14,7 @@
 #
 #  index_units_on_deleted_at  (deleted_at)
 #
-require "test_helper"
+require 'test_helper'
 
 class UnitTest < ActiveSupport::TestCase
   # test "the truth" do

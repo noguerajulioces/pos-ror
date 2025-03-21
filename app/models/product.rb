@@ -45,13 +45,13 @@ class Product < ApplicationRecord
   belongs_to :unit
   has_many :sale_items
   has_many :inventory_movements, dependent: :destroy
-  has_many :variants, class_name: "ProductVariant", dependent: :destroy
-  has_many :images, class_name: "ProductImage", dependent: :destroy
+  has_many :variants, class_name: 'ProductVariant', dependent: :destroy
+  has_many :images, class_name: 'ProductImage', dependent: :destroy
   has_many :purchase_items
   has_many :purchases, through: :purchase_items
   has_many :product_images, dependent: :destroy
 
-  enum :status, { active: "active", inactive: "inactive", out_of_stock: "out_of_stock" }
+  enum :status, { active: 'active', inactive: 'inactive', out_of_stock: 'out_of_stock' }
 
   validates :name, :price, :sku, presence: true
   validates :sku, uniqueness: true
@@ -59,7 +59,7 @@ class Product < ApplicationRecord
   before_create :generate_barcode, if: -> { barcode.blank? }
   before_save :update_stock_status
 
-  scope :available, -> { where(status: "active") }
+  scope :available, -> { where(status: 'active') }
   scope :in_stock, -> { where(stock: 0..) }
 
   def update_average_cost(new_unit_price, new_quantity)
@@ -89,14 +89,14 @@ class Product < ApplicationRecord
   end
 
   def update_stock_status
-    self.status = stock <= 0 ? "out_of_stock" : "active"
+    self.status = stock <= 0 ? 'out_of_stock' : 'active'
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    [ "average_cost", "barcode", "category_id", "created_at", "description", "id", "min_stock", "name", "price", "sku", "slug", "status", "stock", "updated_at", "unit_id" ]
+    [ 'average_cost', 'barcode', 'category_id', 'created_at', 'description', 'id', 'min_stock', 'name', 'price', 'sku', 'slug', 'status', 'stock', 'updated_at', 'unit_id' ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ "category", "images", "inventory_movements", "purchases", "product_images", "unit", "variants" ]
+    [ 'category', 'images', 'inventory_movements', 'purchases', 'product_images', 'unit', 'variants' ]
   end
 end

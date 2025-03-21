@@ -21,7 +21,7 @@
 #  fk_rails_...  (product_id => products.id)
 #  fk_rails_...  (purchase_id => purchases.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class PurchaseItemTest < ActiveSupport::TestCase
   # test "the truth" do

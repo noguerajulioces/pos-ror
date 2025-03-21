@@ -1,6 +1,6 @@
-require_relative "boot"
+require_relative 'boot'
 
-require "rails/all"
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -25,7 +25,7 @@ module PosRor
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Set the default timezone to Asunción, Paraguay (UTC-3)
-    config.time_zone = "America/Asuncion"
+    config.time_zone = 'America/Asuncion'
 
     # If you want Active Record to convert times to this timezone when retrieving from the database
     config.active_record.default_timezone = :local

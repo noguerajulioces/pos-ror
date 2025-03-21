@@ -20,7 +20,7 @@ class ProductsController < ApplicationController
       if @product.save
         StockManager.create_initial_stock(@product)
         attach_image if params[:product][:image].present?
-        redirect_to @product, notice: "Producto creado exitosamente."
+        redirect_to @product, notice: 'Producto creado exitosamente.'
       else
         render :new, status: :unprocessable_entity
       end
@@ -33,16 +33,16 @@ class ProductsController < ApplicationController
   def update
     if @product.update(product_params)
       attach_image if params[:product][:image].present?
-      redirect_to @product, notice: "Producto actualizado exitosamente."
+      redirect_to @product, notice: 'Producto actualizado exitosamente.'
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @product.status = "inactive"
+    @product.status = 'inactive'
     @product.save!
-    redirect_to products_path, notice: "Producto inactivado exitosamente."
+    redirect_to products_path, notice: 'Producto inactivado exitosamente.'
   end
 
   private

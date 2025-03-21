@@ -32,7 +32,7 @@
 #  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (unit_id => units.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class ProductTest < ActiveSupport::TestCase
   # test "the truth" do

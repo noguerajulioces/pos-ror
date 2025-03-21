@@ -19,7 +19,7 @@ class PaymentMethodsController < ApplicationController
     @payment_method = PaymentMethod.new(payment_method_params)
 
     if @payment_method.save
-      redirect_to payment_methods_path, notice: "Método de pago creado exitosamente."
+      redirect_to payment_methods_path, notice: 'Método de pago creado exitosamente.'
     else
       render :new
     end
@@ -27,7 +27,7 @@ class PaymentMethodsController < ApplicationController
 
   def update
     if @payment_method.update(payment_method_params)
-      redirect_to payment_methods_path, notice: "Método de pago actualizado exitosamente."
+      redirect_to payment_methods_path, notice: 'Método de pago actualizado exitosamente.'
     else
       render :edit
     end
@@ -39,7 +39,7 @@ class PaymentMethodsController < ApplicationController
     else
       @payment_method.update(active: true)
     end
-    redirect_to payment_methods_path, notice: "Método de pago inactivo exitosamente."
+    redirect_to payment_methods_path, notice: 'Método de pago inactivo exitosamente.'
   end
 
   private
