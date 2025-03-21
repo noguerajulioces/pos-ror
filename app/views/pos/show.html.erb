@@ -85,13 +85,13 @@
   <!-- Contenedor Principal -->
   <div class="flex flex-1">
     <!-- Columna Izquierda -->
-    <div class="w-2/4 border-r border-gray-300 p-4 flex flex-col justify-between">
+    <div class="w-2/4 border-r border-gray-300 p-4 flex flex-col h-[calc(100vh-56px)]">
       <!-- Sección de productos (tabla) -->
-      <div id="cart-items" class="overflow-hidden rounded-lg shadow">
-        <div class="overflow-x-auto">
+      <div id="cart-items" class="rounded-lg shadow flex-grow flex flex-col">
+        <div class="overflow-y-auto max-h-[calc(100vh-300px)]">
           <table class="w-full bg-white text-xs">
-            <thead>
-              <tr class="bg-gray-50 border-b border-gray-200">
+            <thead class="sticky top-0 bg-gray-50 z-10">
+              <tr class="border-b border-gray-200">
                 <th class="px-2 py-2 text-left font-medium text-gray-700">Producto</th>
                 <th class="px-2 py-2 text-left font-medium text-gray-700">Cant.</th>
                 <th class="px-2 py-2 text-left font-medium text-gray-700">Precio</th>
@@ -231,7 +231,6 @@
         </div>
       </div>
 
-      <!-- Resto del código sigue igual -->
       <div class="mt-4 bg-white rounded-md shadow">
         <div class="grid grid-cols-2 text-sm">
           <div class="border-r border-gray-200">
@@ -303,7 +302,6 @@
         </div>
       </div>
 
-      <!-- Botones de acción al final (Pay, Hold, Discount, Void) -->
       <div class="mt-4 grid grid-cols-4 gap-0">
         <button class="bg-green-500 hover:bg-green-600 text-white py-4 font-medium border-r border-green-600 focus:outline-none flex items-center justify-center"
                 data-controller="modal"
