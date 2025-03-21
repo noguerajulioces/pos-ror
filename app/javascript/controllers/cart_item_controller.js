@@ -50,4 +50,50 @@ export default class extends Controller {
       event.target.value = event.target.defaultValue
     })
   }
+
+  applyItemDiscount(event) {
+    const productId = this.productIdValue
+    const discountPercentage = event.target.value
+    
+    // Validar que el descuento esté entre 0 y 100
+    if (discountPercentage < 0 || discountPercentage > 100) {
+      event.target.value = discountPercentage < 0 ? 0 : 100
+      return
+    }
+    
+    fetch('/pos/cart/apply_item_discount', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'text/vnd.turbo-stream.html'
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        discount_percentage: discountPercentage
+      })
+    })
+    .then(response => response.text())
+    .then(html => {
+      Turbo.renderStreamMessage(html)
+    })
+    .catch(error => {
+      console.error('Error applying item discount:', error)
+    })
+  }
+
+  incrementQuantity(event) {
+    const input = this.element.closest('tr').querySelector('input[type="number"]')
+    input.value = parseInt(input.value) + 1
+    input.dispatchEvent(new Event('change'))
+  }
+
+  decrementQuantity(event) {
+    const input = this.element.closest('tr').querySelector('input[type="number"]')
+    const newValue = parseInt(input.value) - 1
+    if (newValue >= 1) {
+      input.value = newValue
+      input.dispatchEvent(new Event('change'))
+    }
+  }
 }
