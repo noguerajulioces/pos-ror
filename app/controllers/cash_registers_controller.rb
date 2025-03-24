@@ -21,14 +21,24 @@ class CashRegistersController < ApplicationController
     @cash_register = current_user.cash_registers.open.first
     
     if @cash_register.nil?
-      redirect_to pos_path, alert: 'No hay caja abierta para cerrar.'
+      # We'll handle this in the view
       return
     end
+    
+    # Calculate sales total without relying on cash_register_id
+    @sales_total = Order.where(user_id: current_user.id, status: 'completed')
+                       .where('created_at >= ?', @cash_register.open_at)
+                       .sum(:total_amount) || 0
+                       
+    # Calculate expected amount
+    @expected_amount = @cash_register.initial_amount + @sales_total
+    
+    render layout: false
   end
 
   def process_close
     @cash_register = current_user.cash_registers.open.find(params[:id])
-    
+
     if @cash_register.close!(params[:cash_register][:final_amount])
       redirect_to pos_path, notice: 'Caja cerrada correctamente.'
     else

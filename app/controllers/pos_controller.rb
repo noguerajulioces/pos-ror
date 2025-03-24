@@ -453,9 +453,9 @@ class PosController < ApplicationController
 
   def check_cash_register
     @cash_register = current_user.cash_registers.open.first
-  
+
     unless @cash_register
-      redirect_to new_cash_register_path, alert: "Debes abrir una caja antes de usar el POS."
+      redirect_to new_cash_register_path, alert: 'Debes abrir una caja antes de usar el POS.'
     end
   end
 
