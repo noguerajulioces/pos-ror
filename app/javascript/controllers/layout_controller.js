@@ -4,8 +4,12 @@ export default class extends Controller {
   static targets = ["leftColumn", "rightColumn", "toggleIcon", "toggleButton"]
   
   connect() {
-    // Initialize with right column visible
-    this.rightColumnVisible = true
+    // Check localStorage for saved state
+    const savedState = localStorage.getItem('rightColumnVisible')
+    
+    // Initialize with saved state or default to true if no saved state
+    this.rightColumnVisible = savedState !== null ? savedState === 'true' : true
+    
     this.updateLayout()
     
     // Add longer transition duration to both columns
@@ -18,6 +22,10 @@ export default class extends Controller {
   
   toggleRightColumn() {
     this.rightColumnVisible = !this.rightColumnVisible
+    
+    // Save state to localStorage
+    localStorage.setItem('rightColumnVisible', this.rightColumnVisible)
+    
     this.updateLayout()
   }
   
