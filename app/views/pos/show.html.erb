@@ -81,18 +81,18 @@
   <!-- Contenedor Principal -->
   <div class="flex flex-1" data-controller="layout">
     <!-- Columna Izquierda -->
-    <div class="border-r border-gray-300 p-4 flex flex-col h-[calc(100vh-56px)] transition-all duration-300 ease-in-out" 
+    <div class="border-r border-gray-300 p-4 flex flex-col h-[calc(100vh-56px)] transition-all duration-300 ease-in-out relative" 
          data-layout-target="leftColumn"
          data-class-expanded="w-full"
          data-class-normal="w-2/4">
-      <!-- Toggle button for right column -->
+      <!-- Toggle button for right column - repositioned -->
       <button 
-        class="absolute right-4 top-20 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none z-20"
+        class="absolute -right-4 top-4 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none z-20"
         data-action="layout#toggleRightColumn"
         data-layout-target="toggleButton"
         title="Mostrar/Ocultar panel de productos">
         <svg class="w-5 h-5" data-layout-target="toggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
       </button>
       

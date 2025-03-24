@@ -36,5 +36,13 @@ export default class extends Controller {
       // Update icon to show "show" arrow
       this.toggleIconTarget.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>'
     }
+    // In your updateLayout method:
+    if (this.rightColumnVisible) {
+      // When right column is visible, show left-pointing arrow
+      this.toggleIconTarget.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>';
+    } else {
+      // When right column is hidden, show right-pointing arrow
+      this.toggleIconTarget.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>';
+    }
   }
 }
