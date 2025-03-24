@@ -15,7 +15,7 @@
         <div>
           <%= f.label :user_id_eq, "Usuario", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.collection_select :user_id_eq, 
-                      User.all, :id, :email, 
+                      User.all, :id, :name, 
                       { include_blank: "Todos los usuarios" }, 
                       class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
         </div>
@@ -100,7 +100,17 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <% if cash_register.status == 'open' %>
-                    <%= link_to "Cerrar", close_cash_register_path(cash_register), class: "text-orange-600 hover:text-orange-900", data: { turbo_frame: "close_register_modal" } %>
+                    <%= link_to "Cerrar", close_cash_register_path(cash_register), 
+                        class: "text-orange-600 hover:text-orange-900", 
+                        data: { 
+                          controller: "modal",
+                          action: "modal#open",
+                          modal_title: "Cerrar Caja",
+                          modal_size: "max-w-md w-full",
+                          modal_frame_id: "close_register_modal",
+                          modal_frame_src: close_cash_register_path(cash_register),
+                          turbo_frame: "close_register_modal"
+                        } %>
                   <% else %>
                     <%= link_to "Ver detalles", "#", class: "text-indigo-600 hover:text-indigo-900" %>
                   <% end %>
