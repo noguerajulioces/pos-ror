@@ -53,7 +53,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="text-gray-700"><strong>Total Ventas:</strong></p>
-              <p class="text-lg font-semibold text-green-600"><%= number_to_currency(@sales_total, precision: 0, unit: '₲s. ') %></p>
+              <p class="text-lg font-semibold text-green-600"><%= number_to_currency(@sales_total, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
             </div>
             <div>
               <p class="text-gray-700"><strong>Monto Esperado:</strong></p>
@@ -64,11 +64,15 @@
 
         <div>
           <%= form.label :final_amount, "Monto Final (₲s)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <div class="relative rounded-md shadow-sm">
+          <div class="relative rounded-md shadow-sm" data-controller="number-format">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500 sm:text-sm">₲s.</span>
             </div>
-            <%= form.number_field :final_amount, value: @expected_amount, class: "pl-12 block w-full pr-12 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 px-3 py-1.5", min: 0, step: 1000 %>
+            <%= form.text_field :final_amount, value: @expected_amount, 
+                class: "pl-12 block w-full pr-12 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 px-3 py-1.5", 
+                min: 0, 
+                step: 1000,
+                data: { number_format_target: "input" } %>
           </div>
           <p class="text-xs text-gray-500 mt-1">El monto final puede ser diferente del esperado si hay diferencias en efectivo.</p>
         </div>

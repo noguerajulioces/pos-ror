@@ -19,20 +19,20 @@ class CashRegistersController < ApplicationController
 
   def close
     @cash_register = current_user.cash_registers.open.first
-    
+
     if @cash_register.nil?
       # We'll handle this in the view
       return
     end
-    
+
     # Calculate sales total without relying on cash_register_id
     @sales_total = Order.where(user_id: current_user.id, status: 'completed')
                        .where('created_at >= ?', @cash_register.open_at)
                        .sum(:total_amount) || 0
-                       
+
     # Calculate expected amount
     @expected_amount = @cash_register.initial_amount + @sales_total
-    
+
     render layout: false
   end
 
@@ -40,8 +40,23 @@ class CashRegistersController < ApplicationController
     @cash_register = current_user.cash_registers.open.find(params[:id])
 
     if @cash_register.close!(params[:cash_register][:final_amount])
-      redirect_to pos_path, notice: 'Caja cerrada correctamente.'
+      respond_to do |format|
+        format.html { redirect_to pos_path, notice: 'Caja cerrada correctamente.' }
+        format.turbo_stream {
+          flash.now[:notice] = 'Caja cerrada correctamente.'
+          render turbo_stream: [
+            turbo_stream.replace('flash', partial: 'layouts/flash'),
+            turbo_stream.remove('close_register_modal')
+          ]
+        }
+      end
     else
+      # Calculate values again in case of error
+      @sales_total = Order.where(user_id: current_user.id, status: 'completed')
+                         .where('created_at >= ?', @cash_register.open_at)
+                         .sum(:total_amount) || 0
+      @expected_amount = @cash_register.initial_amount + @sales_total
+
       render :close, status: :unprocessable_entity
     end
   end
