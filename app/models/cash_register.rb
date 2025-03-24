@@ -22,16 +22,34 @@
 #
 class CashRegister < ApplicationRecord
   belongs_to :user
+  belongs_to :cash_register
 
   validates :open_at, :initial_amount, :status, presence: true
   validates :initial_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :final_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+  validate :only_one_open_register_per_user, on: :create
+
   # Un scope para obtener la caja abierta
   scope :open, -> { where(status: 'open') }
+  scope :from_today, -> { where(open_at: Time.current.beginning_of_day..Time.current.end_of_day) }
 
   # Método para cerrar la caja
   def close!(final_amount)
     update(close_at: Time.current, final_amount: final_amount, status: 'closed')
+  end
+
+  def only_one_open_register_per_user
+    if user.cash_registers.open.exists?
+      errors.add(:base, 'Ya existe una caja abierta para este usuario')
+    end
+  end
+
+  def force_close!(final_amount, reason = nil)
+    update(close_at: Time.current, final_amount: final_amount, status: 'forced_closed', closure_reason: reason)
+  end
+
+  def daily_report
+    sales.includes(:products)
   end
 end
