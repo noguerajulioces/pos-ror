@@ -1,0 +1,119 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Registro de Cajas</h1>
+    <div>
+      <%= link_to "Nueva Caja", new_cash_register_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" if !current_user.cash_registers.open.exists? %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+    <div class="px-4 py-5 sm:px-6 bg-gray-50">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">Filtros</h3>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
+      <%= search_form_for @q, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do |f| %>
+        <div>
+          <%= f.label :user_id_eq, "Usuario", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :user_id_eq, 
+                      User.all, :id, :email, 
+                      { include_blank: "Todos los usuarios" }, 
+                      class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+        <div>
+          <%= f.label :status_eq, "Estado", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :status_eq, 
+                      [["Abierta", "open"], ["Cerrada", "closed"], ["Cierre forzado", "forced_closed"]], 
+                      { include_blank: "Todos los estados" }, 
+                      class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+        <div>
+          <%= f.label :open_at_gteq, "Fecha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :open_at_gteq, 
+                          class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+            </svg>
+            Filtrar
+          </button>
+          <%= link_to cash_registers_path, class: "ml-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Limpiar
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Inicial</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Final</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apertura</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cierre</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @cash_registers.any? %>
+            <% @cash_registers.each do |cash_register| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= cash_register.id %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= cash_register&.user&.name %></td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% case cash_register.status %>
+                  <% when 'open' %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Abierta</span>
+                  <% when 'closed' %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Cerrada</span>
+                  <% when 'forced_closed' %>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Cierre forzado</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= number_to_currency(cash_register.initial_amount, precision: 0, unit: '₲s. ') %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= cash_register.final_amount.present? ? number_to_currency(cash_register.final_amount, precision: 0, unit: '₲s. ') : '-' %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= l(cash_register.open_at.to_date, format: :long) %><br>
+                  <span class="text-xs text-gray-400"><%= cash_register.open_at.strftime("%H:%M") %></span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <% if cash_register.close_at.present? %>
+                    <%= l(cash_register.close_at.to_date, format: :long) %><br>
+                    <span class="text-xs text-gray-400"><%= cash_register.close_at.strftime("%H:%M") %></span>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <% if cash_register.status == 'open' %>
+                    <%= link_to "Cerrar", close_cash_register_path(cash_register), class: "text-orange-600 hover:text-orange-900", data: { turbo_frame: "close_register_modal" } %>
+                  <% else %>
+                    <%= link_to "Ver detalles", "#", class: "text-indigo-600 hover:text-indigo-900" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No hay registros de cajas disponibles</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

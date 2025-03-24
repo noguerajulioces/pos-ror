@@ -1,6 +1,11 @@
 class CashRegistersController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @q = CashRegister.includes(:user).order(created_at: :desc).ransack(params[:q])
+    @cash_registers = @q.result
+  end
+  
   def new
     @cash_register = CashRegister.new
   end
