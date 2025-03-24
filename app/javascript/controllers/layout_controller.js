@@ -7,6 +7,13 @@ export default class extends Controller {
     // Initialize with right column visible
     this.rightColumnVisible = true
     this.updateLayout()
+    
+    // Add longer transition duration to both columns
+    this.leftColumnTarget.classList.remove("duration-300")
+    this.leftColumnTarget.classList.add("duration-500")
+    
+    this.rightColumnTarget.classList.remove("duration-300")
+    this.rightColumnTarget.classList.add("duration-500")
   }
   
   toggleRightColumn() {
