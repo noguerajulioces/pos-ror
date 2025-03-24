@@ -81,10 +81,10 @@
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= number_to_currency(cash_register.initial_amount, precision: 0, unit: '₲s. ') %>
+                  <%= number_to_currency(cash_register.initial_amount, precision: 0, unit: '₲s. ', delimiter: '.') %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= cash_register.final_amount.present? ? number_to_currency(cash_register.final_amount, precision: 0, unit: '₲s. ') : '-' %>
+                  <%= cash_register.final_amount.present? ? number_to_currency(cash_register.final_amount, precision: 0, unit: '₲s. ', delimiter: '.') : '-' %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <%= l(cash_register.open_at.to_date, format: :long) %><br>
