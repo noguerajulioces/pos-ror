@@ -101,13 +101,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div class="text-lg font-medium mb-2">Monto Recibido</div>
-            <div class="flex items-center">
+            <div class="flex items-center" data-controller="number-format">
               <span class="text-lg mr-2">₲s.</span>
               <%= f.text_field :amount_received, 
                               id: "amount-received", 
                               class: "flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500", 
                               placeholder: "Ingrese el monto recibido",
-                              data: { action: "input->payment#calculateChange", payment_target: "amountReceived" } %>
+                              data: { 
+                                action: "input->payment#calculateChange input->number-format#formatNumber", 
+                                payment_target: "amountReceived",
+                                number_format_target: "input"
+                              } %>
             </div>
           </div>
           

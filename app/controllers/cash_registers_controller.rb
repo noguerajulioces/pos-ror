@@ -45,7 +45,6 @@ class CashRegistersController < ApplicationController
         format.turbo_stream {
           flash.now[:notice] = 'Caja cerrada correctamente.'
           render turbo_stream: [
-            turbo_stream.replace('flash', partial: 'layouts/flash'),
             turbo_stream.remove('close_register_modal')
           ]
         }

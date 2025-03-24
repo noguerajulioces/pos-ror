@@ -28,6 +28,10 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Order < ApplicationRecord
+  include NumericFormatter
+
+  sanitize_numeric_attributes :total_amount, :discount_percentage
+
   belongs_to :user
   belongs_to :payment_method
   belongs_to :customer, optional: true

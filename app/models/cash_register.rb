@@ -21,6 +21,9 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class CashRegister < ApplicationRecord
+  include NumericFormatter
+  sanitize_numeric_attributes :final_amount, :initial_amount
+
   belongs_to :user
   belongs_to :cash_movement, optional: true
 
