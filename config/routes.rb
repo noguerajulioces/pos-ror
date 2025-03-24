@@ -57,7 +57,13 @@ Rails.application.routes.draw do
   # Add this route within your routes.rb file
   get 'pos/search_products', to: 'pos#search_products'
   # Add these routes to your routes.rb file
-  resources :cash_registers, only: [ :create ]
+  # Add these routes inside your routes.rb file
+  resources :cash_registers, only: [:new, :create] do
+    member do
+      get :close
+      patch :process_close
+    end
+  end
   get 'pos/cash_register_modal', to: 'pos#cash_register_modal'
   # Agrega estas rutas dentro del bloque de rutas existente
   get 'pos/discount_modal', to: 'pos#discount_modal'

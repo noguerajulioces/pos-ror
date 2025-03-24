@@ -1,0 +1,39 @@
+<div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
+  <h1 class="text-2xl font-bold mb-6 text-center">Cerrar Caja</h1>
+
+  <%= form_with(model: @cash_register, url: process_close_cash_register_path(@cash_register), method: :patch, local: true, class: "space-y-4") do |form| %>
+    <% if @cash_register.errors.any? %>
+      <div class="bg-red-50 p-4 rounded-md mb-4">
+        <div class="text-red-700 font-medium mb-2">
+          <%= pluralize(@cash_register.errors.count, "error") %> impidieron que se cerrara la caja:
+        </div>
+        <ul class="list-disc pl-5 text-red-600">
+          <% @cash_register.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <p class="text-gray-700"><strong>Monto Inicial:</strong> ₲s. <%= number_with_delimiter(@cash_register.initial_amount, delimiter: '.') %></p>
+      <p class="text-gray-700"><strong>Fecha de Apertura:</strong> <%= l(@cash_register.open_at, format: :long) %></p>
+    </div>
+
+    <div>
+      <%= form.label :final_amount, "Monto Final (₲s)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="relative rounded-md shadow-sm">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span class="text-gray-500 sm:text-sm">₲s.</span>
+        </div>
+        <%= form.number_field :final_amount, class: "pl-12 block w-full pr-12 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500", min: 0, step: 1000 %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-4">
+      <%= link_to "Cancelar", pos_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      
+      <%= form.submit "Cerrar Caja", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    </div>
+  <% end %>
+</div>

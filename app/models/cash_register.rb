@@ -22,7 +22,7 @@
 #
 class CashRegister < ApplicationRecord
   belongs_to :user
-  belongs_to :cash_register
+  belongs_to :cash_movement, optional: true
 
   validates :open_at, :initial_amount, :status, presence: true
   validates :initial_amount, numericality: { greater_than_or_equal_to: 0 }

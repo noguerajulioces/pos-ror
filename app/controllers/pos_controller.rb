@@ -452,8 +452,11 @@ class PosController < ApplicationController
   end
 
   def check_cash_register
-    @cash_register = CashRegister.open.first
-    @needs_cash_register = @cash_register.nil?
+    @cash_register = current_user.cash_registers.open.first
+  
+    unless @cash_register
+      redirect_to new_cash_register_path, alert: "Debes abrir una caja antes de usar el POS."
+    end
   end
 
   def ensure_cash_register_open
