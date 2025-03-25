@@ -9,8 +9,6 @@ class PosController < ApplicationController
     @categories = Category.where(parent_id: nil)
   end
 
-
-
   def update_order_type
     @order_type = params[:type]
     respond_to do |format|
@@ -19,8 +17,6 @@ class PosController < ApplicationController
       }
     end
   end
-
-
 
   def subcategories
     category = Category.find(params[:category_id])
@@ -73,9 +69,7 @@ class PosController < ApplicationController
     }
   end
 
-  # Helper method to get or initialize the current order
   def current_order
-    # If you're using a session-based approach
     if session[:order_id].present?
       Order.find_by(id: session[:order_id]) || create_new_order
     else
@@ -88,12 +82,6 @@ class PosController < ApplicationController
     session[:order_id] = order.id
     order
   end
-
-
-
-
-
-
 
   def set_order_type
     session[:order_type] = params[:order_type]
@@ -170,7 +158,6 @@ class PosController < ApplicationController
 
       PrintService.print_order(result[:order_id])
 
-      # Clear the cart and other session data
       session[:cart] = []
       session[:discount] = 0
       session[:discount_percentage] = nil
@@ -187,9 +174,6 @@ class PosController < ApplicationController
       end
     end
   end
-
-
-
 
   def change_discount_type
     product_id = params[:product_id]
@@ -234,14 +218,11 @@ class PosController < ApplicationController
   end
 
   def ensure_cash_register_open
-    # Verifica que haya una caja abierta
-    # (asumiendo que tienes un modelo CashRegister con un scope :open)
     @cash_register = CashRegister.open.first
     unless @cash_register
       redirect_to new_cash_register_path, notice: 'Por favor, abre la caja antes de continuar.'
     end
   end
-
 
   def payment_params
     params.permit(:payment_method_id, :status, :customer_id, :order_type, :amount_received, :change_amount)
