@@ -98,4 +98,28 @@ export default class extends Controller {
     input.value = parseInt(input.value) + 1
     input.dispatchEvent(new Event('change'))
   }
+  
+  changeDiscountType(event) {
+      const productId = this.productIdValue
+      const discountType = event.target.value
+      
+      fetch('/pos/change_discount_type', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          discount_type_mode: discountType
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Refresh the cart display
+          Turbo.visit(window.location.href, { action: "replace" })
+        }
+      })
+    }
 }

@@ -66,9 +66,12 @@ Rails.application.routes.draw do
   end
   get 'pos/cash_register_modal', to: 'pos#cash_register_modal'
   # Agrega estas rutas dentro del bloque de rutas existente
-  get 'pos/discount_modal', to: 'pos#discount_modal'
+  # POS routes
+  get 'pos', to: 'pos#show'
+  get 'pos/discount/modal', to: 'pos#discount_modal'
   post 'pos/apply_discount', to: 'pos#apply_discount'
   post 'pos/create_order', to: 'pos#create_order'
+  post 'pos/change_discount_type', to: 'pos#change_discount_type'
   # Add this line to your existing routes
   resources :payment_methods
   resources :orders do

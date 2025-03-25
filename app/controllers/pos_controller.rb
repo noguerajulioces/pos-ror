@@ -316,57 +316,39 @@ class PosController < ApplicationController
     render partial: 'payment_modal'
   end
 
+  # In your POS controller
   def discount_modal
-    # Simple action to render the discount modal
-    render partial: 'discount_modal'
-  end
-
-  def apply_discount
-    discount_amount = params[:discount_amount].to_f
-    discount_type = params[:discount_type]
-
-    # Get the current subtotal
-    cart_totals = calculate_cart_totals
-    subtotal = cart_totals[:subtotal]
-
-    # Calculate the discount
-    if discount_type == 'percentage'
-      # Ensure percentage is valid (0-100)
-      discount_percentage = [ 0, [ discount_amount, 100 ].min ].max
-      discount = subtotal * (discount_percentage / 100)
-      # Store the percentage in the session
-      session[:discount_percentage] = discount_percentage.to_i
-      session[:discount_fixed_amount] = nil
-    else
-      # For fixed discount, if cart is empty, store the original amount for later use
-      if subtotal == 0
-        session[:discount_fixed_amount] = discount_amount
-        discount = 0
-      else
-        # Ensure discount is not greater than subtotal
-        discount = [ discount_amount, subtotal ].min
-        session[:discount_fixed_amount] = discount_amount
-      end
-      # Clear the percentage from the session
-      session[:discount_percentage] = nil
+    product_id = params[:product_id]
+    @current_discount = 0
+    
+    if session[:cart].present?
+      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
+      @current_discount = item["discount_percentage"] if item && item["discount_percentage"].present?
     end
-
-    # Save the discount in the session
-    session[:discount] = discount
-
-    # Recalculate totals
-    new_totals = calculate_cart_totals
-
-    render json: {
-      success: true,
-      discount: discount,
-      discount_percentage: session[:discount_percentage],
-      formatted_discount: "₲s. #{number_with_delimiter(discount.to_i, delimiter: '.')}",
-      formatted_subtotal: "₲s. #{number_with_delimiter(new_totals[:subtotal].to_i, delimiter: '.')}",
-      formatted_total: "₲s. #{number_with_delimiter(new_totals[:total].to_i, delimiter: '.')}",
-      formatted_iva: "₲s. #{number_with_delimiter(new_totals[:iva].to_i, delimiter: '.')}",
-      discount_label: session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : 'Descuento'
-    }
+    
+    render partial: "pos/discount/modal"
+  end
+  
+  def apply_discount
+    product_id = params[:product_id]
+    discount_percentage = params[:discount_percentage].to_i
+    discount_type = params[:discount_type]
+    discount_reason = params[:discount_reason]
+    
+    if session[:cart].present?
+      session[:cart].each do |item|
+        if item["product_id"].to_s == product_id.to_s
+          item["discount_percentage"] = discount_percentage
+          item["discount_type"] = discount_type if discount_type.present?
+          item["discount_reason"] = discount_reason if discount_reason.present?
+        end
+      end
+    end
+    
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: pos_path) }
+      format.json { render json: { success: true } }
+    end
   end
 
   def process_payment
@@ -422,6 +404,39 @@ class PosController < ApplicationController
           turbo_stream.replace('cart-total', partial: 'pos/cart_total')
         ]
       end
+    end
+  end
+
+
+  def change_discount_type
+    product_id = params[:product_id]
+    discount_type_mode = params[:discount_type_mode]
+    
+    if session[:cart].present?
+      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
+      if item
+        # Store the current discount type mode
+        item["discount_type_mode"] = discount_type_mode
+        
+        # If switching from percentage to amount, convert the percentage to an equivalent amount
+        if discount_type_mode == "amount" && item["discount_percentage"].present?
+          item_subtotal = item["price"].to_i * item["quantity"].to_i
+          item["discount_amount"] = (item_subtotal * item["discount_percentage"].to_f / 100).round
+        end
+        
+        # If switching from amount to percentage, convert the amount to an equivalent percentage
+        if discount_type_mode == "percentage" && item["discount_amount"].present?
+          item_subtotal = item["price"].to_i * item["quantity"].to_i
+          item["discount_percentage"] = [(item["discount_amount"].to_f / item_subtotal * 100).round, 100].min
+        end
+      end
+    end
+    
+    # Recalculate totals
+    totals = calculate_cart_totals
+    
+    respond_to do |format|
+      format.json { render json: { success: true, totals: totals } }
     end
   end
 
