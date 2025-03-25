@@ -43,7 +43,7 @@ class CustomersController < ApplicationController
             'new_customer_form',
             partial: 'customers/modal_form',
             locals: { customer: @customer }
-          )
+          ), status: :unprocessable_entity
         }
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
@@ -58,7 +58,15 @@ class CustomersController < ApplicationController
       if @customer.save
         format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
       else
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.replace(
+            'customer_search_modal',
+            partial: 'pos/customer_search_modal',
+            locals: { customer: @customer }
+          )
+        }
         format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
       end
     end
   end

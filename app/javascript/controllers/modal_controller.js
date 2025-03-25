@@ -10,6 +10,7 @@ export default class extends Controller {
 
   connect() {
     // Opcional: código de inicialización si es necesario
+    this.element.addEventListener("turbo:submit-end", this.submitEnd.bind(this))
   }
 
   open(event) {

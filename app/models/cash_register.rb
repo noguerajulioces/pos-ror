@@ -57,10 +57,10 @@ class CashRegister < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["close_at", "created_at", "final_amount", "id", "initial_amount", "open_at", "status", "updated_at", "user_id"]
+    [ 'close_at', 'created_at', 'final_amount', 'id', 'initial_amount', 'open_at', 'status', 'updated_at', 'user_id' ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["cash_movement", "user"]
+    [ 'cash_movement', 'user' ]
   end
 end

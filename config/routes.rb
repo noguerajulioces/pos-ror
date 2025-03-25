@@ -58,7 +58,7 @@ Rails.application.routes.draw do
   get 'pos/search_products', to: 'pos#search_products'
   # Add these routes to your routes.rb file
   # Add these routes inside your routes.rb file
-  resources :cash_registers, only: [:index, :new, :create] do
+  resources :cash_registers, only: [ :index, :new, :create ] do
     member do
       get :close
       patch :process_close
