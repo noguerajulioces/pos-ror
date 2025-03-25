@@ -179,32 +179,102 @@ class PosController < ApplicationController
   def change_discount_type
     product_id = params[:product_id]
     discount_type_mode = params[:discount_type_mode]
-
+  
     if session[:cart].present?
       item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
       if item
-        # Store the current discount type mode
         item['discount_type_mode'] = discount_type_mode
-
-        # If switching from percentage to amount, convert the percentage to an equivalent amount
+  
         if discount_type_mode == 'amount' && item['discount_percentage'].present?
           item_subtotal = item['price'].to_i * item['quantity'].to_i
           item['discount_amount'] = (item_subtotal * item['discount_percentage'].to_f / 100).round
         end
-
-        # If switching from amount to percentage, convert the amount to an equivalent percentage
+  
         if discount_type_mode == 'percentage' && item['discount_amount'].present?
           item_subtotal = item['price'].to_i * item['quantity'].to_i
-          item['discount_percentage'] = [ (item['discount_amount'].to_f / item_subtotal * 100).round, 100 ].min
+          item['discount_percentage'] = [(item['discount_amount'].to_f / item_subtotal * 100).round, 100].min
         end
       end
     end
-
-    # Recalculate totals
+  
     totals = calculate_cart_totals
-
+    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : "Descuento"
+  
     respond_to do |format|
-      format.json { render json: { success: true, totals: totals } }
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.replace(
+            'cart-items-body',
+            partial: 'pos/main/cart_items',
+            locals: { cart_items: session[:cart] }
+          ),
+          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('discount-label', discount_label)
+        ]
+      }
+      format.json { 
+        render json: { 
+          success: true, 
+          totals: totals,
+          discount_label: discount_label
+        } 
+      }
+    end
+  end
+  
+  def apply_item_discount
+    product_id = params[:product_id]
+    discount_value = params[:discount_value].to_i
+    discount_type_mode = params[:discount_type_mode] || 'percentage'
+  
+    if session[:cart].present?
+      item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
+      if item
+        if discount_type_mode == 'amount'
+          item['discount_type_mode'] = 'amount'
+          item['discount_amount'] = discount_value
+          # Calcular el porcentaje equivalente para referencia
+          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item['discount_percentage'] = [(discount_value.to_f / item_subtotal * 100).round, 100].min if item_subtotal > 0
+        else
+          item['discount_type_mode'] = 'percentage'
+          item['discount_percentage'] = [discount_value, 100].min
+          # Calcular el monto equivalente para referencia
+          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item['discount_amount'] = (item_subtotal * discount_value.to_f / 100).round
+        end
+      end
+    end
+  
+    # Recalcular totales
+    totals = calculate_cart_totals
+    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : "Descuento"
+  
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.replace(
+            'cart-items-body',
+            partial: 'pos/main/cart_items',
+            locals: { cart_items: session[:cart] }
+          ),
+          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('discount-label', discount_label)
+        ]
+      }
+      format.json { 
+        render json: { 
+          success: true, 
+          totals: totals,
+          discount_label: discount_label
+        } 
+      }
     end
   end
 

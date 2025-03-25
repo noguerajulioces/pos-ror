@@ -70,7 +70,7 @@
                 <div class="flex items-center">
                   <div class="flex items-center">
                     <select 
-                      class="w-12 px-1 py-0.5 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xxs"
+                      class="w-12 px-1 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xxs"
                       data-controller="cart-item"
                       data-action="change->cart-item#changeDiscountType"
                       data-cart-item-product-id-value="<%= item["product_id"] %>"
@@ -82,7 +82,7 @@
                       type="text" 
                       min="0" 
                       value="<%= item["discount_type_mode"] == "amount" ? item["discount_amount"] : (item["discount_percentage"] || 0) %>" 
-                      class="w-14 px-1 py-0.5 border-t border-b border-r border-gray-300 rounded-r-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      class="w-14 px-1 py-1 border-t border-b border-r border-gray-300 rounded-r-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
                       data-controller="cart-item"
                       data-action="change->cart-item#applyItemDiscount"
                       data-cart-item-product-id-value="<%= item["product_id"] %>"

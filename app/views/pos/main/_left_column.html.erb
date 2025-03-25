@@ -66,7 +66,7 @@
         </div>
         <div class="px-4 py-3 border-b border-gray-200">
           <span class="text-gray-700" id="discount-label">
-            Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
+            Descuento <%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
             <% if session[:discount_reason].present? %>
               <span class="text-xs text-gray-500 block" title="<%= session[:discount_reason] %>">
                 <%= truncate(session[:discount_reason], length: 20) %>

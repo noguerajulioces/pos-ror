@@ -63,7 +63,7 @@ export default class extends Controller {
       return
     }
     
-    fetch('/pos/cart/apply_item_discount', {
+    fetch('/pos/apply_item_discount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,31 +99,27 @@ export default class extends Controller {
     input.dispatchEvent(new Event('change'))
   }
   
+  // Asegúrate de que estos métodos estén en tu cart_item_controller.js
   changeDiscountType(event) {
-      const productId = this.productIdValue
-      const discountType = event.target.value
-      
-      fetch('/pos/change_discount_type', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          discount_type_mode: discountType
-        })
+    const productId = this.productIdValue
+    const discountTypeMode = event.target.value
+    
+    fetch(`/pos/change_discount_type`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        discount_type_mode: discountTypeMode
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Refresh the cart display
-          Turbo.visit(window.location.href, { action: "replace" })
-        }
-      })
+    })
+    .catch(error => {
+      console.error('Error:', error)
+    })
   }
-
-  // Agrega este método a tu cart_item_controller.js
+  
   applyDetailedDiscount(event) {
     event.preventDefault();
     
