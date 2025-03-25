@@ -5,7 +5,7 @@ class CashRegistersController < ApplicationController
     if params[:q] && params[:q][:open_at_lteq].present?
       params[:q][:open_at_lteq] = Time.zone.parse(params[:q][:open_at_lteq]).end_of_day
     end
-    
+
     @q = CashRegister.includes(:user).order(created_at: :desc).ransack(params[:q])
     @cash_registers = @q.result(distinct: true).paginate(page: params[:page], per_page: 10)
   end
