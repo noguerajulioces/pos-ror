@@ -1,0 +1,275 @@
+<div class="border-r border-gray-300 p-4 flex flex-col h-[calc(100vh-56px)] transition-all duration-300 ease-in-out relative" 
+      data-layout-target="leftColumn"
+      data-class-expanded="w-full"
+      data-class-normal="w-2/4">
+  <!-- Toggle button for right column - repositioned -->
+  <button 
+    class="absolute -right-4 top-4 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none z-20"
+    data-action="layout#toggleRightColumn"
+    data-layout-target="toggleButton"
+    title="Mostrar/Ocultar panel de productos">
+    <svg class="w-5 h-5" data-layout-target="toggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+    </svg>
+  </button>
+  
+  <!-- Sección de productos (tabla) -->
+  <div id="cart-items" class="rounded-lg shadow flex-grow flex flex-col">
+    <div class="overflow-y-auto max-h-[calc(100vh-300px)]">
+      <table class="w-full bg-white text-xs">
+        <thead class="sticky top-0 bg-gray-50 z-10">
+          <tr class="border-b border-gray-200">
+            <th class="px-2 py-2 text-left font-medium text-gray-700">Producto</th>
+            <th class="px-2 py-2 text-left font-medium text-gray-700">Cant.</th>
+            <th class="px-2 py-2 text-left font-medium text-gray-700">Precio</th>
+            <th class="px-2 py-2 text-left font-medium text-gray-700">Desc.</th>
+            <th class="px-2 py-2 text-left font-medium text-gray-700">Total</th>
+            <th class="px-2 py-2 text-center font-medium text-gray-700"></th>
+          </tr>
+        </thead>
+        <tbody id="cart-items-body" class="divide-y divide-gray-200 text-xs">
+          <% if session[:cart].present? %>
+            <% session[:cart].each do |item| %>
+              <tr class="hover:bg-gray-50 transition-colors duration-150">
+                <td class="px-2 py-2">
+                  <div class="flex items-center">
+                    <% if item["image_url"].present? %>
+                      <img src="<%= item["image_url"] %>" alt="<%= item["name"] %>" class="h-8 w-8 rounded-md object-cover mr-2">
+                    <% else %>
+                      <div class="h-8 w-8 rounded-md bg-gray-200 flex items-center justify-center mr-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                    <% end %>
+                    <div class="truncate max-w-[120px]">
+                      <div class="font-medium text-gray-800 truncate"><%= item["name"] %></div>
+                      <div class="text-xxs text-gray-500 truncate"><%= item["code"] || "SKU: #{item["product_id"]}" %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-2 py-2">
+                  <div class="flex items-center">
+                    <button 
+                      class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-l-md w-6 h-6 flex items-center justify-center focus:outline-none"
+                      data-controller="cart-item"
+                      data-action="cart-item#decrementQuantity"
+                      data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                      </svg>
+                    </button>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value="<%= item["quantity"] %>" 
+                      class="min-w-8 max-w-16 h-6 px-0 py-0 border-t border-b border-gray-300 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      data-controller="cart-item"
+                      data-action="change->cart-item#updateQuantity"
+                      data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    >
+                    <button 
+                      class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-r-md w-6 h-6 flex items-center justify-center focus:outline-none"
+                      data-controller="cart-item"
+                      data-action="cart-item#incrementQuantity"
+                      data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="px-2 py-2 text-gray-700 whitespace-nowrap">₲s. <%= number_with_delimiter(item["price"].to_i, delimiter: '.') %></td>
+                <td class="px-2 py-2">
+                  <div class="flex items-center">
+                    <input 
+                      type="number" 
+                      min="0" 
+                      max="100" 
+                      value="<%= item["discount_percentage"] || 0 %>" 
+                      class="w-10 px-1 py-0.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      data-controller="cart-item"
+                      data-action="change->cart-item#applyItemDiscount"
+                      data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    >
+                    <span class="ml-0.5 text-gray-700">%</span>
+                    <button 
+                      class="ml-1 text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                      data-controller="modal cart-item"
+                      data-action="modal#open"
+                      data-modal-title="Descuento: <%= item["name"].truncate(20) %>"
+                      data-modal-size="max-w-md w-full"
+                      data-modal-frame-id="item_discount_modal"
+                      data-modal-frame-src="/pos/discount/modal?product_id=<%= item["product_id"] %>"
+                      data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="px-2 py-2 font-medium whitespace-nowrap">
+                  <% 
+                    discount_percentage = item["discount_percentage"] || 0
+                    item_price = item["price"].to_i
+                    item_quantity = item["quantity"].to_i
+                    item_subtotal = item_price * item_quantity
+                    item_discount = (item_subtotal * discount_percentage.to_f / 100).round
+                    item_total = item_subtotal - item_discount
+                  %>
+                  <% if discount_percentage.to_i > 0 %>
+                    <div class="text-xxs text-gray-500 line-through">₲s. <%= number_with_delimiter(item_subtotal, delimiter: '.') %></div>
+                  <% end %>
+                  <div class="text-gray-800">₲s. <%= number_with_delimiter(item_total, delimiter: '.') %></div>
+                </td>
+                <td class="px-2 py-2 text-center">
+                  <button 
+                    data-controller="cart-item" 
+                    data-action="cart-item#remove" 
+                    data-cart-item-product-id-value="<%= item["product_id"] %>"
+                    class="text-red-500 hover:text-red-700 focus:outline-none transition-colors duration-200"
+                    title="Eliminar"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-2 py-6 text-center">
+                <div class="flex flex-col items-center justify-center text-gray-500">
+                  <svg class="w-12 h-12 mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <p class="text-sm font-medium">Carrito vacío</p>
+                  <p class="text-xs mt-1">Agrega productos desde el panel derecho</p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-4 bg-white rounded-md shadow">
+    <div class="grid grid-cols-2 text-sm">
+      <div class="border-r border-gray-200">
+        <div class="px-4 py-3 border-b border-gray-200">
+          <span class="text-gray-700">IVA</span>
+          <span class="float-right font-medium" id="cart-iva">
+            ₲s. <%= number_with_delimiter((calculate_cart_totals[:iva]).to_i, delimiter: '.') %>
+          </span>
+        </div>
+        <div class="px-4 py-3 border-b border-gray-200">
+          <span class="text-gray-700">Cliente:</span>
+          <span class="float-right font-medium" id="customer-info">
+            <% unless session[:customer_name].nil? %>
+              <%= session[:customer_name] %>
+            <% else %>
+              <%=  
+                link_to "Buscar Cliente", "#",
+                class: 'underline decoration-dotted text-indigo-500 hover:text-indigo-700 focus:outline-none',
+                data: {
+                  turbo_frame: "customer_search_modal",
+                  controller: "modal",
+                  action: "modal#open",
+                  modal_size: "max-w-2xl w-full",
+                  modal_title: "Buscar Cliente",
+                  modal_frame_id: "customer_search_modal",
+                  modal_frame_src: "/pos/customer_search_modal"
+                },
+                id: "customer_search_button" 
+              %>
+            <% end %>
+          </span>
+          <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
+        </div>
+        <div class="px-4 py-3">
+          <span class="text-gray-700">Tipo de Pedido:</span>
+          <span class="float-right font-medium" id="order-type-display"><%= @order_type || "N/A" %></span>
+          <input type="hidden" id="selected-order-type" value="<%= @order_type %>">
+          <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
+          <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
+        </div>
+      </div>
+      <div>
+        <div class="px-4 py-3 border-b border-gray-200">
+          <span class="text-gray-700">Sub Total</span>
+          <span class="float-right font-medium" id="cart-subtotal">
+            ₲s. <%= number_with_delimiter((calculate_cart_totals[:subtotal]).to_i, delimiter: '.') %>
+          </span>
+        </div>
+        <div class="px-4 py-3 border-b border-gray-200">
+          <span class="text-gray-700" id="discount-label">
+            Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
+            <% if session[:discount_reason].present? %>
+              <span class="text-xs text-gray-500 block" title="<%= session[:discount_reason] %>">
+                <%= truncate(session[:discount_reason], length: 20) %>
+              </span>
+            <% end %>
+          </span>
+          <span class="float-right font-medium text-red-600" id="cart-discount">
+            ₲s. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
+          </span>
+        </div>
+        <div class="px-4 py-3 bg-green-50">
+          <span class="text-gray-700 font-bold">Total</span>
+          <span class="float-right font-medium" id="cart-total">
+            ₲s. <%= number_with_delimiter((calculate_cart_totals[:total]).to_i, delimiter: '.') %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 grid grid-cols-4 gap-0">
+    <button class="bg-green-500 hover:bg-green-600 text-white py-4 font-medium border-r border-green-600 focus:outline-none flex items-center justify-center"
+            data-controller="modal"
+            data-action="modal#open"
+            data-modal-title="Procesar Pago"
+            data-modal-size="max-w-4xl w-full"
+            data-modal-frame-id="payment_modal"
+            data-modal-frame-src="/pos/payment_modal">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+      Pagar
+    </button>
+    <button 
+      class="bg-blue-500 hover:bg-blue-600 text-white py-4 font-medium border-r border-blue-600 focus:outline-none flex items-center justify-center"
+      data-controller="order"
+      data-action="order#createOnHold">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+      </svg>
+      En espera
+    </button>
+    <button class="bg-white hover:bg-gray-100 text-gray-700 py-4 font-medium border-r border-gray-300 focus:outline-none flex items-center justify-center"
+            data-controller="modal"
+            data-action="modal#open"
+            data-modal-title="Aplicar Descuento"
+            data-modal-size="max-w-md w-full"
+            data-modal-frame-id="discount_modal"
+            data-modal-frame-src="/pos/discount_modal">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Descuento
+    </button>
+    <button class="bg-red-500 hover:bg-red-600 text-white py-4 font-medium focus:outline-none flex items-center justify-center"
+      data-controller="refresh"
+      data-action="refresh#reload">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      Anular
+    </button>
+  </div>
+</div>
