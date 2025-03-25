@@ -37,11 +37,7 @@ Rails.application.routes.draw do
   get 'pos/subcategories', to: 'pos#subcategories'
   get 'pos/products_by_subcategory', to: 'pos#products_by_subcategory'
 
-  post 'pos/add_product_to_cart', to: 'pos#add_product_to_cart'
   post 'pos/add_product_to_order', to: 'pos#add_product_to_order'
-  post 'pos/clear_cart', to: 'pos#clear_cart'
-  delete 'pos/remove_from_cart', to: 'pos#remove_from_cart'
-  post 'pos/set_customer', to: 'pos#set_customer'
   post 'pos/set_order_type', to: 'pos#set_order_type'
   get 'pos/search_products', to: 'pos#search_products'
 
@@ -62,6 +58,12 @@ Rails.application.routes.draw do
       get 'item_discounts', to: 'item_discounts#show'
       get 'discounts', to: 'discounts#show'
     end
+
+    post 'add_product_to_cart', to: 'carts#add_product_to_cart'
+    delete 'remove_from_cart', to: 'carts#remove_from_cart'
+    post 'clear_cart', to: 'carts#clear_cart'
+    patch 'update_quantity', to: 'carts#update_quantity'
+    post 'set_customer', to: 'carts#set_customer'
   end
 
   post 'pos/apply_discount', to: 'pos#apply_discount'
@@ -75,7 +77,6 @@ Rails.application.routes.draw do
   end
   resources :order_payments, except: [ :edit, :update ]
 
-  patch 'pos/update_quantity', to: 'pos#update_quantity'
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos
   get 'print_message', to: 'print#print_message'
   resources :purchases
