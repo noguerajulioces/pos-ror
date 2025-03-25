@@ -1,6 +1,41 @@
 en:
   activerecord:
+    errors:
+      messages:
+        record_invalid: "La validación falló: %{errors}"
+        taken: "ya ha sido registrado"
     attributes:
+      customer:
+        first_name: "Nombre"
+        last_name: "Apellido"
+        email: "Correo electrónico"
+        phone: "Teléfono"
+        address: "Dirección"
+        city: "Ciudad"
+        state: "Estado/Provincia"
+        zip_code: "Código postal"
+        country: "País"
+        notes: "Notas"
+        document: "Documento"
+      product:
+        name: "Nombre"
+        description: "Descripción"
+        price: "Precio"
+        cost: "Costo"
+        sku: "SKU"
+        barcode: "Código de barras"
+        stock: "Inventario"
+        category_id: "Categoría"
+        active: "Activo"
+      category:
+        name: "Nombre"
+        description: "Descripción"
+      order:
+        total_amount: "Monto total"
+        status: "Estado"
+        payment_method: "Método de pago"
+        notes: "Notas"
+        customer_id: "Cliente"
       expense:
         categories:
           supplies: "Suministros de Oficina"
@@ -12,6 +47,15 @@ en:
           transportation: "Transporte"
           taxes: "Impuestos"
           other: "Otros"
+    models:
+      customer: "Cliente"
+      product: "Producto"
+      category: "Categoría"
+      order: "Pedido"
+      order_item: "Ítem de pedido"
+      expense: "Gasto"
+      cash_register: "Caja"
+      user: "Usuario"
   date:
     formats:
       default: "%d %B %Y"
@@ -122,3 +166,36 @@ en:
       default: "%H horas %M minutos"
       short: "%Hh %Mm"
       seconds: "%S segundos"
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      accepted: "debe ser aceptado"
+      blank: "no puede estar en blanco"
+      confirmation: "no coincide con la confirmación"
+      empty: "no puede estar vacío"
+      equal_to: "debe ser igual a %{count}"
+      even: "debe ser par"
+      exclusion: "está reservado"
+      greater_than: "debe ser mayor que %{count}"
+      greater_than_or_equal_to: "debe ser mayor o igual que %{count}"
+      inclusion: "no está incluido en la lista"
+      invalid: "no es válido"
+      less_than: "debe ser menor que %{count}"
+      less_than_or_equal_to: "debe ser menor o igual que %{count}"
+      model_invalid: "La validación falló: %{errors}"
+      not_a_number: "no es un número"
+      not_an_integer: "debe ser un entero"
+      odd: "debe ser impar"
+      other_than: "debe ser distinto de %{count}"
+      present: "debe estar en blanco"
+      required: "debe existir"
+      taken: "ya ha sido registrado"
+      too_long:
+        one: "es demasiado largo (máximo 1 caracter)"
+        other: "es demasiado largo (máximo %{count} caracteres)"
+      too_short:
+        one: "es demasiado corto (mínimo 1 caracter)"
+        other: "es demasiado corto (mínimo %{count} caracteres)"
+      wrong_length:
+        one: "no tiene la longitud correcta (debe ser de 1 caracter)"
+        other: "no tiene la longitud correcta (debe ser de %{count} caracteres)"
