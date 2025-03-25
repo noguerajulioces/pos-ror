@@ -59,7 +59,8 @@ Rails.application.routes.draw do
       get 'orders', to: 'orders#index'
       get 'cash_register', to: 'cash_registers#show'
       get 'payment', to: 'payments#show'
-      get 'discount', to: 'discounts#show'
+      get 'item_discounts', to: 'item_discounts#show'
+      get 'discounts', to: 'discounts#show'
     end
   end
 
