@@ -11,7 +11,7 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900">Filtros</h3>
     </div>
     <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
-      <%= search_form_for @q, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do |f| %>
+      <%= search_form_for @q, class: "grid grid-cols-1 md:grid-cols-5 gap-4" do |f| %>
         <div>
           <%= f.label :user_id_eq, "Usuario", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.collection_select :user_id_eq, 
@@ -27,8 +27,16 @@
                       class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
         </div>
         <div>
-          <%= f.label :open_at_gteq, "Fecha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.label :open_at_gteq, "Fecha desde", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.date_field :open_at_gteq, 
+                          value: params.dig(:q, :open_at_gteq),
+                          class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
+        </div>
+        
+        <div>
+          <%= f.label :open_at_lteq, "Fecha hasta", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.date_field :open_at_lteq, 
+                          value: params.dig(:q, :open_at_lteq),
                           class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" %>
         </div>
         <div class="flex items-end">
