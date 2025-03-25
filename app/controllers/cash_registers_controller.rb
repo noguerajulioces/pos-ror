@@ -46,7 +46,7 @@ class CashRegistersController < ApplicationController
 
     if @cash_register.close!(params[:cash_register][:final_amount])
       respond_to do |format|
-        format.turbo_stream { redirect_to root_path, notice: 'Caja cerrada correctamente.' }
+        format.html { redirect_to root_path, notice: 'Caja cerrada correctamente.' }
       end
     else
       # Calculate values again in case of error

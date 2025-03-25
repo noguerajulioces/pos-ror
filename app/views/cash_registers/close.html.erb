@@ -20,7 +20,7 @@
         </div>
       </div>
     <% else %>
-      <%= form_with(model: @cash_register, url: process_close_cash_register_path(@cash_register), method: :patch, class: "space-y-4") do |form| %>
+      <%= form_with(model: @cash_register, url: process_close_cash_register_path(@cash_register), method: :patch, class: "space-y-4", data: { turbo: false }) do |form| %>
         <% if @cash_register.errors.any? %>
           <div class="bg-red-50 p-4 rounded-md mb-4">
             <div class="text-red-700 font-medium mb-2">
