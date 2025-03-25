@@ -10,13 +10,6 @@ class PosController < ApplicationController
   end
 
 
-  def order_type_modal
-    render partial: 'order_type_modal'
-  end
-
-  def customer_search_modal
-    render partial: 'customer_search_modal'
-  end
 
   def update_order_type
     @order_type = params[:type]
@@ -27,10 +20,7 @@ class PosController < ApplicationController
     end
   end
 
-  def orders_modal
-    @orders = Order.on_hold.order(created_at: :desc)
-    render partial: 'orders_modal'
-  end
+
 
   def subcategories
     category = Category.find(params[:category_id])
@@ -293,46 +283,25 @@ class PosController < ApplicationController
     }
   end
 
-  def cash_register_modal
-    render partial: 'cash_register_modal'
-  end
-
-  def payment_modal
-    render partial: 'payment_modal'
-  end
-
-  # In your POS controller
-  def discount_modal
-    product_id = params[:product_id]
-    @current_discount = 0
-    
-    if session[:cart].present?
-      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
-      @current_discount = item["discount_percentage"] if item && item["discount_percentage"].present?
-    end
-    
-    render partial: "pos/discount/modal"
-  end
-  
   def apply_discount
     product_id = params[:product_id]
     discount_percentage = params[:discount_percentage].to_i
     discount_type = params[:discount_type]
     discount_reason = params[:discount_reason]
-    
+
     if session[:cart].present?
       session[:cart].each do |item|
-        if item["product_id"].to_s == product_id.to_s
-          item["discount_percentage"] = discount_percentage
-          item["discount_type"] = discount_type if discount_type.present?
-          item["discount_reason"] = discount_reason if discount_reason.present?
+        if item['product_id'].to_s == product_id.to_s
+          item['discount_percentage'] = discount_percentage
+          item['discount_type'] = discount_type if discount_type.present?
+          item['discount_reason'] = discount_reason if discount_reason.present?
         end
       end
     end
-    
+
     # Recalcular totales
     totals = calculate_cart_totals
-    
+
     respond_to do |format|
       format.html { redirect_back(fallback_location: pos_path) }
       format.json { render json: { success: true } }
@@ -399,30 +368,30 @@ class PosController < ApplicationController
   def change_discount_type
     product_id = params[:product_id]
     discount_type_mode = params[:discount_type_mode]
-    
+
     if session[:cart].present?
-      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
+      item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
       if item
         # Store the current discount type mode
-        item["discount_type_mode"] = discount_type_mode
-        
+        item['discount_type_mode'] = discount_type_mode
+
         # If switching from percentage to amount, convert the percentage to an equivalent amount
-        if discount_type_mode == "amount" && item["discount_percentage"].present?
-          item_subtotal = item["price"].to_i * item["quantity"].to_i
-          item["discount_amount"] = (item_subtotal * item["discount_percentage"].to_f / 100).round
+        if discount_type_mode == 'amount' && item['discount_percentage'].present?
+          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item['discount_amount'] = (item_subtotal * item['discount_percentage'].to_f / 100).round
         end
-        
+
         # If switching from amount to percentage, convert the amount to an equivalent percentage
-        if discount_type_mode == "percentage" && item["discount_amount"].present?
-          item_subtotal = item["price"].to_i * item["quantity"].to_i
-          item["discount_percentage"] = [(item["discount_amount"].to_f / item_subtotal * 100).round, 100].min
+        if discount_type_mode == 'percentage' && item['discount_amount'].present?
+          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item['discount_percentage'] = [ (item['discount_amount'].to_f / item_subtotal * 100).round, 100 ].min
         end
       end
     end
-    
+
     # Recalculate totals
     totals = calculate_cart_totals
-    
+
     respond_to do |format|
       format.json { render json: { success: true, totals: totals } }
     end
