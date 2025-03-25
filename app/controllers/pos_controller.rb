@@ -1,5 +1,6 @@
 class PosController < ApplicationController
   include ActionView::Helpers::NumberHelper
+  include CartCalculations
   layout 'pos'
 
   before_action :check_cash_register, only: [ :show ]

@@ -1,6 +1,7 @@
 module Pos
   class CartsController < ApplicationController
     include ActionView::Helpers::NumberHelper
+    include CartCalculations
 
     # Add this method to your PosController
     def add_product_to_cart
@@ -209,30 +210,6 @@ module Pos
           session[:discount] = subtotal
         end
       end
-    end
-
-    def calculate_cart_totals
-      cart = session[:cart] || []
-
-      # Calculate subtotal
-      subtotal = cart.sum { |item| item['price'].to_f * item['quantity'].to_i }
-
-      # Get discount from session or default to 0
-      discount = session[:discount].to_f || 0
-
-      # Calculate total
-      # total = subtotal - discount
-      total = subtotal - discount
-
-      # Calculate IVA (10%)
-      iva = total * 0.10
-
-      {
-        subtotal: subtotal,
-        iva: iva,
-        discount: discount,
-        total: total
-      }
     end
   end
 end
