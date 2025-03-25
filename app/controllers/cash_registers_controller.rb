@@ -7,7 +7,7 @@ class CashRegistersController < ApplicationController
     end
     
     @q = CashRegister.includes(:user).order(created_at: :desc).ransack(params[:q])
-    @cash_registers = @q.result(distinct: true).paginate(page: params[:page], per_page: 20)
+    @cash_registers = @q.result(distinct: true).paginate(page: params[:page], per_page: 10)
   end
 
   def new

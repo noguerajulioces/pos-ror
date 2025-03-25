@@ -66,7 +66,7 @@
 </div>
 
 <% if @payment_methods.respond_to?(:total_pages) %>
-  <div class="mt-4 justify-center flex">
+  <div class="mt-4 justify-center border-t flex">
     <%= will_paginate @payment_methods, renderer: TailwindPaginateRenderer %>
   </div>
 <% end %>

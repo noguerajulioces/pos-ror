@@ -128,7 +128,7 @@
 </div>
 
 <% if @orders.respond_to?(:total_pages) %>
-  <div class="mt-4 justify-center flex">
+  <div class="mt-4 justify-center border-t flex">
     <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
   </div>
 <% end %>
