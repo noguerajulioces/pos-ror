@@ -10,7 +10,7 @@ module Pos
           @current_discount = item['discount_percentage'] if item && item['discount_percentage'].present?
         end
 
-        render partial: 'pos/discount/modal'
+        render 'pos/modals/discount_modal'
       end
     end
   end

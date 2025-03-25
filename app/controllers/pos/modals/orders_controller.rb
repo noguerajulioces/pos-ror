@@ -3,7 +3,7 @@ module Pos
     class OrdersController < BaseController
       def index
         @orders = Order.on_hold.order(created_at: :desc)
-        render partial: 'orders_modal'
+        render 'pos/modals/orders_modal'
       end
     end
   end
