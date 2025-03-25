@@ -5,7 +5,7 @@ class CashRegistersController < ApplicationController
     @q = CashRegister.includes(:user).order(created_at: :desc).ransack(params[:q])
     @cash_registers = @q.result
   end
-  
+
   def new
     @cash_register = CashRegister.new
   end
@@ -46,13 +46,7 @@ class CashRegistersController < ApplicationController
 
     if @cash_register.close!(params[:cash_register][:final_amount])
       respond_to do |format|
-        format.html { redirect_to pos_path, notice: 'Caja cerrada correctamente.' }
-        format.turbo_stream {
-          flash.now[:notice] = 'Caja cerrada correctamente.'
-          render turbo_stream: [
-            turbo_stream.remove('close_register_modal')
-          ]
-        }
+        format.turbo_stream { redirect_to root_path, notice: 'Caja cerrada correctamente.' }
       end
     else
       # Calculate values again in case of error
