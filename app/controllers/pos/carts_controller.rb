@@ -166,11 +166,11 @@ module Pos
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace('cart-items-body', partial: 'pos/cart_items', locals: { cart_items: session[:cart] }),
-            turbo_stream.replace('cart-iva', partial: 'pos/cart_iva'),
-            turbo_stream.replace('cart-subtotal', partial: 'pos/cart_subtotal'),
-            turbo_stream.replace('cart-discount', partial: 'pos/cart_discount'),
-            turbo_stream.replace('cart-total', partial: 'pos/cart_total')
+            turbo_stream.replace('cart-items-body', partial: 'pos/carts/cart_items', locals: { cart_items: session[:cart] }),
+            turbo_stream.replace('cart-iva', partial: 'pos/carts/cart_iva'),
+            turbo_stream.replace('cart-subtotal', partial: 'pos/carts/cart_subtotal'),
+            turbo_stream.replace('cart-discount', partial: 'pos/carts/cart_discount'),
+            turbo_stream.replace('cart-total', partial: 'pos/carts/cart_total')
           ]
         end
       end
