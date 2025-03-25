@@ -121,5 +121,40 @@ export default class extends Controller {
           Turbo.visit(window.location.href, { action: "replace" })
         }
       })
-    }
+  }
+
+  // Agrega este método a tu cart_item_controller.js
+  applyDetailedDiscount(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+      method: form.method,
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Cerrar el modal
+        const modal = document.querySelector('[data-controller="modal"]');
+        if (modal) {
+          const modalController = application.getControllerForElementAndIdentifier(modal, "modal");
+          if (modalController) {
+            modalController.close();
+          }
+        }
+        
+        // Actualizar la vista del carrito
+        Turbo.visit(window.location.href, { action: "replace" });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
 }

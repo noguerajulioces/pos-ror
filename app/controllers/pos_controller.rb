@@ -1,15 +1,10 @@
-# app/controllers/pos_controller.rb
 class PosController < ApplicationController
-  include ActionView::Helpers::NumberHelper  # Add this line at the top of your controller
+  include ActionView::Helpers::NumberHelper
   layout 'pos'
 
-  # before_action :authenticate_user!
-  # before_action :ensure_cash_register_open
   before_action :check_cash_register, only: [ :show ]
 
   def show
-    # Aquí puedes cargar los datos que necesites en la vista
-    # Por ejemplo, si quieres mostrar la lista de productos:
     @products = Product.all
     @categories = Category.where(parent_id: nil)
   end
@@ -19,7 +14,6 @@ class PosController < ApplicationController
     render partial: 'order_type_modal'
   end
 
-  # Add this method to your PosController
   def customer_search_modal
     render partial: 'customer_search_modal'
   end
@@ -38,7 +32,6 @@ class PosController < ApplicationController
     render partial: 'orders_modal'
   end
 
-  # Add this method to your PosController
   def subcategories
     category = Category.find(params[:category_id])
     subcategories = category.subcategories.order(:name)
@@ -46,19 +39,15 @@ class PosController < ApplicationController
     render json: subcategories
   end
 
-  # Method to fetch products by subcategory
   def products_by_subcategory
     subcategory = Category.find(params[:subcategory_id])
     products = subcategory.products.order(:name)
 
-    # Custom JSON response with first image
     products_with_images = products.map do |product|
       product_json = product.as_json(only: [ :id, :name, :price, :stock ])
 
-      # Add first image if available
       first_image = product.product_images.first
       if first_image&.image&.attached?
-        # Generate a URL for the resized image
         variant = first_image.image.variant(resize_to_fill: [ 200, 200 ]).processed
         product_json['image_url'] = Rails.application.routes.url_helpers.rails_blob_path(variant, only_path: true)
         product_json['image_alt'] = first_image.alt_text
@@ -70,18 +59,14 @@ class PosController < ApplicationController
     render json: products_with_images
   end
 
-  # Add this method to handle adding products to the order
   def add_product_to_order
     product = Product.find(params[:product_id])
     quantity = params[:quantity].to_i
 
-    # Initialize or get the current order from the session
     @order = current_order
 
-    # Add the product to the order
     @order.add_product(product, quantity)
 
-    # Return the updated order as JSON
     render json: {
       items: @order.order_items.map do |item|
         {
@@ -344,6 +329,9 @@ class PosController < ApplicationController
         end
       end
     end
+    
+    # Recalcular totales
+    totals = calculate_cart_totals
     
     respond_to do |format|
       format.html { redirect_back(fallback_location: pos_path) }
