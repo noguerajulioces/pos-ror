@@ -1,5 +1,7 @@
-module PosHelper
-  # Modifica este método en tu helper o controlador
+# app/controllers/concerns/cart_calculations.rb
+module CartCalculations
+  extend ActiveSupport::Concern
+
   def calculate_cart_totals
     cart = session[:cart] || []
 

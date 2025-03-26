@@ -63,7 +63,7 @@ export default class extends Controller {
       return
     }
     
-    fetch('/pos/cart/apply_item_discount', {
+    fetch('/pos/apply_item_discount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,31 +99,66 @@ export default class extends Controller {
     input.dispatchEvent(new Event('change'))
   }
   
+  // Asegúrate de que estos métodos estén en tu cart_item_controller.js
   changeDiscountType(event) {
-      const productId = this.productIdValue
-      const discountType = event.target.value
-      
-      fetch('/pos/change_discount_type', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          discount_type_mode: discountType
-        })
+    const productId = this.productIdValue
+    const discountTypeMode = event.target.value
+    const row = event.target.closest('tr')
+    const discountInput = row.querySelector('input[data-action="change->cart-item#applyItemDiscount"]')
+    
+    fetch(`/pos/change_discount_type`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        discount_type_mode: discountTypeMode
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Refresh the cart display
-          Turbo.visit(window.location.href, { action: "replace" })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Find the updated item in the response
+        const updatedItem = data.cart_item;
+        if (updatedItem) {
+          // Update the input value based on discount type
+          if (discountTypeMode === 'amount') {
+            discountInput.value = updatedItem.discount_amount || 0;
+          } else {
+            discountInput.value = updatedItem.discount_percentage || 0;
+          }
+          
+          // Update discount type value attribute
+          discountInput.dataset.cartItemDiscountTypeValue = discountTypeMode;
+          
+          // Update the button state
+          const discountButton = row.querySelector('button[data-controller~="modal"]');
+          if (discountButton) {
+            if (discountTypeMode === 'amount') {
+              discountButton.classList.add('opacity-50', 'cursor-not-allowed');
+              discountButton.setAttribute('disabled', '');
+              discountButton.removeAttribute('data-action');
+              const svg = discountButton.querySelector('svg');
+              if (svg) svg.classList.add('text-gray-400');
+            } else {
+              discountButton.classList.remove('opacity-50', 'cursor-not-allowed');
+              discountButton.removeAttribute('disabled');
+              discountButton.setAttribute('data-action', 'modal#open');
+              const svg = discountButton.querySelector('svg');
+              if (svg) svg.classList.remove('text-gray-400');
+            }
+          }
         }
-      })
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error)
+    })
   }
-
-  // Agrega este método a tu cart_item_controller.js
+  
   applyDetailedDiscount(event) {
     event.preventDefault();
     
@@ -133,17 +168,23 @@ export default class extends Controller {
     fetch(form.action, {
       method: form.method,
       headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json' // Explicitly request JSON response
       },
       body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
         // Cerrar el modal
         const modal = document.querySelector('[data-controller="modal"]');
         if (modal) {
-          const modalController = application.getControllerForElementAndIdentifier(modal, "modal");
+          const modalController = this.application.getControllerForElementAndIdentifier(modal, "modal");
           if (modalController) {
             modalController.close();
           }

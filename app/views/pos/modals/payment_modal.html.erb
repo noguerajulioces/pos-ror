@@ -21,17 +21,17 @@
             <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:subtotal].to_i, delimiter: '.') %></span>
           </div>
           <div class="flex justify-between mb-2">
-            <span>IVA:</span>
-            <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
-          </div>
-          <div class="flex justify-between mb-2">
             <span>Descuento:</span>
-            <span>₲s. <%= number_with_delimiter(calculate_cart_totals[:discount].to_i, delimiter: '.') %></span>
+            <span>- ₲s. <%= number_with_delimiter(calculate_cart_totals[:discount].to_i, delimiter: '.') %></span>
           </div>
           <div class="flex justify-between font-bold">
             <span>Total a Pagar:</span>
             <span id="total-amount">₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
             <input type="hidden" id="total-amount-value" value="<%= calculate_cart_totals[:total].to_i %>">
+          </div>
+          <div class="flex justify-between mb-2">
+            <span>IVA <span class="text-xs">(10% del total)</span>:</span>
+            <span class="text-xs">₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
           </div>
         </div>
         

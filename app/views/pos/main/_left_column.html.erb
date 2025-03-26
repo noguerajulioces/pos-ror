@@ -41,7 +41,7 @@
                   modal_size: "max-w-2xl w-full",
                   modal_title: "Buscar Cliente",
                   modal_frame_id: "customer_search_modal",
-                  modal_frame_src: "/pos/customer_search_modal"
+                  modal_frame_src: pos_modals_customer_search_path,
                 },
                 id: "customer_search_button" 
               %>
@@ -66,7 +66,7 @@
         </div>
         <div class="px-4 py-3 border-b border-gray-200">
           <span class="text-gray-700" id="discount-label">
-            Descuento<%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
+            Descuento <%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
             <% if session[:discount_reason].present? %>
               <span class="text-xs text-gray-500 block" title="<%= session[:discount_reason] %>">
                 <%= truncate(session[:discount_reason], length: 20) %>
@@ -94,7 +94,7 @@
             data-modal-title="Procesar Pago"
             data-modal-size="max-w-4xl w-full"
             data-modal-frame-id="payment_modal"
-            data-modal-frame-src="/pos/payment_modal">
+            data-modal-frame-src="<%= pos_modals_payment_path %>">
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
       </svg>
@@ -115,7 +115,7 @@
             data-modal-title="Aplicar Descuento"
             data-modal-size="max-w-md w-full"
             data-modal-frame-id="discount_modal"
-            data-modal-frame-src="/pos/discount_modal">
+            data-modal-frame-src="<%= pos_modals_discounts_path %>">
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
