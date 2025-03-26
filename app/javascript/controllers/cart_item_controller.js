@@ -103,17 +103,56 @@ export default class extends Controller {
   changeDiscountType(event) {
     const productId = this.productIdValue
     const discountTypeMode = event.target.value
+    const row = event.target.closest('tr')
+    const discountInput = row.querySelector('input[data-action="change->cart-item#applyItemDiscount"]')
     
     fetch(`/pos/change_discount_type`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
         product_id: productId,
         discount_type_mode: discountTypeMode
       })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Find the updated item in the response
+        const updatedItem = data.cart_item;
+        if (updatedItem) {
+          // Update the input value based on discount type
+          if (discountTypeMode === 'amount') {
+            discountInput.value = updatedItem.discount_amount || 0;
+          } else {
+            discountInput.value = updatedItem.discount_percentage || 0;
+          }
+          
+          // Update discount type value attribute
+          discountInput.dataset.cartItemDiscountTypeValue = discountTypeMode;
+          
+          // Update the button state
+          const discountButton = row.querySelector('button[data-controller~="modal"]');
+          if (discountButton) {
+            if (discountTypeMode === 'amount') {
+              discountButton.classList.add('opacity-50', 'cursor-not-allowed');
+              discountButton.setAttribute('disabled', '');
+              discountButton.removeAttribute('data-action');
+              const svg = discountButton.querySelector('svg');
+              if (svg) svg.classList.add('text-gray-400');
+            } else {
+              discountButton.classList.remove('opacity-50', 'cursor-not-allowed');
+              discountButton.removeAttribute('disabled');
+              discountButton.setAttribute('data-action', 'modal#open');
+              const svg = discountButton.querySelector('svg');
+              if (svg) svg.classList.remove('text-gray-400');
+            }
+          }
+        }
+      }
     })
     .catch(error => {
       console.error('Error:', error)

@@ -198,6 +198,7 @@ class PosController < ApplicationController
   def change_discount_type
     product_id = params[:product_id]
     discount_type_mode = params[:discount_type_mode]
+    updated_item = nil
   
     if session[:cart].present?
       item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
@@ -213,6 +214,8 @@ class PosController < ApplicationController
           item_subtotal = item['price'].to_i * item['quantity'].to_i
           item['discount_percentage'] = [(item['discount_amount'].to_f / item_subtotal * 100).round, 100].min
         end
+        
+        updated_item = item.dup # Create a copy of the updated item
       end
     end
   
@@ -220,6 +223,7 @@ class PosController < ApplicationController
     discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : "Descuento"
   
     respond_to do |format|
+      format.html { redirect_back(fallback_location: pos_path) }
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace(
@@ -238,7 +242,8 @@ class PosController < ApplicationController
         render json: { 
           success: true, 
           totals: totals,
-          discount_label: discount_label
+          discount_label: discount_label,
+          cart_item: updated_item
         } 
       }
     end
@@ -292,7 +297,7 @@ class PosController < ApplicationController
           success: true, 
           totals: totals,
           discount_label: discount_label
-        } 
+        }
       }
     end
   end
