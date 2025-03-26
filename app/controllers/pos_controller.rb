@@ -298,4 +298,43 @@ class PosController < ApplicationController
   def payment_params
     params.permit(:payment_method_id, :status, :customer_id, :order_type, :amount_received, :change_amount)
   end
+
+  def update_quantity
+    product_id = params[:product_id]
+    quantity = params[:quantity].to_i
+    
+    if session[:cart].present?
+      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
+      if item
+        # Guardar los valores de descuento actuales
+        discount_percentage = item["discount_percentage"]
+        discount_amount = item["discount_amount"]
+        discount_type_mode = item["discount_type_mode"]
+        discount_reason = item["discount_reason"]
+        
+        # Actualizar la cantidad
+        item["quantity"] = quantity
+        
+        # Restaurar los valores de descuento
+        item["discount_percentage"] = discount_percentage
+        item["discount_amount"] = discount_amount
+        item["discount_type_mode"] = discount_type_mode
+        item["discount_reason"] = discount_reason
+      end
+    end
+    
+    # Recalcular totales
+    totals = calculate_cart_totals
+    
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+        ]
+      }
+    end
+  end
 end
