@@ -92,16 +92,17 @@
                   </div>
                   <div class="relative ml-1">
                     <button 
-                      class="text-indigo-600 hover:text-indigo-800 focus:outline-none"
+                      class="text-indigo-600 hover:text-indigo-800 focus:outline-none <%= item["discount_type_mode"] == "amount" ? 'opacity-50 cursor-not-allowed' : '' %>"
                       data-controller="modal cart-item"
-                      data-action="modal#open"
+                      data-action="<%= item["discount_type_mode"] == "amount" ? '' : 'modal#open' %>"
                       data-modal-title="Descuento: <%= item["name"].truncate(20) %>"
                       data-modal-size="max-w-md w-full"
                       data-modal-frame-id="item_discount_modal"
                       data-modal-frame-src="/pos/modals/item_discounts?product_id=<%= item["product_id"] %>"
                       data-cart-item-product-id-value="<%= item["product_id"] %>"
+                      <%= item["discount_type_mode"] == "amount" ? 'disabled' : '' %>
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-4 h-4 <%= item["discount_type_mode"] == "amount" ? 'text-gray-400' : '' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                       </svg>
                     </button>
