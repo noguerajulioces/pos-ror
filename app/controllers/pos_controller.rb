@@ -143,7 +143,26 @@ class PosController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_back(fallback_location: pos_path) }
-      format.json { render json: { success: true } }
+      format.json { 
+        render json: { 
+          success: true,
+          totals: totals
+        } 
+      }
+      # Add this to handle turbo_stream requests properly
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.replace(
+            'cart-items-body',
+            partial: 'pos/main/cart_items',
+            locals: { cart_items: session[:cart] }
+          ),
+          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}")
+        ]
+      }
     end
   end
 

@@ -129,17 +129,23 @@ export default class extends Controller {
     fetch(form.action, {
       method: form.method,
       headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json' // Explicitly request JSON response
       },
       body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
         // Cerrar el modal
         const modal = document.querySelector('[data-controller="modal"]');
         if (modal) {
-          const modalController = application.getControllerForElementAndIdentifier(modal, "modal");
+          const modalController = this.application.getControllerForElementAndIdentifier(modal, "modal");
           if (modalController) {
             modalController.close();
           }
