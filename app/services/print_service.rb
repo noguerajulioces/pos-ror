@@ -17,7 +17,8 @@ class PrintService
     # Construye el comando para invocar el script Node.js
     require 'shellwords'
     script_path = Rails.root.join('scripts', 'print.js').to_s
-    command = [ 'node', script_path, temp_file.to_s ].shelljoin
+    node_path = `which node`.strip
+    command = [ node_path, script_path, temp_file.to_s ].shelljoin
 
     pid = Process.spawn(command)
     Process.detach(pid)
