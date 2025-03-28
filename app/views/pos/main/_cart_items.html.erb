@@ -46,7 +46,8 @@
                   </button>
                   <input 
                     type="number" 
-                    min="1" 
+                    min="0.001"
+                    step="0.001" 
                     value="<%= item["quantity"] %>" 
                     class="no-spinner min-w-8 max-w-16 h-6 px-0 py-0 border-t border-b border-gray-300 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     data-controller="cart-item"
@@ -120,8 +121,8 @@
               <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <% 
                   item_price = item["price"].to_i
-                  item_quantity = item["quantity"].to_i
-                  item_subtotal = item_price * item_quantity
+                  item_quantity = item["quantity"]
+                  item_subtotal = (item_price * item_quantity).to_i
                   
                   if item["discount_type_mode"] == "amount"
                     item_discount = [item["discount_amount"].to_i, item_subtotal].min
