@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_123529) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_28_163258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -174,6 +174,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_123529) do
     t.string "order_type"
     t.decimal "discount_percentage", precision: 5, scale: 2
     t.string "discount_reason"
+    t.string "receipt_number"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
     t.index ["user_id"], name: "index_orders_on_user_id"

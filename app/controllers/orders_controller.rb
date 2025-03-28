@@ -2,6 +2,11 @@ class OrdersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_order, only: [ :show, :edit, :update, :destroy ]
 
+  def receipt_preview
+    @order = Order.find(params[:id])
+    render template: 'orders/print_templates/default', layout: 'application' # o 'print' si tenés un layout para recibos
+  end
+
   def index
     @q = Order.ransack(params[:q])
     @orders = @q.result(distinct: true)

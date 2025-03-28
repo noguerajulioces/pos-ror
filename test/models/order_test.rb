@@ -7,6 +7,7 @@
 #  discount_reason     :string
 #  order_date          :datetime
 #  order_type          :string
+#  receipt_number      :string
 #  status              :string
 #  total_amount        :decimal(, )
 #  created_at          :datetime         not null

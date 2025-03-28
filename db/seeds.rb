@@ -30,26 +30,16 @@ currencies.each do |currency_data|
 end
 
 company_settings = [
-  {
-    var: 'company_name',
-    value: 'TU EMPRESA'
-  },
-  {
-    var: 'company_owner',
-    value: 'JUAN PEREZ PEREZ'
-  },
-  {
-    var: 'company_address',
-    value: 'RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION'
-  },
-  {
-    var: 'company_ruc',
-    value: '000000000-0'
-  },
-  {
-    var: 'receipt_final_message',
-    value: '***¡Gracias por su compra!***'
-  }
+  { var: 'company_name', value: 'TU EMPRESA' },
+  { var: 'company_owner', value: 'JUAN PEREZ PEREZ' },
+  { var: 'company_address', value: 'RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION' },
+  { var: 'company_ruc', value: '000000000-0' },
+  { var: 'company_phone', value: '0975 000000' },
+  { var: 'company_email', value: 'contacto@tuempresa.com' },
+  { var: 'company_invoice_number', value: '001-002-0001516' },
+  { var: 'company_stamp_number', value: '17304657' },
+  { var: 'company_stamp_validity', value: '01/07/2024 al 31/07/2025' },
+  { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' }
 ]
 
 company_settings.each do |setting|

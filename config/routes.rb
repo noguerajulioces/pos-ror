@@ -91,4 +91,11 @@ Rails.application.routes.draw do
       get :expenses
     end
   end
+
+  resources :orders do
+    member do
+      get :receipt_preview
+    end
+  end
+  
 end

@@ -39,12 +39,16 @@ class Setting < ApplicationRecord
   end
 
   def description
-    # You can add descriptions in a hash if needed
     descriptions = {
       'company_name' => 'Nombre de la empresa que aparecerá en los recibos',
       'company_owner' => 'Nombre del propietario de la empresa',
       'company_address' => 'Dirección completa de la empresa',
       'company_ruc' => 'RUC de la empresa',
+      'company_phone' => 'Teléfono de la empresa que aparece en el recibo',
+      'company_email' => 'Correo electrónico de contacto de la empresa',
+      'company_invoice_number' => 'Número de factura que aparece en los comprobantes',
+      'company_stamp_number' => 'Número de timbrado habilitado por la SET (TIMBRADO)',
+      'company_stamp_validity' => 'Vigencia del timbrado (ej: 01/01/2024 al 31/12/2025)',
       'receipt_final_message' => 'Mensaje que aparece al final de cada recibo'
     }
     descriptions[var] || var.humanize
