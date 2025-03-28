@@ -6,13 +6,13 @@ module CartCalculations
     cart = session[:cart] || []
 
     # Calculate subtotal
-    subtotal = cart.sum { |item| item['price'].to_f * item['quantity'].to_i }
+    subtotal = cart.sum { |item| item['price'].to_f * item['quantity'].to_f }
 
     # Calculate item-level discounts
     item_discounts = 0
     cart.each do |item|
       item_price = item['price'].to_f
-      item_quantity = item['quantity'].to_i
+      item_quantity = item['quantity'].to_f
       item_subtotal = item_price * item_quantity
       
       if item['discount_type_mode'] == 'amount' && item['discount_amount'].present?

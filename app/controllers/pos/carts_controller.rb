@@ -196,7 +196,7 @@ module Pos
       end
 
       # Calculate current subtotal
-      subtotal = session[:cart].sum { |item| item['price'].to_f * item['quantity'].to_i }
+      subtotal = session[:cart].sum { |item| item['price'].to_f * item['quantity'].to_f }
 
       # If percentage discount is applied, recalculate based on new subtotal
       if session[:discount_percentage].present?
