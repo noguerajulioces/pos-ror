@@ -90,7 +90,7 @@
                     <%= number_to_currency(expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= truncate(sanitize(expense.description), length: 100, separator: ' ', omission: '...', word_count: 20) %>
+                    <%= truncate(sanitize(expense.description), length: 15, separator: ' ', omission: '...', word_count: 20) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <% if expense.category.present? %>
