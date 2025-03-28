@@ -108,7 +108,7 @@
         <td class="px-2 py-2 font-medium whitespace-nowrap">
           <% 
             item_price = item["price"].to_i
-            item_quantity = item["quantity"]
+            item_quantity = item["quantity"].to_f
             item_subtotal = (item_price * item_quantity).to_i
             
             if item["discount_type_mode"] == "amount"
