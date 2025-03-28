@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_28_173845) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_28_184811) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -215,8 +215,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_28_173845) do
     t.decimal "price"
     t.string "barcode"
     t.string "sku"
-    t.integer "stock"
-    t.integer "min_stock"
+    t.decimal "stock", precision: 10, scale: 3
+    t.decimal "min_stock", precision: 10, scale: 3
     t.string "status"
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
