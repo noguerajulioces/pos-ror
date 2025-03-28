@@ -229,10 +229,10 @@
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= movement.quantity.abs %>
+                      <%= movement.quantity.abs %> <%= @product&.unit&.abbreviation %>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= movement.final_stock %>
+                      <%= movement.final_stock %> <%= @product&.unit&.abbreviation %>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <%= truncate(movement.reason, length: 50) %>
