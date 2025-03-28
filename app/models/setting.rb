@@ -50,7 +50,8 @@ class Setting < ApplicationRecord
       'company_stamp_number' => 'Número de timbrado habilitado por la SET (TIMBRADO)',
       'company_stamp_validity' => 'Vigencia del timbrado (ej: 01/01/2024 al 31/12/2025)',
       'receipt_final_message' => 'Mensaje que aparece al final de cada recibo',
-      'company_tax_stamp' => 'Timbrado de la empresa'
+      'company_tax_stamp' => 'Timbrado de la empresa',
+      'company_economic_activity' => 'Actividad económica declarada de la empresa'
     }
     descriptions[var] || var.humanize
   end

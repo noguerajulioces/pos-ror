@@ -14,6 +14,9 @@
 <%= "Factura Nro: #{order&.receipt_number || '000-000-0000000'}" %>
 
 <%= "=" * line_width %>
+<%= "Actividad Económica: #{Setting.get('company_economic_activity')}".center(line_width) %>
+
+<%= "=" * line_width %>
 Fecha: <%= order.order_date.strftime("%d/%m/%Y") %>  Hora: <%= order.order_date.strftime("%H:%M") %>
 
 <%= "=" * line_width %>

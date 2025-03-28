@@ -39,7 +39,8 @@ company_settings = [
   { var: 'company_invoice_number', value: '001-002-0001516' },
   { var: 'company_stamp_number', value: '17304657' },
   { var: 'company_stamp_validity', value: '01/07/2024 al 31/07/2025' },
-  { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' }
+  { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' },
+  { var: 'company_economic_activity', value: 'VENTA DE PRODUCTOS ELECTRÓNICOS' }
 ]
 
 company_settings.each do |setting|
