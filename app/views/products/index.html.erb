@@ -95,7 +95,7 @@
                     </strong>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= product.stock %>
+                    <%= product.stock %> <%= product&.unit&.abbreviation %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <span class="<%= product.status == 'active' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">

@@ -87,7 +87,7 @@
           </td>
           <td><%= product.category.name %></td>
           <td class="<%= 'low-stock' if product.stock <= product.min_stock %>">
-            <%= product.stock %> <%= product.unit.name %>
+            <%= product.stock %> <%= product&.unit&.name %>
           </td>
           <td>
             <%= number_to_currency(product.price, unit: 'Gs. ', precision: 0, delimiter: '.') %>

@@ -91,10 +91,10 @@
                     <%= number_to_currency(product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm font-semibold <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
-                    <%= product.stock %>
+                    <%= product.stock %> <%= product&.unit&.abbreviation %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm <%= product.stock <= product.min_stock ? 'text-red-700' : 'text-gray-500' %>">
-                    <%= product.min_stock %>
+                    <%= product.min_stock %> <%= product&.unit&.abbreviation %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
