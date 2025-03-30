@@ -120,10 +120,11 @@
             </svg>
           </div>
           <div class="mt-2 text-2xl font-bold text-gray-900">
-            <%= @product.stock %>
+            <%= @product.stock %> 
+            <span class="text-xs"><%= @product&.unit&.abbreviation %></span>
           </div>
           <div class="mt-1 text-sm text-gray-500">
-            Mínimo: <%= @product.min_stock %>
+            Mínimo: <%= @product.min_stock %> <span class="text-xs"><%= @product&.unit&.abbreviation %></span>
           </div>
         </div>
       </div>
