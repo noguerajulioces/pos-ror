@@ -276,14 +276,15 @@
               <div class="ml-4 w-0 flex-1">
                 <h3 class="text-sm font-medium text-gray-900">Cliente más Frecuente</h3>
                 <p class="text-base font-bold text-purple-600 truncate">
-                  <%= Customer.joins(:orders)
-                          .where(orders: { status: 'completed' })
-                          .unscoped
-                          .group('customers.id')
-                          .order('count_all DESC')
-                          .count
-                          .first
-                          .then { |id, _| Customer.find(id).full_name } rescue "N/A" %>
+                  <% 
+                    most_frequent_customer = Customer.joins(:orders)
+                      .select('customers.id, customers.first_name, customers.last_name, COUNT(orders.id) as order_count')
+                      .where(orders: { status: 'completed' })
+                      .group('customers.id')
+                      .order('order_count DESC')
+                      .first
+                  %>
+                  <%= most_frequent_customer&.full_name || "N/A" %>
                 </p>
               </div>
             </div>
