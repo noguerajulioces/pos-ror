@@ -22,6 +22,10 @@
 #  fk_rails_...  (purchase_id => purchases.id)
 #
 class PurchaseItem < ApplicationRecord
+  include NumericFormatter
+
+  sanitize_numeric_attributes :total_price, :unit_price
+
   belongs_to :product
   belongs_to :purchase
 

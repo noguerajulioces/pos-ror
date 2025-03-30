@@ -1,14 +1,30 @@
-<div class="px-4 sm:px-6 lg:px-8 py-6">
-  <div class="md:flex md:items-center md:justify-between mb-6">
-    <div class="min-w-0 flex-1">
-      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-        Nueva Compra
-      </h2>
+<div class="px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6 border border-gray-200">
+      <div class="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center">
+          <div class="bg-indigo-100 rounded-full p-2 mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900">Nueva Compra</h1>
+            <p class="mt-1 text-sm text-gray-500">Registre una nueva compra en el sistema</p>
+          </div>
+        </div>
+        
+        <div class="mt-4 sm:mt-0">
+          <%= link_to purchases_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Volver a Compras
+          <% end %>
+        </div>
+      </div>
     </div>
-    <div class="mt-4 flex md:ml-4 md:mt-0">
-      <%= link_to "Volver a Compras", purchases_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
-    </div>
-  </div>
 
-  <%= render 'form', purchase: @purchase %>
+    <%= render 'form', purchase: @purchase %>
+  </div>
 </div>

@@ -18,6 +18,10 @@
 #  fk_rails_...  (supplier_id => suppliers.id)
 #
 class Purchase < ApplicationRecord
+  include NumericFormatter
+
+  sanitize_numeric_attributes :total_amount
+
   belongs_to :supplier
   has_many :purchase_items, dependent: :destroy
   accepts_nested_attributes_for :purchase_items, allow_destroy: true
