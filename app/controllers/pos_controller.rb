@@ -167,6 +167,12 @@ class PosController < ApplicationController
   end
 
   def process_payment
+
+    totals = calculate_cart_totals
+
+    session[:discount] = totals[:discount]
+    session[:discount_percentage] = totals[:discount_percentage]
+
     result = Orders::CreateService.new(
       cart: session[:cart],
       params: payment_params,
