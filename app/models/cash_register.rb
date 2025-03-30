@@ -36,6 +36,7 @@ class CashRegister < ApplicationRecord
   # Un scope para obtener la caja abierta
   scope :open, -> { where(status: 'open') }
   scope :from_today, -> { where(open_at: Time.current.beginning_of_day..Time.current.end_of_day) }
+  scope :from_previous_days, -> { open.where('open_at < ?', Time.current.beginning_of_day) }
 
   # Método para cerrar la caja
   def close!(final_amount)
@@ -48,12 +49,39 @@ class CashRegister < ApplicationRecord
     end
   end
 
-  def force_close!(final_amount, reason = nil)
-    update(close_at: Time.current, final_amount: final_amount, status: 'forced_closed', closure_reason: reason)
+  def force_close!(final_amount)
+    update(close_at: nil, final_amount: final_amount, status: 'forced_closed')
   end
 
   def daily_report
     sales.includes(:products)
+  end
+
+  # Método para verificar y cerrar cajas abiertas de días anteriores
+  def self.auto_close_previous_day_registers
+    from_previous_days.find_each do |register|
+      # Since there's no direct cash_register_id in orders, we need to find orders
+      # created during the time this register was open
+      # Assuming orders are associated with the register's time period
+      order_time_range = register.open_at..(register.close_at || Time.current)
+      
+      # Find orders created by this user during the register's open period
+      total_sales_amount = Order.where(
+        user_id: register.user_id,
+        created_at: order_time_range
+      ).sum(:total_amount) || 0
+      
+      # El monto final debería ser el monto inicial más las ventas
+      final_amount = register.initial_amount + total_sales_amount
+      
+      # Cerrar forzadamente la caja con el monto calculado
+      register.force_close!(final_amount)
+    end
+  end
+
+  # Método para verificar si hay cajas abiertas de días anteriores
+  def self.has_previous_day_open_registers?
+    from_previous_days.exists?
   end
 
   def self.ransackable_attributes(auth_object = nil)
