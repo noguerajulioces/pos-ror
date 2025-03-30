@@ -97,5 +97,4 @@ Rails.application.routes.draw do
       get :receipt_preview
     end
   end
-  
 end
