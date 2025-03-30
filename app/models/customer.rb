@@ -39,4 +39,15 @@ class Customer < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     %w[]
   end
+
+  def initials
+    first_initial = first_name.present? ? first_name[0].upcase : ''
+    last_initial = last_name.present? ? last_name[0].upcase : ''
+    
+    if first_initial.present? || last_initial.present?
+      "#{first_initial}#{last_initial}"
+    else
+      document.present? ? document[0..1].upcase : "CG"
+    end
+  end
 end
