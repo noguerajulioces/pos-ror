@@ -24,7 +24,7 @@
           <div>
             <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
             <%= f.collection_select :category_id_eq,
-                Category.all,
+                Category.where.not(parent_id: nil),
                 :id,
                 :name,
                 { include_blank: "Todas las categorías" },
