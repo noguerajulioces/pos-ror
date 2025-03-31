@@ -132,13 +132,21 @@
             </svg>
           </div>
           <div class="mt-2 text-2xl font-bold text-gray-900">
-            <%= number_to_currency(@product.current_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            <% if @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
+              <%= number_to_currency(@product.manual_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            <% else %>
+              <%= number_to_currency(@product.average_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            <% end %>
           </div>
           <div class="mt-1 text-sm text-gray-500">
-            <%= @product.manual_purchase_price.present? ? "Costo de producción (manual)" : "Costo promedio" %>
+            <% if @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
+              Costo de producción (manual)
+            <% else %>
+              Costo promedio de compra
+            <% end %>
           </div>
           
-          <% if @product.purchase_items.any? && @product.manual_purchase_price.present? %>
+          <% if @product.purchase_items.any? && @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
             <div class="mt-3 pt-3 border-t border-gray-200">
               <div class="flex justify-between items-center">
                 <span class="text-sm font-medium text-gray-500">Costo de compra:</span>
@@ -159,20 +167,31 @@
             </svg>
           </div>
           <div class="mt-2">
-            <span class="text-2xl font-bold <%= @product.profit_per_unit > 0 ? 'text-green-600' : 'text-red-600' %>">
-              <%= number_to_currency(@product.profit_per_unit, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            <% if @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
+              <% profit = @product.price - @product.manual_purchase_price %>
+              <% margin = @product.manual_purchase_price > 0 ? (profit / @product.manual_purchase_price * 100) : 0 %>
+            <% else %>
+              <% profit = @product.price - @product.average_purchase_price %>
+              <% margin = @product.average_purchase_price > 0 ? (profit / @product.average_purchase_price * 100) : 0 %>
+            <% end %>
+            <span class="text-2xl font-bold <%= profit > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_currency(profit, delimiter: '.', precision: 0, unit: '₲s. ') %>
             </span>
           </div>
           <div class="mt-1">
-            <span class="text-sm <%= @product.profit_margin_percentage > 0 ? 'text-green-600' : 'text-red-600' %>">
-              <%= number_to_percentage(@product.profit_margin_percentage, precision: 2) %>
+            <span class="text-sm <%= margin > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_percentage(margin, precision: 2) %>
             </span>
             <span class="text-xs text-gray-500 ml-1">
-              <%= @product.manual_purchase_price.present? ? "(basado en costo de producción)" : "(basado en costo promedio)" %>
+              <% if @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
+                (basado en costo de producción)
+              <% else %>
+                (basado en costo promedio)
+              <% end %>
             </span>
           </div>
           
-          <% if @product.purchase_items.any? && @product.manual_purchase_price.present? %>
+          <% if @product.purchase_items.any? && @product.manual_purchase_price.present? && @product.manual_purchase_price > 0 %>
             <div class="mt-3 pt-3 border-t border-gray-200">
               <div class="flex justify-between items-center">
                 <span class="text-xs font-medium text-gray-500">Ganancia con costo de compra:</span>
