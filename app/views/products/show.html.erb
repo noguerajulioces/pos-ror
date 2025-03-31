@@ -197,60 +197,153 @@
       </div>
     </div>
   </div>
-  <!-- Recent Movements -->
-  <div class="mt-8">
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Movimientos Recientes</h3>
-        <span class="text-sm text-gray-500">Últimos 30 días</span>
-      </div>
-      <div class="border-t border-gray-200">
-        <% if @product.inventory_movements.any? %>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-300">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Final</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <% @product.inventory_movements.order(created_at: :desc).limit(10).each do |movement| %>
-                  <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= l movement.created_at, format: :short %>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        <%= movement.quantity.positive? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                        <%= movement.quantity.positive? ? 'Entrada' : 'Salida' %>
-                      </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= movement.quantity.abs %> <%= @product&.unit&.abbreviation %>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= movement.final_stock %> <%= @product&.unit&.abbreviation %>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <%= truncate(movement.reason, length: 50) %>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
+  <!-- Tabbed History Section -->
+    <div class="mt-8">
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200">
+          <nav class="flex -mb-px" aria-label="Tabs">
+            <button 
+              data-controller="tabs" 
+              data-tabs-target="movements" 
+              data-tabs-active="true"
+              data-action="click->tabs#switch"
+              class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+              Movimientos Recientes
+            </button>
+            <button 
+              data-controller="tabs" 
+              data-tabs-target="purchases" 
+              data-tabs-active="false"
+              data-action="click->tabs#switch"
+              class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+              Historial de Compras
+            </button>
+          </nav>
+        </div>
+  
+        <!-- Tab Contents -->
+        <div>
+          <!-- Recent Movements Tab -->
+          <div id="tab-movements" class="tab-content">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+              <h3 class="text-lg font-medium leading-6 text-gray-900">Movimientos Recientes</h3>
+              <span class="text-sm text-gray-500">Últimos 30 días</span>
+            </div>
+            <div class="border-t border-gray-200">
+              <% if @product.inventory_movements.any? %>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Final</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      <% @product.inventory_movements.order(created_at: :desc).limit(10).each do |movement| %>
+                        <tr>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= l movement.created_at, format: :short %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                              <%= movement.quantity.positive? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                              <%= movement.quantity.positive? ? 'Entrada' : 'Salida' %>
+                            </span>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= movement.quantity.abs %> <%= @product&.unit&.abbreviation %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= movement.final_stock %> <%= @product&.unit&.abbreviation %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= truncate(movement.reason, length: 50) %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              <% else %>
+                <div class="text-center py-8">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <p class="mt-2 text-sm text-gray-500">No hay movimientos registrados</p>
+                </div>
+              <% end %>
+            </div>
           </div>
-        <% else %>
-          <div class="text-center py-8">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <p class="mt-2 text-sm text-gray-500">No hay movimientos registrados</p>
+  
+          <!-- Purchase History Tab -->
+          <div id="tab-purchases" class="tab-content hidden">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+              <h3 class="text-lg font-medium leading-6 text-gray-900">Historial de Compras</h3>
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-500">Costo Promedio:</span>
+                <span class="text-sm font-semibold text-indigo-600">
+                  <%= number_to_currency(@product.average_purchase_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                </span>
+              </div>
+            </div>
+            <div class="border-t border-gray-200">
+              <% if @product.purchase_items.any? %>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proveedor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                      <% @product.purchase_items_by_date(10).each do |item| %>
+                        <tr>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= l item.purchase.created_at, format: :short %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= item.purchase&.supplier&.company_name || 'Sin proveedor' %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= item.quantity %> <%= @product&.unit&.abbreviation %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <%= number_to_currency(item.unit_price, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <%= number_to_currency(item.total_price || (item.quantity * item.unit_price), delimiter: '.', precision: 0, unit: '₲s. ') %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="px-6 py-3 bg-gray-50 text-right">
+                  <%= link_to purchases_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" do %>
+                    Ver todas las compras
+                    <span aria-hidden="true"> &rarr;</span>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="text-center py-8">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  <p class="mt-2 text-sm text-gray-500">No hay compras registradas para este producto</p>
+                </div>
+              <% end %>
+            </div>
           </div>
-        <% end %>
+        </div>
       </div>
     </div>
   </div>

@@ -82,6 +82,28 @@ class Product < ApplicationRecord
     manual_purchase_price.presence || average_cost || 0
   end
 
+  # Calculate the weighted average purchase price based on purchase history
+  def average_purchase_price
+    items = purchase_items
+    
+    if items.any?
+      total_quantity = items.sum(:quantity)
+      total_cost = items.sum('purchase_items.quantity * purchase_items.unit_price')
+      
+      total_quantity.positive? ? (total_cost / total_quantity) : 0
+    else
+      current_purchase_price || 0
+    end
+  end
+  
+  # Get purchase items ordered by purchase date
+  def purchase_items_by_date(limit = 10)
+    purchase_items.joins(:purchase)
+                 .select('purchase_items.*, purchases.created_at as purchase_date')
+                 .order('purchases.created_at DESC')
+                 .limit(limit)
+  end
+
   private
 
   def generate_barcode
