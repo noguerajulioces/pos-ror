@@ -5,6 +5,7 @@
 <%= Setting.get('company_owner').to_s.center(line_width) %>
 <%= Setting.get('company_address').to_s.center(line_width) %>
 <%= "RUC: #{Setting.get('company_ruc')}".center(line_width) %>
+<%= "#{Setting.get('company_phone')}".center(line_width) %>
 
 <%= "=" * line_width %>
 
