@@ -41,12 +41,50 @@ export default class extends Controller {
       console.log("Products data received:", data);
       // Store the products data for later use
       this.productsData = data.products;
-      this.renderSearchResults(data.products)
+      
+      // Check if there's exactly one product and it matches the query exactly
+      // This is useful for barcode scanning
+      // Check if there's exactly one product and it matches the query exactly
+      if (data.products.length === 1) {
+        const product = data.products[0];
+        
+        if (product.name === query || 
+            (product.sku && product.sku === query) || 
+            (product.sku && product.sku.includes(query)) ||
+            query.includes(product.id.toString())) {
+          this.addToCart(null, product.id.toString());
+          // Clear the search input
+          this.queryTarget.value = "";
+          // Show a notification
+          this.showNotification(`${product.name} añadido al carrito`);
+          // Return to categories view
+          this.showCategories();
+          return;
+        }
+      }
+      
+      // If no exact match or multiple products, show search results
+      this.renderSearchResults(data.products);
     })
     .catch(error => {
       console.error("Error searching products:", error)
       resultsContainer.innerHTML = '<div class="w-full p-4 text-center text-red-500">Error al buscar productos</div>';
     })
+  }
+  
+  // Add this new method to show notifications
+  showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => notification.remove(), 500);
+    }, 3000);
   }
   
   renderSearchResults(products) {

@@ -104,7 +104,7 @@ class PosController < ApplicationController
   end
 
   def search_products
-    @q = Product.ransack(name_or_description_cont: params[:query])
+    @q = Product.ransack(name_or_sku_cont: params[:query])
     @products = @q.result(distinct: true).limit(30)
 
     render json: {
