@@ -84,7 +84,7 @@ module Orders
           product_id: item['product_id'],
           quantity: item['quantity'],
           price: item['price'],
-          subtotal: item['price'].to_f * item['quantity'].to_i
+          subtotal: item['price'].to_f * item['quantity'].to_f
         )
       end
     end

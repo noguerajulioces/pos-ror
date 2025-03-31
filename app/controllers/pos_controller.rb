@@ -211,12 +211,12 @@ class PosController < ApplicationController
         item['discount_type_mode'] = discount_type_mode
 
         if discount_type_mode == 'amount' && item['discount_percentage'].present?
-          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item_subtotal = item['price'].to_i * item['quantity'].to_f
           item['discount_amount'] = (item_subtotal * item['discount_percentage'].to_f / 100).round
         end
 
         if discount_type_mode == 'percentage' && item['discount_amount'].present?
-          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item_subtotal = item['price'].to_i * item['quantity'].to_f
           item['discount_percentage'] = [ (item['discount_amount'].to_f / item_subtotal * 100).round, 100 ].min
         end
 
@@ -266,13 +266,13 @@ class PosController < ApplicationController
           item['discount_type_mode'] = 'amount'
           item['discount_amount'] = discount_value
           # Calcular el porcentaje equivalente para referencia
-          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item_subtotal = item['price'].to_i * item['quantity'].to_f
           item['discount_percentage'] = [ (discount_value.to_f / item_subtotal * 100).round, 100 ].min if item_subtotal > 0
         else
           item['discount_type_mode'] = 'percentage'
           item['discount_percentage'] = [ discount_value, 100 ].min
           # Calcular el monto equivalente para referencia
-          item_subtotal = item['price'].to_i * item['quantity'].to_i
+          item_subtotal = item['price'].to_i * item['quantity'].to_f
           item['discount_amount'] = (item_subtotal * discount_value.to_f / 100).round
         end
       end
