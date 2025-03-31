@@ -4,7 +4,7 @@
 #
 #  id            :bigint           not null, primary key
 #  movement_type :string
-#  quantity      :integer
+#  quantity      :decimal(10, 3)
 #  reason        :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

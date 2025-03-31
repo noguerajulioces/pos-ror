@@ -27,6 +27,8 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
+        session[:customer_id] = @customer.id
+        session[:customer_name] = @customer.full_name
         # Close the modal and update customer info in the POS view
         format.turbo_stream {
           render turbo_stream: [

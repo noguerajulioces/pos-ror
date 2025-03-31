@@ -15,7 +15,7 @@ module Pos
       existing_item = session[:cart].find { |item| item['product_id'] == @product.id }
 
       if existing_item
-        existing_item['quantity'] += quantity
+        existing_item['quantity'] = (existing_item['quantity'].to_f + quantity.to_f).to_s
       else
         session[:cart] << {
           'product_id' => @product.id,
@@ -154,7 +154,7 @@ module Pos
     # Add this method to your PosController
     def update_quantity
       product_id = params[:product_id]
-      quantity = params[:quantity].to_i
+      quantity = params[:quantity].to_f
 
       if session[:cart].present?
         item_index = session[:cart].find_index { |item| item['product_id'].to_s == product_id.to_s }
@@ -196,7 +196,7 @@ module Pos
       end
 
       # Calculate current subtotal
-      subtotal = session[:cart].sum { |item| item['price'].to_f * item['quantity'].to_i }
+      subtotal = session[:cart].sum { |item| item['price'].to_f * item['quantity'].to_f }
 
       # If percentage discount is applied, recalculate based on new subtotal
       if session[:discount_percentage].present?

@@ -21,10 +21,9 @@ export default class extends Controller {
   }
   
   updateQuantity(event) {
-    const newQuantity = parseInt(event.target.value, 10)
-    
-    if (newQuantity < 1 || isNaN(newQuantity)) {
-      event.target.value = 1
+    const newQuantity = parseFloat(event.target.value)
+    if (newQuantity < 0.001 || isNaN(newQuantity)) {
+      event.target.value = 0.001
       return
     }
     
@@ -45,8 +44,6 @@ export default class extends Controller {
       Turbo.renderStreamMessage(html)
     })
     .catch(error => {
-      console.error('Error updating quantity:', error)
-      // Reset to previous value if there was an error
       event.target.value = event.target.defaultValue
     })
   }

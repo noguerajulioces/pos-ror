@@ -1,55 +1,162 @@
-<div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center pb-5">
-    <h1 class="text-xl font-semibold">Reporte de Gastos</h1>
+<div class="px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
+  <div class="sm:flex sm:items-center sm:justify-between pb-4 border-b border-gray-200">
+    <h1 class="text-xl font-bold text-gray-800 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-red-500">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+      </svg>
+      Reporte de Gastos
+    </h1>
+    
+    <div class="mt-4 sm:mt-0">
+      <button onclick="window.print()" class="inline-flex items-center px-3 py-1.5 bg-gray-100 border border-gray-300 rounded-md font-medium text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        Imprimir
+      </button>
+    </div>
   </div>
 
-  <!-- Filtro Simple -->
-  <div class="bg-white p-4 rounded-lg shadow mb-6">
-    <%= search_form_for @q, url: expenses_reports_path, class: "flex gap-4" do |f| %>
-      <%= f.date_field :expense_date_gteq, class: "rounded border-gray-300" %>
-      <%= f.date_field :expense_date_lteq, class: "rounded border-gray-300" %>
-      <%= f.submit "Filtrar", class: "px-4 py-2 bg-gray-100 rounded border" %>
+  <!-- Filtros Simples -->
+  <div class="bg-white p-4 rounded-lg shadow-sm mb-4 mt-4">
+    <%= search_form_for @q, url: expenses_reports_path do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Desde</label>
+          <%= f.date_field :expense_date_gteq, class: "w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Hasta</label>
+          <%= f.date_field :expense_date_lteq, class: "w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+          <%= f.select :category_eq, Expense.categories.keys.map { |k| [I18n.t("activerecord.attributes.expense.categories.#{k}", default: k.humanize), k] }, { include_blank: 'Todas' }, class: "w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        
+        <div class="flex items-end">
+          <button type="submit" class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtrar
+          </button>
+          <%= link_to expenses_reports_path, class: "ml-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Limpiar
+          <% end %>
+        </div>
+      </div>
     <% end %>
   </div>
 
-  <!-- Total -->
-  <div class="bg-white p-4 rounded-lg shadow mb-6">
-    <span class="text-gray-600">Total Gastos:</span>
-    <span class="text-xl font-bold ml-2">
-      <%= number_to_currency(@total, unit: 'Gs. ', precision: 0, delimiter: '.') %>
-    </span>
+  <!-- Stats Básicos -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-red-500">
+      <p class="text-sm font-medium text-gray-500">Total de Gastos</p>
+      <p class="text-xl font-bold text-gray-800">
+        <%= number_to_currency(@total, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+      </p>
+    </div>
+    
+    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
+      <p class="text-sm font-medium text-gray-500">Registros</p>
+      <p class="text-xl font-bold text-gray-800"><%= @expenses.total_entries %></p>
+    </div>
+    
+    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
+      <p class="text-sm font-medium text-gray-500">Período</p>
+      <p class="text-xl font-bold text-gray-800">
+        <% if @q.expense_date_gteq.present? && @q.expense_date_lteq.present? %>
+          <%= l(@q.expense_date_gteq, format: :short) %> - <%= l(@q.expense_date_lteq, format: :short) %>
+        <% else %>
+          Todos
+        <% end %>
+      </p>
+    </div>
   </div>
 
   <!-- Lista de Gastos -->
-  <div class="bg-white rounded-lg shadow overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Fecha</th>
-          <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Categoría</th>
-          <th class="px-6 py-3 text-right text-sm font-medium text-gray-500">Monto</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <% @expenses.each do |expense| %>
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+      <h2 class="text-base font-medium text-gray-800">Listado de Gastos</h2>
+      <% if @expenses.any? %>
+        <span class="text-sm text-gray-500">
+          Mostrando <%= @expenses.offset + 1 %> a <%= @expenses.offset + @expenses.length %> de <%= @expenses.total_entries %> registros
+        </span>
+      <% end %>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
           <tr>
-            <td class="px-6 py-4 text-sm text-gray-900">
-              <%= l(expense.expense_date, format: :short) %>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-900">
-              <%= expense.category %>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-900 text-right">
-              <%= number_to_currency(expense.amount, unit: 'Gs. ', precision: 0, delimiter: '.') %>
-            </td>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método de Pago</th>
+            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @expenses.any? %>
+            <% @expenses.each do |expense| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <%= l(expense.expense_date, format: :short) %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= category_badge_class(expense.category) %>">
+                    <%= I18n.t("activerecord.attributes.expense.categories.#{expense.category}", default: expense.category.humanize) %>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 max-w-xs truncate">
+                  <%= expense.description.present? ? expense.description : "-" %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <%= expense.payment_method&.name || "-" %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                  <%= number_to_currency(expense.amount, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <%= link_to edit_expense_path(expense), class: "text-indigo-600 hover:text-indigo-900 mx-1" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-4 py-3 text-center text-sm text-gray-500">
+                No se encontraron gastos con los filtros seleccionados
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+        <% if @expenses.any? %>
+          <tfoot class="bg-gray-50">
+            <tr>
+              <td colspan="4" class="px-4 py-3 text-right text-sm font-medium text-gray-700">Total:</td>
+              <td class="px-4 py-3 text-right text-sm font-bold text-gray-900">
+                <%= number_to_currency(@total, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
         <% end %>
-      </tbody>
-    </table>
+      </table>
+    </div>
   </div>
+</div>
 
-  <!-- Paginación -->
-  <div class="mt-4">
-    <%= will_paginate @expenses %>
-  </div>
+<div class="mt-4 justify-center border-t flex">
+  <%= will_paginate @expenses, renderer: TailwindPaginateRenderer %>
 </div>

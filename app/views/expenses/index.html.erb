@@ -2,7 +2,7 @@
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
       <h1 class="text-base font-semibold text-gray-900">Gastos</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de todos los gastos registrados en el sistema.</p>
+      <p class="mt-2 text-sm text-gray-700">Lista de todos los gastos registrados.</p>
     </div>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
       <%= link_to "Nuevo Gasto", new_expense_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
@@ -90,7 +90,7 @@
                     <%= number_to_currency(expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= truncate(sanitize(expense.description), length: 100, separator: ' ', omission: '...', word_count: 20) %>
+                    <%= truncate(sanitize(expense.description), length: 15, separator: ' ', omission: '...', word_count: 20) %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <% if expense.category.present? %>

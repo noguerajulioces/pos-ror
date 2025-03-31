@@ -1,112 +1,166 @@
-<div class="px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="sm:flex sm:items-center border-b border-gray-200 pb-5">
-    <div class="sm:flex-auto">
-      <h1 class="text-xl font-semibold text-gray-900">Análisis de Inventario</h1>
-      <p class="mt-2 text-sm text-gray-500">Vista general del estado y rendimiento del inventario</p>
-    </div>
-    <%= link_to reports_path, class: "mt-4 sm:mt-0 sm:ml-16 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      Volver
-    <% end %>
-  </div>
-
-  <!-- Key Metrics -->
-  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="bg-white px-4 py-5 border border-gray-200 shadow-sm rounded-lg overflow-hidden">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <div class="ml-4">
-          <dt class="text-sm font-medium text-gray-500 truncate">Valor del Inventario</dt>
-          <dd class="mt-1 text-md font-semibold text-gray-900">
-            <%= number_to_currency(@inventory_metrics[:total_value], unit: 'Gs. ', precision: 0, delimiter: '.') %>
-          </dd>
-        </div>
+<div class="bg-gray-50 min-h-screen py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header with improved styling -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-200">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Análisis de Inventario</h1>
+        <p class="mt-2 text-sm text-gray-500">Vista general del estado y rendimiento del inventario</p>
       </div>
-    </div>
-
-    <div class="bg-white px-4 py-5 border border-gray-200 shadow-sm rounded-lg overflow-hidden">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      <%= link_to reports_path, class: "mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+        <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <div class="ml-4">
-          <dt class="text-sm font-medium text-gray-500 truncate">Margen Promedio</dt>
-          <dd class="mt-1 text-md font-semibold text-gray-900">
-            <%= number_to_percentage(@inventory_metrics[:average_margin], precision: 1) %>
-          </dd>
-        </div>
-      </div>
+        Volver a Reportes
+      <% end %>
     </div>
 
-    <div class="bg-white px-4 py-5 border border-gray-200 shadow-sm rounded-lg overflow-hidden">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <div class="ml-4">
-          <dt class="text-sm font-medium text-gray-500 truncate">Salud del Inventario</dt>
-          <dd class="mt-1 text-md font-semibold text-gray-900">
-            <%= number_to_percentage(@inventory_metrics[:stock_health], precision: 1) %>
-          </dd>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white px-4 py-5 border border-gray-200 shadow-sm rounded-lg overflow-hidden">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <div class="ml-4">
-          <dt class="text-sm font-medium text-gray-500 truncate">Productos en Alerta</dt>
-          <dd class="mt-1 text-md font-semibold text-gray-900">
-            <%= @stock_status[:low_stock] %>
-          </dd>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Detailed Analysis -->
-  <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <!-- Category Distribution -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-base font-medium text-gray-900">Distribución por Categorías</h3>
-        <div class="mt-4 space-y-4">
-          <% @top_categories.each do |category| %>
-            <div>
-              <div class="flex justify-between text-sm text-gray-600">
-                <span><%= category.name %></span>
-                <span class="font-medium"><%= category.products_count %></span>
-              </div>
-              <div class="mt-1 w-full bg-gray-100 rounded-full h-1.5">
-                <div class="bg-gray-600 h-1.5 rounded-full" style="width: <%= number_to_percentage(category.products_count.to_f / @stock_status[:total] * 100, precision: 0) %>"></div>
-              </div>
+    <!-- Key Metrics with improved cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <!-- Inventory Value -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md transition-all hover:shadow-lg border-l-4 border-blue-500">
+        <div class="px-5 py-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+              <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-          <% end %>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Valor del Inventario</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">
+                  <%= number_to_currency(@inventory_metrics[:total_value], unit: 'Gs. ', precision: 0, delimiter: '.') %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Margin -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md transition-all hover:shadow-lg border-l-4 border-green-500">
+        <div class="px-5 py-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Margen Promedio</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">
+                  <%= number_to_percentage(@inventory_metrics[:average_margin], precision: 1) %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Health -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md transition-all hover:shadow-lg border-l-4 border-purple-500">
+        <div class="px-5 py-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
+              <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Salud del Inventario</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">
+                  <%= number_to_percentage(@inventory_metrics[:stock_health], precision: 1) %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Products -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md transition-all hover:shadow-lg border-l-4 border-red-500">
+        <div class="px-5 py-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-red-100 rounded-md p-3">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Productos en Alerta</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">
+                  <%= @stock_status[:low_stock] %>
+                </dd>
+              </dl>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Sales Performance -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-      <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-base font-medium text-gray-900">Rendimiento de Ventas (30 días)</h3>
-        <div class="mt-4">
-          <div class="border-t border-gray-200">
-            <% @sales_analysis[:top_sellers].each do |product| %>
-              <div class="py-3 flex justify-between items-center text-sm">
-                <span class="text-gray-600"><%= product.name %></span>
-                <span class="font-medium"><%= product.sales_count %> ventas</span>
+    <!-- Detailed Analysis with improved styling -->
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <!-- Category Distribution -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md">
+        <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
+          <h3 class="text-lg font-medium text-gray-900">Distribución por Categorías</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-5">
+            <% @top_categories.each do |category| %>
+              <div>
+                <div class="flex justify-between text-sm text-gray-700 mb-2">
+                  <span class="font-medium"><%= category.name %></span>
+                  <span class="font-bold"><%= category.products_count %> productos</span>
+                </div>
+                <div class="relative pt-1">
+                  <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-100">
+                    <div style="width: <%= number_to_percentage(category.products_count.to_f / @stock_status[:total] * 100, precision: 0) %>" 
+                         class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600 rounded-full">
+                    </div>
+                  </div>
+                </div>
               </div>
             <% end %>
           </div>
+          <div class="mt-4 text-xs text-gray-500 text-right">
+            Total: <%= @stock_status[:total] %> productos
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Performance -->
+      <div class="bg-white overflow-hidden rounded-lg shadow-md">
+        <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
+          <h3 class="text-lg font-medium text-gray-900">Rendimiento de Ventas (30 días)</h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <% @sales_analysis[:top_sellers].each_with_index do |product, index| %>
+              <div class="flex items-center p-3 <%= index % 2 == 0 ? 'bg-gray-50' : 'bg-white' %> rounded-lg">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                  <%= index + 1 %>
+                </div>
+                <div class="ml-4 flex-1">
+                  <div class="text-sm font-medium text-gray-900"><%= product.name %></div>
+                  <div class="text-xs text-gray-500">SKU: <%= product.sku || 'N/A' %></div>
+                </div>
+                <div class="ml-2 flex-shrink-0">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <%= product.sales_count %> ventas
+                  </span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% if @sales_analysis[:top_sellers].empty? %>
+            <div class="text-center py-8 text-gray-500">
+              No hay datos de ventas para mostrar en este período
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

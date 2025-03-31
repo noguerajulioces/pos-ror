@@ -8,13 +8,13 @@
 #  deleted_at            :datetime
 #  description           :text
 #  manual_purchase_price :decimal(, )
-#  min_stock             :integer
+#  min_stock             :decimal(10, 3)
 #  name                  :string
 #  price                 :decimal(, )
 #  sku                   :string
 #  slug                  :string
 #  status                :string
-#  stock                 :integer
+#  stock                 :decimal(10, 3)
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  category_id           :bigint           not null

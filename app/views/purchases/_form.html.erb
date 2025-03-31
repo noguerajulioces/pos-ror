@@ -4,7 +4,7 @@
       nested_form_wrapper_selector_value: '.nested-form-wrapper' 
     }) do |form| %>
   <% if purchase.errors.any? %>
-    <div class="bg-red-50 p-4 rounded-md">
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -27,73 +27,112 @@
     </div>
   <% end %>
 
-  <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-    <div class="md:grid md:grid-cols-3 md:gap-6">
-      <div class="md:col-span-1">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Información de la Compra</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          Ingrese los detalles básicos de la compra.
-        </p>
-      </div>
-      <div class="mt-5 md:mt-0 md:col-span-2">
-        <div class="grid grid-cols-6 gap-6">
-          <div class="col-span-6 sm:col-span-3">
-            <%= form.label :purchase_date, "Fecha de Compra", class: "block text-sm font-medium text-gray-700" %>
-            <%= form.date_field :purchase_date, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        Información de la Compra
+      </h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Ingrese los detalles básicos de la compra.
+      </p>
+    </div>
+    <div class="px-6 py-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= form.label :purchase_date, "Fecha de Compra", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <%= form.date_field :purchase_date, class: "block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2" %>
           </div>
+        </div>
 
-          <div class="col-span-6 sm:col-span-3">
-            <%= form.label :supplier_id, "Proveedor", class: "block text-sm font-medium text-gray-700" %>
+        <div>
+          <%= form.label :supplier_id, "Proveedor", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
             <%= form.collection_select :supplier_id, 
                 Supplier.all, 
                 :id, 
                 ->(supplier) { "#{supplier.company_name} (#{supplier.document})" }, 
                 { include_blank: 'Seleccione un proveedor' }, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2" %>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-    <div class="md:grid md:grid-cols-3 md:gap-6">
-      <div class="mt-5 md:mt-0 md:col-span-3">
-        <template data-nested-form-target="template">
-          <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
-            <%= render 'purchase_item_fields', f: item_form %>
-          <% end %>
-        </template>
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        Productos
+      </h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Agregue los productos que forman parte de esta compra.
+      </p>
+    </div>
+    <div class="px-6 py-5">
+      <template data-nested-form-target="template">
+        <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
+          <%= render 'purchase_item_fields', f: item_form %>
+        <% end %>
+      </template>
 
+      <div class="space-y-4">
         <%= form.fields_for :purchase_items do |item_form| %>
           <%= render 'purchase_item_fields', f: item_form %>
         <% end %>
 
         <!-- Inserted elements will be injected before that target -->
         <div data-nested-form-target="target"></div>
+      </div>
 
-        <div class="mt-4">
-          <button type="button" 
-                  data-action="nested-form#add"
-                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Agregar Producto
-          </button>
-        </div>
+      <div class="mt-6">
+        <button type="button" 
+                data-action="nested-form#add"
+                class="inline-flex items-center rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Agregar Producto
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-    <div class="md:grid md:grid-cols-2 md:gap-6">
-      <div class="md:col-span-1">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Total</h3>
-      </div>
-      <div class="mt-5 md:mt-0 md:col-span-1">
-        <div class="grid grid-cols-1 gap-6">
-          <div class="col-span-6 sm:col-span-3 ml-auto">
-            <%= form.label :total_amount, "Monto Total", class: "block text-sm font-medium text-gray-700 text-right" %>
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+        </svg>
+        Resumen
+      </h3>
+    </div>
+    <div class="px-6 py-5">
+      <div class="flex justify-end">
+        <div class="w-full md:w-1/3">
+          <%= form.label :total_amount, "Monto Total", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500 sm:text-sm">₲s.</span>
+            </div>
             <%= form.text_field :total_amount, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right", 
+                class: "block w-full pl-12 pr-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-right font-medium text-gray-900", 
                 id: "purchase_total_amount",
                 readonly: true %>
           </div>
@@ -102,9 +141,19 @@
     </div>
   </div>
 
-  <div class="flex justify-end">
-    <%= link_to "Cancelar", purchases_path, class: "rounded-md bg-white py-2 px-4 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 mr-3" %>
-    <%= form.submit purchase.new_record? ? "Crear Compra" : "Actualizar Compra", class: "rounded-md bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+  <div class="flex justify-end space-x-3 pt-4">
+    <%= link_to purchases_path, class: "inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      Cancelar
+    <% end %>
+    <%= form.button type: "submit", class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <%= purchase.new_record? ? "Crear Compra" : "Actualizar Compra" %>
+    <% end %>
   </div>
 <% end %>
 

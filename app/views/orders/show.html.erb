@@ -1,229 +1,334 @@
-<div class="px-4 sm:px-6 lg:px-8 py-6">
-  <div class="md:flex md:items-center md:justify-between mb-6">
-    <div class="min-w-0 flex-1">
-      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-        Orden #<%= @order.id %>
-      </h2>
-    </div>
-    <div class="mt-4 flex md:ml-4 md:mt-0">
-      <%= button_to 'Cancelar', order_path(@order), method: :delete, data: { turbo_confirm: '¿Estás seguro?' }, class: "inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 mr-4" %>
-      <%= link_to "Volver a Órdenes", orders_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
-    </div>
-  </div>
-
+<div class="px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
   <% if notice.present? %>
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
       <p><%= notice %></p>
     </div>
   <% end %>
 
-  <div class="bg-white shadow rounded-lg overflow-hidden">
-    <div class="px-4 py-5 sm:px-6 bg-gray-50">
-      <h3 class="text-lg leading-6 font-medium text-gray-900">Detalles de la Orden</h3>
-    </div>
-    <div class="border-t border-gray-200">
-      <dl>
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Fecha</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= @order.order_date.strftime("%d/%m/%Y %H:%M") %>
-          </dd>
+  <!-- Header with Order Info and Actions -->
+  <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 bg-indigo-100 rounded-md p-3">
+          <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
         </div>
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Cliente</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= @order.customer&.full_name || "Cliente Genérico" %>
-          </dd>
-        </div>
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Tipo de Orden</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= @order.order_type || "N/A" %>
-          </dd>
-        </div>
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Estado</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+        <div class="ml-5">
+          <h1 class="text-2xl font-bold text-gray-900">
+            Orden #<%= @order.id %>
             <% status_class = case @order.status 
                when Order::STATUSES[:completed] then "text-green-600 bg-green-100"
                when Order::STATUSES[:on_hold] then "text-yellow-600 bg-yellow-100"
                when Order::STATUSES[:cancelled] then "text-red-600 bg-red-100"
                end %>
-            <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+            <span class="<%= status_class %> inline-flex rounded-full px-3 py-1 text-xs font-semibold leading-5 ml-2">
               <%= @order.status == "completed" ? "Completado" : 
                   @order.status == "on_hold" ? "En Espera" : 
                   @order.status == "cancelled" ? "Cancelado" : @order.status %>
             </span>
-          </dd>
+          </h1>
+          <p class="text-sm text-gray-500">
+            Creada el <%= @order.order_date.strftime("%d/%m/%Y %H:%M") %> por <%= @order.user.name || @order.user.email %>
+          </p>
         </div>
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Método de Pago</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= @order.payment_method.name %>
-          </dd>
-        </div>
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Total</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            ₲s. <%= number_with_delimiter(@order.total_amount.to_i, delimiter: '.') %>
-          </dd>
-        </div>
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Creado por</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= @order.user.name || @order.user.email %>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-
-  <div class="mt-8">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Productos</h3>
-    <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-      <table class="min-w-full divide-y divide-gray-300">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Producto</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-          <% @order_items.each do |item| %>
-            <tr>
-              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                <%= item.product.name %>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                ₲s. <%= number_with_delimiter(item.product.price.to_i, delimiter: '.') %>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <%= item.quantity %>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                ₲s. <%= number_with_delimiter(item.subtotal.to_i, delimiter: '.') %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-        <tfoot>
-          <tr class="border-t-2 border-gray-300">
-            <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">Subtotal:</th>
-            <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
-              ₲s. <%= number_with_delimiter(@order.order_items.sum(:subtotal).to_i, delimiter: '.') %>
-            </td>
-          </tr>
-          <% if @order.discount_percentage.present? && @order.discount_percentage > 0 %>
-            <tr>
-              <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">
-                Descuento (<%= @order.discount_percentage %>%):
-                <% if @order.discount_reason.present? %>
-                  <span class="text-xs text-gray-500 italic"><%= @order.discount_reason %></span>
-                <% end %>
-              </th>
-              <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-red-600">
-                -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) * @order.discount_percentage / 100).to_i, delimiter: '.') %>
-              </td>
-            </tr>
-          <% else %>
-            <tr>
-              <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">
-                Descuento (Monto):
-                <% if @order.discount_reason.present? %>
-                  <span class="text-xs text-gray-500 italic"><%= @order.discount_reason %></span>
-                <% end %>
-              </th>
-              <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-red-600">
-                -₲s. <%= number_with_delimiter((@order.total_amount - @order.order_items.sum(:subtotal)).to_i, delimiter: '.') %>
-              </td>
-            </tr>
-          <% end %>
-          <tr class="bg-gray-50">
-            <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">Total:</th>
-            <td class="whitespace-nowrap px-3 py-4 text-sm font-bold text-gray-900">
-              ₲s. <%= number_with_delimiter(@order.total_amount.to_i, delimiter: '.') %>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
-
-  <!-- New Order Payments Section -->
-  <div class="mt-8">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Pagos</h3>
-      <%#= link_to "Registrar Pago", new_order_payment_path(order_id: @order.id), class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-    </div>
-    
-    <% if @order.order_payments.any? %>
-      <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-300">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Fecha</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Referencia</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Monto</th>
-              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span class="sr-only">Acciones</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
-            <% @order.order_payments.order(payment_date: :desc).each do |payment| %>
-              <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                  <%= payment.payment_date&.strftime("%d/%m/%Y %H:%M") %>
-                </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  <%= payment.payment_method&.name %>
-                </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  <%= payment.reference_number || "-" %>
-                </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  ₲s. <%= number_with_delimiter(payment.amount.to_i, delimiter: '.') %>
-                </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <%= button_to order_payment_path(payment), method: :delete, data: { turbo_confirm: '¿Estás seguro de eliminar este pago?' }, class: "text-red-600 hover:text-red-900" do %>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                    </svg>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-          <tfoot>
-            <tr class="border-t-2 border-gray-300">
-              <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">Total Pagado:</th>
-              <td class="whitespace-nowrap px-3 py-4 text-sm font-bold text-gray-900">
-                ₲s. <%= number_with_delimiter(@order.order_payments.sum(:amount).to_i, delimiter: '.') %>
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <th colspan="3" class="py-3.5 pl-4 pr-3 text-right text-sm font-semibold text-gray-900 sm:pl-6">Saldo Pendiente:</th>
-              <td class="whitespace-nowrap px-3 py-4 text-sm font-bold <%= @order.total_amount - @order.order_payments.sum(:amount) > 0 ? 'text-red-600' : 'text-green-600' %>">
-                ₲s. <%= number_with_delimiter((@order.total_amount - @order.order_payments.sum(:amount)).to_i, delimiter: '.') %>
-              </td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
       </div>
-    <% else %>
+      <div class="flex space-x-3">
+        <%= button_to order_path(@order), method: :delete, 
+            data: { turbo_confirm: '¿Estás seguro de cancelar esta orden?' }, 
+            class: "inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Cancelar Orden
+        <% end %>
+        <%= link_to orders_path, 
+            class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+          </svg>
+          Volver a Órdenes
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Order Details -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Order Information -->
       <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:p-6 text-center">
-          <p class="text-sm text-gray-500">No hay pagos registrados para esta orden.</p>
-          <div class="mt-5">
-            <%= link_to "Registrar Pago", new_order_payment_path(order_id: @order.id), class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-          </div>
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+          <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <svg class="h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Información de la Orden
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Cliente</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @order.customer&.full_name || "Cliente Genérico" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Tipo de Orden</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @order.order_type == "in_store" ? "En Tienda" : "Delivery" %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Método de Pago</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @order.payment_method.name %>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Fecha de Orden</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @order.order_date.strftime("%d/%m/%Y %H:%M") %>
+              </dd>
+            </div>
+            <% if @order.receipt_number.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Número de Recibo</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @order.receipt_number %>
+              </dd>
+            </div>
+            <% end %>
+          </dl>
         </div>
       </div>
-    <% end %>
+
+      <!-- Products Table -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+          <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <svg class="h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Productos
+          </h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @order_items.each do |item| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <%= item.product.name %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                    ₲s. <%= number_with_delimiter(item.price.to_i, delimiter: '.') %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                    <%= item.quantity %> <%= item&.product&.unit&.abbreviation %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                    ₲s. <%= number_with_delimiter(item.subtotal.to_i, delimiter: '.') %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Payment Summary -->
+    <div class="space-y-6">
+      <!-- Order Summary Card -->
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+          <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <svg class="h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Resumen de la Orden
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+          <dl class="space-y-4">
+            <div class="flex justify-between">
+              <dt class="text-sm font-medium text-gray-500">Subtotal</dt>
+              <dd class="text-sm font-medium text-gray-900">₲s. <%= number_with_delimiter(@order.order_items.sum(:subtotal).to_i, delimiter: '.') %></dd>
+            </div>
+            
+            <% if @order.discount_percentage.present? && @order.discount_percentage > 0 %>
+              <div class="flex justify-between">
+                <dt class="text-sm font-medium text-gray-500">
+                  Descuento (<%= @order.discount_percentage %>%)
+                  <% if @order.discount_reason.present? %>
+                    <p class="text-xs text-gray-500 italic"><%= @order.discount_reason %></p>
+                  <% end %>
+                </dt>
+                <dd class="text-sm font-medium text-red-600">
+                  -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) * @order.discount_percentage / 100).to_i, delimiter: '.') %>
+                </dd>
+              </div>
+            <% elsif @order.total_amount != @order.order_items.sum(:subtotal) %>
+              <div class="flex justify-between">
+                <dt class="text-sm font-medium text-gray-500">
+                  Descuento (Monto)
+                  <% if @order.discount_reason.present? %>
+                    <p class="text-xs text-gray-500 italic"><%= @order.discount_reason %></p>
+                  <% end %>
+                </dt>
+                <dd class="text-sm font-medium text-red-600">
+                  -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) - @order.total_amount).to_i, delimiter: '.') %>
+                </dd>
+              </div>
+            <% end %>
+            
+            <div class="pt-4 border-t border-gray-200 flex justify-between">
+              <dt class="text-base font-bold text-gray-900">Total</dt>
+              <dd class="text-base font-bold text-gray-900">₲s. <%= number_with_delimiter(@order.total_amount.to_i, delimiter: '.') %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Payments Card -->
+      <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-100">
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-white">
+          <h3 class="text-lg font-medium text-gray-900 flex items-center">
+            <svg class="h-5 w-5 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+            <span class="font-semibold">Pagos</span>
+          </h3>
+          <% if @order.status != "cancelled" && @order.outstanding_balance > 0 %>
+            <%= link_to new_order_payment_path(order_id: @order.id), 
+                class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200 transform hover:scale-105" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+              </svg>
+              Registrar Pago
+            <% end %>
+          <% end %>
+        </div>
+        
+        <% if @order.order_payments.any? %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
+                  <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                  <th scope="col" class="relative px-6 py-3">
+                    <span class="sr-only">Acciones</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <% @order.order_payments.order(payment_date: :desc).each_with_index do |payment, index| %>
+                  <tr class="<%= index.even? ? 'bg-white' : 'bg-gray-50' %> hover:bg-indigo-50 transition-colors duration-150">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-400 mr-2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                        </svg>
+                        <%= payment.payment_date&.strftime("%d/%m/%Y %H:%M") %>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-400 mr-2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                        </svg>
+                        <%= payment.payment_method&.name %>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <% if payment.reference_number.present? %>
+                        <div class="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-400 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                          </svg>
+                          <%= payment.reference_number %>
+                        </div>
+                      <% else %>
+                        <span class="text-gray-400">-</span>
+                      <% end %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                      ₲s. <%= number_with_delimiter(payment.amount.to_i, delimiter: '.') %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <%= button_to order_payment_path(payment), method: :delete, 
+                          data: { turbo_confirm: '¿Estás seguro de eliminar este pago?' }, 
+                          class: "text-red-600 hover:text-red-900 transition-colors duration-150 p-1 rounded-full hover:bg-red-50" do %>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-6 py-5 sm:px-8 bg-gradient-to-r from-gray-50 to-white border-t border-gray-200">
+            <dl class="space-y-3">
+              <div class="flex justify-between items-center">
+                <dt class="text-sm font-medium text-gray-500 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-green-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                  </svg>
+                  Total Pagado
+                </dt>
+                <dd class="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                  ₲s. <%= number_with_delimiter(@order.order_payments.sum(:amount).to_i, delimiter: '.') %>
+                </dd>
+              </div>
+              <div class="flex justify-between items-center">
+                <dt class="text-sm font-medium text-gray-500 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" 
+                       stroke="currentColor" class="w-4 h-4 mr-2 <%= @order.outstanding_balance > 0 ? 'text-red-500' : 'text-green-500' %>">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Saldo Pendiente
+                </dt>
+                <dd class="text-sm font-medium <%= @order.outstanding_balance > 0 ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50' %> px-3 py-1 rounded-full">
+                  ₲s. <%= number_with_delimiter(@order.outstanding_balance.to_i, delimiter: '.') %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        <% else %>
+          <div class="px-4 py-8 sm:p-10 text-center">
+            <div class="mx-auto w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-indigo-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+              </svg>
+            </div>
+            <p class="text-sm text-gray-500 mb-5">No hay pagos registrados para esta orden.</p>
+            <% if @order.status != "cancelled" %>
+              <%= link_to new_order_payment_path(order_id: @order.id), 
+                  class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all duration-200 transform hover:scale-105" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
+                Registrar Pago
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>

@@ -4,7 +4,7 @@ module Products
 
     def initialize(product:, quantity:, reason:, user:)
       @product = product
-      @quantity = quantity.to_i
+      @quantity = quantity.to_f
       @reason = reason
       @user = user
     end

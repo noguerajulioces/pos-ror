@@ -19,7 +19,7 @@ module Orders
     private
 
     def subtotal
-      cart.sum { |item| item['price'].to_f * item['quantity'].to_i }
+      cart.sum { |item| item['price'].to_f * item['quantity'].to_f }
     end
 
     def iva

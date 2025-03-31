@@ -143,11 +143,11 @@ class PosController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_back(fallback_location: pos_path) }
-      format.json { 
-        render json: { 
+      format.json {
+        render json: {
           success: true,
           totals: totals
-        } 
+        }
       }
       # Add this to handle turbo_stream requests properly
       format.turbo_stream {
@@ -167,6 +167,11 @@ class PosController < ApplicationController
   end
 
   def process_payment
+    totals = calculate_cart_totals
+
+    session[:discount] = totals[:discount]
+    session[:discount_percentage] = totals[:discount_percentage]
+
     result = Orders::CreateService.new(
       cart: session[:cart],
       params: payment_params,
@@ -199,29 +204,29 @@ class PosController < ApplicationController
     product_id = params[:product_id]
     discount_type_mode = params[:discount_type_mode]
     updated_item = nil
-  
+
     if session[:cart].present?
       item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
       if item
         item['discount_type_mode'] = discount_type_mode
-  
+
         if discount_type_mode == 'amount' && item['discount_percentage'].present?
           item_subtotal = item['price'].to_i * item['quantity'].to_i
           item['discount_amount'] = (item_subtotal * item['discount_percentage'].to_f / 100).round
         end
-  
+
         if discount_type_mode == 'percentage' && item['discount_amount'].present?
           item_subtotal = item['price'].to_i * item['quantity'].to_i
-          item['discount_percentage'] = [(item['discount_amount'].to_f / item_subtotal * 100).round, 100].min
+          item['discount_percentage'] = [ (item['discount_amount'].to_f / item_subtotal * 100).round, 100 ].min
         end
-        
+
         updated_item = item.dup # Create a copy of the updated item
       end
     end
-  
+
     totals = calculate_cart_totals
-    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : "Descuento"
-  
+    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : 'Descuento'
+
     respond_to do |format|
       format.html { redirect_back(fallback_location: pos_path) }
       format.turbo_stream {
@@ -238,22 +243,22 @@ class PosController < ApplicationController
           turbo_stream.update('discount-label', discount_label)
         ]
       }
-      format.json { 
-        render json: { 
-          success: true, 
+      format.json {
+        render json: {
+          success: true,
           totals: totals,
           discount_label: discount_label,
           cart_item: updated_item
-        } 
+        }
       }
     end
   end
-  
+
   def apply_item_discount
     product_id = params[:product_id]
     discount_value = params[:discount_value].to_i
     discount_type_mode = params[:discount_type_mode] || 'percentage'
-  
+
     if session[:cart].present?
       item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
       if item
@@ -262,21 +267,21 @@ class PosController < ApplicationController
           item['discount_amount'] = discount_value
           # Calcular el porcentaje equivalente para referencia
           item_subtotal = item['price'].to_i * item['quantity'].to_i
-          item['discount_percentage'] = [(discount_value.to_f / item_subtotal * 100).round, 100].min if item_subtotal > 0
+          item['discount_percentage'] = [ (discount_value.to_f / item_subtotal * 100).round, 100 ].min if item_subtotal > 0
         else
           item['discount_type_mode'] = 'percentage'
-          item['discount_percentage'] = [discount_value, 100].min
+          item['discount_percentage'] = [ discount_value, 100 ].min
           # Calcular el monto equivalente para referencia
           item_subtotal = item['price'].to_i * item['quantity'].to_i
           item['discount_amount'] = (item_subtotal * discount_value.to_f / 100).round
         end
       end
     end
-  
+
     # Recalcular totales
     totals = calculate_cart_totals
-    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : "Descuento"
-  
+    discount_label = totals[:discount] > 0 ? "Descuento (#{totals[:discount_percentage]}%)" : 'Descuento'
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
@@ -292,9 +297,9 @@ class PosController < ApplicationController
           turbo_stream.update('discount-label', discount_label)
         ]
       }
-      format.json { 
-        render json: { 
-          success: true, 
+      format.json {
+        render json: {
+          success: true,
           totals: totals,
           discount_label: discount_label
         }
@@ -326,30 +331,30 @@ class PosController < ApplicationController
   def update_quantity
     product_id = params[:product_id]
     quantity = params[:quantity].to_i
-    
+
     if session[:cart].present?
-      item = session[:cart].find { |i| i["product_id"].to_s == product_id.to_s }
+      item = session[:cart].find { |i| i['product_id'].to_s == product_id.to_s }
       if item
         # Guardar los valores de descuento actuales
-        discount_percentage = item["discount_percentage"]
-        discount_amount = item["discount_amount"]
-        discount_type_mode = item["discount_type_mode"]
-        discount_reason = item["discount_reason"]
-        
+        discount_percentage = item['discount_percentage']
+        discount_amount = item['discount_amount']
+        discount_type_mode = item['discount_type_mode']
+        discount_reason = item['discount_reason']
+
         # Actualizar la cantidad
-        item["quantity"] = quantity
-        
+        item['quantity'] = quantity
+
         # Restaurar los valores de descuento
-        item["discount_percentage"] = discount_percentage
-        item["discount_amount"] = discount_amount
-        item["discount_type_mode"] = discount_type_mode
-        item["discount_reason"] = discount_reason
+        item['discount_percentage'] = discount_percentage
+        item['discount_amount'] = discount_amount
+        item['discount_type_mode'] = discount_type_mode
+        item['discount_reason'] = discount_reason
       end
     end
-    
+
     # Recalcular totales
     totals = calculate_cart_totals
-    
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [

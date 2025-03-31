@@ -1,259 +1,335 @@
-<div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p class="mt-2 text-sm text-gray-700">Vista general del sistema</p>
-    </div>
-  </div>
-
-  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-    <!-- Orders Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Órdenes Hoy</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= Order.where(order_date: Time.current.beginning_of_day..Time.current.end_of_day).count %>
-                </div>
-              </dd>
-            </dl>
-          </div>
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p class="mt-1 text-sm text-gray-500">Vista general del sistema</p>
         </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700">
-            <%= number_to_currency(Order.where(order_date: Time.current.beginning_of_day..Time.current.end_of_day).sum(:total_amount), 
-                delimiter: '.', precision: 0, unit: '₲s. ') %>
-          </span>
-          <span class="text-gray-500">en ventas hoy</span>
+        <div class="flex items-center space-x-3">
+          <span class="text-sm text-gray-500">Última actualización: <%= l(Time.current, format: :short) %></span>
+          <button type="button" onclick="window.location.reload()" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Actualizar
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Products Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Productos Bajo Stock</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= Product.where('stock <= min_stock').count %>
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700"><%= Product.count %></span>
-          <span class="text-gray-500">productos totales</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Payment Method Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Método de Pago más Usado</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= Order.unscoped.group(:payment_method_id).count.max_by { |_, count| count }.first.then { |id| PaymentMethod.find(id).name } rescue "N/A" %>
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700"><%= Order.count %></span>
-          <span class="text-gray-500">órdenes totales</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Weekly Expenses Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Gastos Última Semana</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= number_to_currency(Expense.where(expense_date: 1.week.ago..Time.current).sum(:amount), delimiter: '.', precision: 0, unit: '₲s. ') %>
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700"><%= Expense.where(expense_date: 1.week.ago..Time.current).count %></span>
-          <span class="text-gray-500">gastos registrados</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Order Type Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Ventas del Mes</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= number_to_currency(Order.where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).sum(:total_amount), delimiter: '.', precision: 0, unit: '₲s. ') %>
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700">
-            <%= Order.where(order_type: 'delivery').where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).count %>
-          </span>
-          <span class="text-gray-500">delivery este mes</span>
-        </div>
-      </div>
-    </div>
-    <!-- Customer Stats -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Cliente más Frecuente</dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 mt-2">
-                  <%= Customer.joins(:orders)
-                          .where(orders: { status: 'completed' })
-                          .unscoped
-                          .group('customers.id')
-                          .order('count_all DESC')
-                          .count
-                          .first
-                          .then { |id, _| Customer.find(id).full_name } rescue "N/A" %>
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-5 py-3">
-        <div class="text-sm">
-          <span class="font-medium text-indigo-700"><%= Customer.count %></span>
-          <span class="text-gray-500">clientes registrados</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Currency Exchange Rates -->
-    <div class="mt-8">
-      <h2 class="text-lg font-medium text-gray-900">Tipos de Cambio</h2>
-      <div class="mt-4 bg-white shadow rounded-lg">
-        <div class="p-6">
-          <ul role="list" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <% Currency.where(display: true).each do |currency| %>
-              <li class="bg-gray-50 rounded-lg p-4">
-                <div class="flex items-center space-x-4">
-                  <% if currency.flag_url.present? %>
-                    <%= image_tag currency.flag_url, class: "h-8 w-8 rounded-full" %>
-                  <% else %>
-                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span class="text-gray-500 text-sm font-medium"><%= currency.code %></span>
-                    </div>
-                  <% end %>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900">
-                      <%= currency.name %>
-                      <span class="text-gray-500">(<%= currency.code %>)</span>
-                    </p>
-                    <p class="text-sm text-gray-500">
-                      1 <%= currency.code %> = <%= number_to_currency(currency.exchange_rate, delimiter: '.', precision: 0, unit: '₲s. ') %>
-                    </p>
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <!-- Total Sales Today -->
+      <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
+              <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-xs font-medium text-gray-500 truncate">Ventas Hoy</dt>
+                <dd>
+                  <div class="text-base font-bold text-gray-900 truncate">
+                    <%= number_to_currency(Order.where(order_date: Time.current.beginning_of_day..Time.current.end_of_day).sum(:total_amount), 
+                        delimiter: '.', precision: 0, unit: '₲s. ') %>
                   </div>
-                </div>
-              </li>
-            <% end %>
-          </ul>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
+            <div class="text-green-600 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              <span><%= Order.where(order_date: Time.current.beginning_of_day..Time.current.end_of_day).count %> órdenes</span>
+            </div>
+            <div class="text-gray-500">Hoy</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Sales -->
+      <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-blue-100 rounded-lg p-3">
+              <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-xs font-medium text-gray-500 truncate">Ventas del Mes</dt>
+                <dd>
+                  <div class="text-base font-bold text-gray-900 truncate">
+                    <%= number_to_currency(Order.where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).sum(:total_amount), 
+                        delimiter: '.', precision: 0, unit: '₲s. ') %>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
+            <div class="text-blue-600 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span><%= Order.where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).count %> órdenes</span>
+            </div>
+            <div class="text-gray-500">Este mes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Low Stock -->
+      <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-red-100 rounded-lg p-3">
+              <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-xs font-medium text-gray-500 truncate">Productos Bajo Stock</dt>
+                <dd>
+                  <div class="text-base font-bold text-gray-900 truncate">
+                    <%= Product.where('stock <= min_stock').count %>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
+            <div class="text-red-600 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span class="truncate text-xs">Requiere atención</span>
+            </div>
+            <div class="text-gray-500 text-xs truncate ml-1">
+              De <%= Product.count %> productos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Expenses -->
+      <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 bg-amber-100 rounded-lg p-3">
+              <svg class="h-6 w-6 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-xs font-medium text-gray-500 truncate">Gastos Última Semana</dt>
+                <dd>
+                  <div class="text-base font-bold text-gray-900 truncate">
+                    <%= number_to_currency(Expense.where(expense_date: 1.week.ago..Time.current).sum(:amount), 
+                        delimiter: '.', precision: 0, unit: '₲s. ') %>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
+            <div class="text-amber-600 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span><%= Expense.where(expense_date: 1.week.ago..Time.current).count %> registros</span>
+            </div>
+            <div class="text-gray-500">Últimos 7 días</div>
+          </div>
         </div>
       </div>
     </div>
-  <!-- Recent Orders -->
-  <div class="mt-8">
-    <h2 class="text-lg font-medium text-gray-900">Últimas Órdenes</h2>
-    <div class="mt-4 bg-white shadow rounded-lg">
-      <div class="p-6">
-        <ul role="list" class="divide-y divide-gray-200">
-          <% Order.limit(5).each do |order| %>
-            <li class="py-4">
-              <div class="flex items-center space-x-4">
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-gray-900 truncate">
-                    <%= order.customer&.full_name || 'Cliente General' %>
-                  </p>
-                  <p class="text-sm text-gray-500 truncate">
-                    <%= l(order.order_date, format: :short) %> - <%= display_order_type(order.order_type) %>
-                  </p>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Recent Orders -->
+        <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200">
+          <div class="px-6 py-5 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-medium text-gray-900">Últimas Órdenes</h2>
+              <%= link_to orders_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" do %>
+                Ver todas
+                <span aria-hidden="true"> &rarr;</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="px-6 py-4">
+            <ul role="list" class="divide-y divide-gray-200">
+              <% Order.order(created_at: :desc).limit(5).each do |order| %>
+                <li class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                        <span class="text-sm font-medium leading-none text-gray-700">
+                          <%= order.customer&.initials || 'CG' %>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-medium text-gray-900">
+                        <%= order.customer&.full_name || 'Cliente General' %>
+                      </p>
+                      <p class="truncate text-sm text-gray-500">
+                        <%= l(order.order_date, format: :short) %> - <%= display_order_type(order.order_type) %>
+                      </p>
+                    </div>
+                    <div>
+                      <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= order.status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                        <%= order.status.humanize %>
+                      </span>
+                    </div>
+                    <div class="flex-shrink-0 text-sm font-medium text-gray-900">
+                      <%= number_to_currency(order.total_amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Payment Methods & Order Types -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Payment Method Stats -->
+          <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200">
+              <h2 class="text-lg font-medium text-gray-900">Métodos de Pago</h2>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-6">
+                <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
+                  <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
                 </div>
-                <div>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= order.status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                    <%= order.status.humanize %>
-                  </span>
-                </div>
-                <div class="flex-shrink-0 text-sm font-medium text-gray-900">
-                  <%= number_to_currency(order.total_amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                <div class="ml-4">
+                  <h3 class="text-lg font-medium text-gray-900">Método más Usado</h3>
+                  <p class="text-xl font-bold text-indigo-600">
+                    <%= Order.unscoped.group(:payment_method_id).count.max_by { |_, count| count }.first.then { |id| PaymentMethod.find(id).name } rescue "N/A" %>
+                  </p>
                 </div>
               </div>
-            </li>
-          <% end %>
-        </ul>
+              <div class="text-xs text-gray-500">
+                Total de <%= Order.count %> órdenes procesadas
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Type Stats -->
+          <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200">
+              <h2 class="text-lg font-medium text-gray-900">Tipos de Orden</h2>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-6">
+                <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
+                  <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-medium text-gray-900">Delivery este mes</h3>
+                  <p class="text-xl font-bold text-green-600">
+                    <%= Order.where(order_type: 'delivery').where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).count %>
+                  </p>
+                </div>
+              </div>
+              <div class="text-xs text-gray-500">
+                De un total de <%= Order.where(order_date: Time.current.beginning_of_month..Time.current.end_of_month).count %> órdenes este mes
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Customer Stats -->
+        <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200">
+          <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Clientes</h2>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center mb-6">
+              <div class="flex-shrink-0 bg-purple-100 rounded-lg p-3">
+                <svg class="h-6 w-6 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div class="ml-4 w-0 flex-1">
+                <h3 class="text-sm font-medium text-gray-900">Cliente más Frecuente</h3>
+                <p class="text-base font-bold text-purple-600 truncate">
+                  <% 
+                    most_frequent_customer = Customer.joins(:orders)
+                      .select('customers.id, customers.first_name, customers.last_name, COUNT(orders.id) as order_count')
+                      .where(orders: { status: 'completed' })
+                      .group('customers.id')
+                      .order('order_count DESC')
+                      .first
+                  %>
+                  <%= most_frequent_customer&.full_name || "N/A" %>
+                </p>
+              </div>
+            </div>
+            <div class="text-sm text-gray-500 mb-4">
+              Total de <%= Customer.count %> clientes registrados 
+            </div>
+            <%= link_to customers_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" do %>
+              Ver todos los clientes
+              <span aria-hidden="true"> &rarr;</span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Currency Exchange Rates -->
+        <div class="bg-white overflow-hidden rounded-xl shadow-sm border border-gray-200">
+          <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Tipos de Cambio</h2>
+          </div>
+          <div class="p-6">
+            <ul role="list" class="space-y-4">
+              <% Currency.where(display: true).each do |currency| %>
+                <li class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-center space-x-4">
+                    <% if currency.flag_url.present? %>
+                      <%= image_tag currency.flag_url, class: "h-8 w-8 rounded-full" %>
+                    <% else %>
+                      <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500 text-sm font-medium"><%= currency.code %></span>
+                      </div>
+                    <% end %>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        <%= currency.name %>
+                        <span class="text-gray-500">(<%= currency.code %>)</span>
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        1 <%= currency.code %> = <%= number_to_currency(currency.exchange_rate, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>

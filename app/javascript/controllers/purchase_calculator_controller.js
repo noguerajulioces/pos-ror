@@ -17,15 +17,21 @@ export default class extends Controller {
     items.forEach((item) => {
       if (item.style.display !== 'none') { // Skip hidden items
         const quantity = parseFloat(item.querySelector('.item-quantity')?.value) || 0
-        const unitPrice = parseFloat(item.querySelector('.item-unit-price')?.value) || 0
+        
+        // Get the unit price and remove thousand separators (dots or commas)
+        const unitPriceRaw = item.querySelector('.item-unit-price')?.value || '0'
+        const unitPrice = parseFloat(unitPriceRaw.replace(/[.,]/g, '')) || 0
+        
         const subtotal = quantity * unitPrice
         
         console.log(`Calculating: ${quantity} x ${unitPrice} = ${subtotal}`)
         
         const subtotalField = item.querySelector('.item-total-price')
         if (subtotalField) {
-          subtotalField.value = subtotal.toFixed(2)
-          console.log(`Updated subtotal: ${subtotal.toFixed(2)}`)
+          // Format the subtotal with thousand separators
+          const formattedSubtotal = this.formatNumber(subtotal)
+          subtotalField.value = formattedSubtotal
+          console.log(`Updated subtotal: ${formattedSubtotal}`)
         }
         
         grandTotal += subtotal
@@ -34,8 +40,15 @@ export default class extends Controller {
     
     const totalField = document.getElementById('purchase_total_amount')
     if (totalField) {
-      totalField.value = grandTotal.toFixed(2)
-      console.log(`Updated grand total: ${grandTotal.toFixed(2)}`)
+      // Format the grand total with thousand separators
+      const formattedGrandTotal = this.formatNumber(grandTotal)
+      totalField.value = formattedGrandTotal
+      console.log(`Updated grand total: ${formattedGrandTotal}`)
     }
+  }
+  
+  // Helper method to format numbers with thousand separators
+  formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
   }
 }
