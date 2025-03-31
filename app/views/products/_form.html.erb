@@ -102,6 +102,7 @@
         <%= form.label :price, "Precio", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_field :price,
+            value: number_with_delimiter(@product.price.to_i, delimiter: '.'),
             data: {
                   controller: "number-format",
                   "number-format-target": "input",
@@ -115,13 +116,13 @@
         <%= form.label :manual_purchase_price, "Precio de Compra Manual", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_field :manual_purchase_price,
+            value: @product.manual_purchase_price.present? ? number_with_delimiter(@product.manual_purchase_price.to_i, delimiter: '.') : nil,
             data: {
                   controller: "number-format",
                   "number-format-target": "input",
                   action: "input->number-format#formatNumber"
                 },
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
-            required: true
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
              %>
         </div>
       </div>
