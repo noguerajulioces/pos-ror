@@ -1,6 +1,7 @@
 <%# app/views/orders/print_templates/default.html.erb %>
 <% line_width = 48 %>
 
+<% order = @order %>
 <%= Setting.get('company_name').to_s.center(line_width) %>
 <%= Setting.get('company_owner').to_s.center(line_width) %>
 <%= Setting.get('company_address').to_s.center(line_width) %>
@@ -37,6 +38,16 @@ Cant.   Descripcion                  P.U.  P.T.
 <% end %>
 
 <%= "=" * line_width %>
+<% 
+  # Calculate subtotal from order items
+  items_subtotal = order.order_items.sum(&:subtotal)
+  calculated_discount = items_subtotal - order.total_amount
+%>
+<% if calculated_discount > 0 %>
+Subtotal: <%= number_to_currency(items_subtotal, unit: "Gs. ", precision: 0, delimiter: '.') %>
+Descuento: <%= number_to_currency(calculated_discount, unit: "Gs. ", precision: 0, delimiter: '.') %>
+<%= "=" * line_width %>
+<% end %>
 Total a Abonar: <%= number_to_currency(order.total_amount, unit: "Gs. ", precision: 0, delimiter: '.') %>
 <%= "=" * line_width %>
 Total Grav. 10% : <%= number_to_currency(order.total_amount * 0.1, unit: "Gs. ", precision: 0, delimiter: '.', separator: ',') %>
