@@ -11,17 +11,11 @@
 #  reset_password_token   :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  account_id             :bigint           not null
 #
 # Indexes
 #
-#  index_users_on_account_id            (account_id)
 #  index_users_on_email                 (email) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
-#
-# Foreign Keys
-#
-#  fk_rails_...  (account_id => accounts.id)
 #
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
@@ -30,5 +24,4 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :cash_registers
-  belongs_to :account
 end

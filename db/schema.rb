@@ -10,15 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_28_185537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-
-  create_table "accounts", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -55,8 +49,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_cash_movements_on_account_id"
     t.index ["cash_register_id"], name: "index_cash_movements_on_cash_register_id"
   end
 
@@ -69,8 +61,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_cash_registers_on_account_id"
     t.index ["user_id"], name: "index_cash_registers_on_user_id"
   end
 
@@ -79,8 +69,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_categories_on_account_id"
   end
 
   create_table "currencies", force: :cascade do |t|
@@ -92,8 +80,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.boolean "display"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_currencies_on_account_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -110,8 +96,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "document"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_customers_on_account_id"
     t.index ["email"], name: "index_customers_on_email", unique: true
   end
 
@@ -125,8 +109,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.bigint "payment_method_id"
     t.string "category"
     t.string "reference_number"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_expenses_on_account_id"
     t.index ["category"], name: "index_expenses_on_category"
     t.index ["payment_method_id"], name: "index_expenses_on_payment_method_id"
     t.index ["purchase_id"], name: "index_expenses_on_purchase_id"
@@ -151,8 +133,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_inventory_movements_on_account_id"
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
   end
 
@@ -164,8 +144,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "subtotal", precision: 10, scale: 2
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_order_items_on_account_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
@@ -180,8 +158,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.string "reference_number"
     t.text "notes"
     t.string "status"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_order_payments_on_account_id"
     t.index ["order_id"], name: "index_order_payments_on_order_id"
     t.index ["payment_method_id"], name: "index_order_payments_on_payment_method_id"
   end
@@ -199,8 +175,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.decimal "discount_percentage", precision: 5, scale: 2
     t.string "discount_reason"
     t.string "receipt_number"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_orders_on_account_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
@@ -212,8 +186,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.boolean "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_payment_methods_on_account_id"
   end
 
   create_table "product_images", force: :cascade do |t|
@@ -222,8 +194,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.integer "position", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_product_images_on_account_id"
     t.index ["product_id"], name: "index_product_images_on_product_id"
   end
 
@@ -236,8 +206,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.bigint "product_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_product_variants_on_account_id"
     t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
@@ -258,8 +226,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.string "slug"
     t.datetime "deleted_at"
     t.decimal "manual_purchase_price"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_products_on_account_id"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["slug"], name: "index_products_on_slug", unique: true
@@ -274,8 +240,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.decimal "total_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_purchase_items_on_account_id"
     t.index ["product_id"], name: "index_purchase_items_on_product_id"
     t.index ["purchase_id"], name: "index_purchase_items_on_purchase_id"
   end
@@ -286,8 +250,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "supplier_id"
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_purchases_on_account_id"
     t.index ["supplier_id"], name: "index_purchases_on_supplier_id"
   end
 
@@ -299,8 +261,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.decimal "total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_sale_items_on_account_id"
     t.index ["product_id"], name: "index_sale_items_on_product_id"
     t.index ["sale_id"], name: "index_sale_items_on_sale_id"
   end
@@ -311,8 +271,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_sales_on_account_id"
   end
 
   create_table "settings", force: :cascade do |t|
@@ -320,8 +278,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.text "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_settings_on_account_id"
   end
 
   create_table "suppliers", force: :cascade do |t|
@@ -334,8 +290,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_suppliers_on_account_id"
     t.index ["document"], name: "index_suppliers_on_document", unique: true
   end
 
@@ -346,8 +300,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_units_on_account_id"
     t.index ["deleted_at"], name: "index_units_on_deleted_at"
   end
 
@@ -360,55 +312,31 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_08_201913) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "account_id", null: false
-    t.index ["account_id"], name: "index_users_on_account_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "cash_movements", "accounts"
   add_foreign_key "cash_movements", "cash_registers"
-  add_foreign_key "cash_registers", "accounts"
   add_foreign_key "cash_registers", "users"
-  add_foreign_key "categories", "accounts"
-  add_foreign_key "currencies", "accounts"
-  add_foreign_key "customers", "accounts"
-  add_foreign_key "expenses", "accounts"
   add_foreign_key "expenses", "payment_methods"
   add_foreign_key "expenses", "purchases"
-  add_foreign_key "inventory_movements", "accounts"
   add_foreign_key "inventory_movements", "products"
-  add_foreign_key "order_items", "accounts"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
-  add_foreign_key "order_payments", "accounts"
   add_foreign_key "order_payments", "orders"
   add_foreign_key "order_payments", "payment_methods"
-  add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "payment_methods"
   add_foreign_key "orders", "users"
-  add_foreign_key "payment_methods", "accounts"
-  add_foreign_key "product_images", "accounts"
   add_foreign_key "product_images", "products"
-  add_foreign_key "product_variants", "accounts"
   add_foreign_key "product_variants", "products"
-  add_foreign_key "products", "accounts"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "units"
-  add_foreign_key "purchase_items", "accounts"
   add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
-  add_foreign_key "purchases", "accounts"
   add_foreign_key "purchases", "suppliers"
-  add_foreign_key "sale_items", "accounts"
   add_foreign_key "sale_items", "products"
   add_foreign_key "sale_items", "sales"
-  add_foreign_key "sales", "accounts"
-  add_foreign_key "settings", "accounts"
-  add_foreign_key "suppliers", "accounts"
-  add_foreign_key "units", "accounts"
-  add_foreign_key "users", "accounts"
 end

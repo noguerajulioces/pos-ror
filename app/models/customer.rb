@@ -16,20 +16,12 @@
 #  zip_code   :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  account_id :bigint           not null
 #
 # Indexes
 #
-#  index_customers_on_account_id  (account_id)
-#  index_customers_on_email       (email) UNIQUE
-#
-# Foreign Keys
-#
-#  fk_rails_...  (account_id => accounts.id)
+#  index_customers_on_email  (email) UNIQUE
 #
 class Customer < ApplicationRecord
-  acts_as_tenant(:account)
-
   has_many :orders, dependent: :destroy
   # Validaciones para asegurar la integridad de los datos
   validates :first_name, :last_name, presence: true

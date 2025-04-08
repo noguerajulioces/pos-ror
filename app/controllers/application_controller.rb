@@ -3,14 +3,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-  set_current_tenant_through_filter
-  before_action :set_current_account
   
   private
-  
-  def set_current_account
-    ActsAsTenant.current_tenant = current_user.account if current_user
-  end
   
   def check_previous_day_cash_registers
     # Only run this check once per session
