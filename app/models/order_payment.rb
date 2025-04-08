@@ -10,20 +10,25 @@
 #  status            :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  account_id        :bigint           not null
 #  order_id          :bigint           not null
 #  payment_method_id :bigint           not null
 #
 # Indexes
 #
+#  index_order_payments_on_account_id         (account_id)
 #  index_order_payments_on_order_id           (order_id)
 #  index_order_payments_on_payment_method_id  (payment_method_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (order_id => orders.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #
 class OrderPayment < ApplicationRecord
+  acts_as_tenant(:account)
+
   include NumericFormatter
   belongs_to :order
   belongs_to :payment_method

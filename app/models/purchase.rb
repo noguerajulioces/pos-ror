@@ -7,17 +7,22 @@
 #  total_amount  :decimal(, )
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  account_id    :bigint           not null
 #  supplier_id   :bigint
 #
 # Indexes
 #
+#  index_purchases_on_account_id   (account_id)
 #  index_purchases_on_supplier_id  (supplier_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (supplier_id => suppliers.id)
 #
 class Purchase < ApplicationRecord
+  acts_as_tenant(:account)
+
   include NumericFormatter
 
   sanitize_numeric_attributes :total_amount

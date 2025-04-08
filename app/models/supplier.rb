@@ -12,12 +12,20 @@
 #  phone        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  account_id   :bigint           not null
 #
 # Indexes
 #
-#  index_suppliers_on_document  (document) UNIQUE
+#  index_suppliers_on_account_id  (account_id)
+#  index_suppliers_on_document    (document) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
 #
 class Supplier < ApplicationRecord
+  acts_as_tenant(:account)
+
   validates :company_name, :document, presence: true
   validates :document, uniqueness: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
