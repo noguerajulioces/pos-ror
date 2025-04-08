@@ -17,11 +17,13 @@
 #  stock                 :decimal(10, 3)
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  account_id            :bigint           not null
 #  category_id           :bigint           not null
 #  unit_id               :bigint
 #
 # Indexes
 #
+#  index_products_on_account_id   (account_id)
 #  index_products_on_category_id  (category_id)
 #  index_products_on_deleted_at   (deleted_at)
 #  index_products_on_slug         (slug) UNIQUE
@@ -29,10 +31,13 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (unit_id => units.id)
 #
 class Product < ApplicationRecord
+  acts_as_tenant(:account)
+
   acts_as_paranoid
   include NumericFormatter
   extend FriendlyId

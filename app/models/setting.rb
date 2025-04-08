@@ -7,8 +7,19 @@
 #  var        :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  account_id :bigint           not null
+#
+# Indexes
+#
+#  index_settings_on_account_id  (account_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id)
 #
 class Setting < ApplicationRecord
+  acts_as_tenant(:account)
+
   # Add default scope at the top of the model
   default_scope { order(:var) }
 

@@ -12,23 +12,28 @@
 #  total_amount        :decimal(, )
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  account_id          :bigint           not null
 #  customer_id         :bigint
 #  payment_method_id   :bigint           not null
 #  user_id             :bigint           not null
 #
 # Indexes
 #
+#  index_orders_on_account_id         (account_id)
 #  index_orders_on_customer_id        (customer_id)
 #  index_orders_on_payment_method_id  (payment_method_id)
 #  index_orders_on_user_id            (user_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class Order < ApplicationRecord
+  acts_as_tenant(:account)
+
   include NumericFormatter
 
   sanitize_numeric_attributes :total_amount, :discount_percentage
