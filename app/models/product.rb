@@ -90,17 +90,17 @@ class Product < ApplicationRecord
   # Calculate the weighted average purchase price based on purchase history
   def average_purchase_price
     items = purchase_items
-    
+
     if items.any?
       total_quantity = items.sum(:quantity)
       total_cost = items.sum('purchase_items.quantity * purchase_items.unit_price')
-      
+
       total_quantity.positive? ? (total_cost / total_quantity) : 0
     else
       current_purchase_price || 0
     end
   end
-  
+
   # Get purchase items ordered by purchase date
   def purchase_items_by_date(limit = 10)
     purchase_items.joins(:purchase)

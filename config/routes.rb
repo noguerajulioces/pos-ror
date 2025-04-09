@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  root 'home#index'
+  authenticated :user do
+    root 'home#index', as: :authenticated_root
+  end
+
+  root 'pages#index'
   devise_for :users, skip: [ :registrations, :passwords ], path_names: { sign_in: 'login', sign_out: 'logout' }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

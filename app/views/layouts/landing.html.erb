@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sistema POS - Solución completa para tu negocio</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-gradient-to-br from-pink-100 to-indigo-100 min-h-screen">
+    <header class="bg-white shadow-sm rounded-lg mx-4 mt-4">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+          <a href="/" class="flex items-center">
+            <span class="text-blue-600 text-3xl font-bold">POS</span>
+            <span class="text-gray-800 text-xl font-semibold">System</span>
+          </a>
+        </div>
+        
+        <nav class="hidden md:flex space-x-8">
+          <a href="#" class="text-gray-800 hover:text-blue-600 font-medium">Inicio</a>
+          <a href="#features" class="text-gray-800 hover:text-blue-600 font-medium">Características</a>
+          <a href="#how-it-works" class="text-gray-800 hover:text-blue-600 font-medium">Cómo funciona</a>
+          <a href="#analytics" class="text-gray-800 hover:text-blue-600 font-medium">Analíticas</a>
+          <a href="#integrations" class="text-gray-800 hover:text-blue-600 font-medium">Integraciones</a>
+          <a href="#faq" class="text-gray-800 hover:text-blue-600 font-medium">FAQ</a>
+        </nav>
+        
+        <div>
+          <a href="#contact" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+            Empezar
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <p>&copy; <%= Date.today.year %> Sistema POS. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -69,16 +69,16 @@ class CashRegister < ApplicationRecord
       # created during the time this register was open
       # Assuming orders are associated with the register's time period
       order_time_range = register.open_at..(register.close_at || Time.current)
-      
+
       # Find orders created by this user during the register's open period
       total_sales_amount = Order.where(
         user_id: register.user_id,
         created_at: order_time_range
       ).sum(:total_amount) || 0
-      
+
       # El monto final debería ser el monto inicial más las ventas
       final_amount = register.initial_amount + total_sales_amount
-      
+
       # Cerrar forzadamente la caja con el monto calculado
       register.force_close!(final_amount)
     end
