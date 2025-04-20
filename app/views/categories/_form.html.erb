@@ -33,7 +33,9 @@
       <div class="col-span-1">
         <%= form.label :parent_id, "Categoría Padre", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= form.collection_select :parent_id, Category.where(parent_id: nil), :id, :name, 
+          <%= form.collection_select :parent_id, 
+              Category.where(parent_id: nil).where.not(id: @category.id), 
+              :id, :name, 
               { prompt: "Selecciona una categoría padre (opcional)" }, 
               class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
