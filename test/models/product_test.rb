@@ -15,6 +15,7 @@
 #  slug                  :string
 #  status                :string
 #  stock                 :decimal(10, 3)
+#  vat_rate              :integer
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  account_id            :bigint           not null

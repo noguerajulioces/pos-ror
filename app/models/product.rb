@@ -15,6 +15,7 @@
 #  slug                  :string
 #  status                :string
 #  stock                 :decimal(10, 3)
+#  vat_rate              :integer
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  account_id            :bigint           not null
@@ -125,5 +126,13 @@ class Product < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     [ 'category', 'images', 'inventory_movements', 'purchases', 'product_images', 'unit', 'variants' ]
+  end
+
+  def vat_amount
+    (price_base * vat_rate / 100.0).round(2)
+  end
+
+  def total_price
+    (price_base + vat_amount).round(2)
   end
 end
