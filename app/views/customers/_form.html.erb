@@ -1,6 +1,4 @@
 <%= form_with(model: customer, 
-              url: create_form_customers_path,
-              method: :post,
               class: "space-y-6") do |f| %>  
   <% if customer.errors.any? %>
     <div class="rounded-md bg-red-50 p-4 mb-6">

@@ -27,46 +27,9 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        session[:customer_id] = @customer.id
-        session[:customer_name] = @customer.full_name
-        # Close the modal and update customer info in the POS view
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.remove('modal'),
-            turbo_stream.update('customer-info', @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
-            turbo_stream.update('selected-customer-id', @customer.id)
-          ]
-        }
-        format.html { redirect_back fallback_location: customer_url(@customer), notice: 'Cliente creado con éxito.' }
+        format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
         format.json { render json: { success: true, customer: @customer } }
       else
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            'new_customer_form',
-            partial: 'customers/modal_form',
-            locals: { customer: @customer }
-          ), status: :unprocessable_entity
-        }
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def create_form
-    @customer = Customer.new(customer_params)
-
-    respond_to do |format|
-      if @customer.save
-        format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
-      else
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            'customer_search_modal',
-            partial: 'pos/customer_search_modal',
-            locals: { customer: @customer }
-          )
-        }
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
       end

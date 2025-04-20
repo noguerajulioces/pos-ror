@@ -96,6 +96,9 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :modal do
+    resources :customers, only: [ :create ]
+  end
   resources :orders do
     member do
       get :receipt_preview
