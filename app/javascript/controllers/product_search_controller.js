@@ -104,7 +104,7 @@ export default class extends Controller {
         style: 'decimal',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-      }).format(parseInt(product.price));
+      }).format(parseInt(product.price_base));
       
       // Determine stock status and styling
       const stockStatus = parseInt(product.stock) <= 0;

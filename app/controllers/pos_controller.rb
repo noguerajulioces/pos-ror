@@ -61,7 +61,7 @@ class PosController < ApplicationController
           product_id: item.product_id,
           product_name: item.product.name,
           quantity: item.quantity,
-          price: item.price,
+          price: item.price_base,
           total: item.total
         }
       end,
@@ -112,7 +112,7 @@ class PosController < ApplicationController
         product_json = {
           id: product.id,
           name: product.name,
-          price: product.price,
+          price: product.price_base,
           stock: product.stock || 0,
           description: product.description,
           image_url: product.images.first.present? ? url_for(product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil

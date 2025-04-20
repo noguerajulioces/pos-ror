@@ -102,7 +102,7 @@
         <%= form.label :price, "Precio", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_field :price,
-            value: number_with_delimiter(@product.price.to_i, delimiter: '.'),
+            value: number_with_delimiter(@product.price_base.to_i, delimiter: '.'),
             data: {
                   controller: "number-format",
                   "number-format-target": "input",

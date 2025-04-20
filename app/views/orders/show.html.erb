@@ -131,7 +131,7 @@
                     <%= item.product.name %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                    ₲s. <%= number_with_delimiter(item.price.to_i, delimiter: '.') %>
+                    ₲s. <%= number_with_delimiter(item.price_base.to_i, delimiter: '.') %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                     <%= item.quantity %> <%= item&.product&.unit&.abbreviation %>

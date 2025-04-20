@@ -90,7 +90,7 @@
             <%= product.stock %> <%= product&.unit&.name %>
           </td>
           <td>
-            <%= number_to_currency(product.price, unit: 'Gs. ', precision: 0, delimiter: '.') %>
+            <%= number_to_currency(product.price_base, unit: 'Gs. ', precision: 0, delimiter: '.') %>
           </td>
           <td>
             <%= number_to_currency(product.average_cost, unit: 'Gs. ', precision: 0, delimiter: '.') %>

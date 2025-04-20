@@ -31,8 +31,8 @@ Cant.   Descripcion                  P.U.  P.T.
 <% order.order_items.each do |item| %>
   <% desc = item.product.name[0,25].ljust(25) %>
   <% cant = item.quantity.to_s.ljust(5) %>
-  <% pu   = sprintf("%.0f", item.price).rjust(6) %>
-  <% pt   = sprintf("%.0f", item.quantity * item.price).rjust(6) %>
+  <% pu   = sprintf("%.0f", item.price_base).rjust(6) %>
+  <% pt   = sprintf("%.0f", item.quantity * item.price_base).rjust(6) %>
   <%= "#{cant} #{desc} #{number_to_currency(pu, unit: "Gs. ", precision: 0, delimiter: '.')} #{number_to_currency(pt, unit: "Gs. ", precision: 0, delimiter: '.')}\n" %>
 <% end %>
 

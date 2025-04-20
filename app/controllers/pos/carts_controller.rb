@@ -20,7 +20,7 @@ module Pos
         session[:cart] << {
           'product_id' => @product.id,
           'name' => @product.name,
-          'price' => @product.price,
+          'price' => @product.price_base,
           'quantity' => quantity,
           'image_url' => @product.images.first.present? ? url_for(@product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
         }
