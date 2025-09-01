@@ -216,7 +216,7 @@ class Product < ApplicationRecord
   def stock_status
     if stock <= 0
       'out_of_stock'
-    elsif stock <= min_stock
+    elsif min_stock && stock <= min_stock
       'low_stock'
     else
       'in_stock'

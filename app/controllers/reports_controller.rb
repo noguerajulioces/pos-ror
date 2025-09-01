@@ -56,7 +56,7 @@ class ReportsController < ApplicationController
     # Stock status breakdown
     @stock_status = {
       active: @products.active.count,
-      low_stock: @products.where('stock <= min_stock').count,
+      low_stock: @products.where('min_stock IS NOT NULL AND stock <= min_stock').count,
       out_of_stock: @products.out_of_stock.count,
       total: @products.count
     }

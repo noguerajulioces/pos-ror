@@ -46,7 +46,7 @@ class Ingredient < ApplicationRecord
 
   # Scopes
   scope :ordered, -> { order(:name) }
-  scope :low_stock, -> { where('stock <= min_stock') }
+  scope :low_stock, -> { where('min_stock IS NOT NULL AND stock <= min_stock') }
   scope :out_of_stock, -> { where(stock: 0) }
 
   # Callbacks
@@ -55,7 +55,7 @@ class Ingredient < ApplicationRecord
   # Métodos
   def stock_status
     return 'out_of_stock' if stock.zero?
-    return 'low_stock' if stock <= min_stock
+    return 'low_stock' if min_stock && stock <= min_stock
     'in_stock'
   end
 
