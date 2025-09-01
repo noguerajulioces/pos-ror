@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "close_register_modal" do %>
-  <div class="p-4">
+  <div class="p-2">
     <% if @cash_register.nil? %>
       <div class="bg-yellow-50 p-4 rounded-md mb-4">
         <div class="flex">
@@ -82,10 +82,10 @@
             <svg class="h-4 w-4 text-orange-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
             </svg>
-            Monto Final en Efectivo
+            Monto Final en la caja
           </h3>
           <div class="bg-white p-3 rounded border border-orange-100">
-            <%= form.label :final_amount, "Ingresa el monto real que tienes en efectivo", class: "block text-xs font-medium text-gray-600 mb-2" %>
+            <%= form.label :final_amount, "Ingresa el monto real que tienes en la caja", class: "block text-xs font-medium text-gray-600 mb-2" %>
             <div class="relative" data-controller="number-format">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500 text-sm font-medium">₲s.</span>
@@ -101,7 +101,7 @@
               <svg class="h-3 w-3 text-gray-400 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Este monto puede ser diferente del esperado si hay diferencias en efectivo
+              Este monto puede ser diferente del esperado si hay diferencias en la caja
             </div>
           </div>
         </div>
