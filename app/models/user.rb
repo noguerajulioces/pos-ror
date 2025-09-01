@@ -54,4 +54,14 @@ class User < ApplicationRecord
   def can_deactivate_users?
     super_user?
   end
+
+  # Devise method to check if user can be authenticated
+  def active_for_authentication?
+    super && active?
+  end
+
+  # Custom message for inactive users
+  def inactive_message
+    active? ? super : :inactive
+  end
 end
