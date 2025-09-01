@@ -158,16 +158,6 @@ class Product < ApplicationRecord
                  .limit(limit)
   end
 
-  private
-
-  def generate_barcode
-    self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
-  end
-
-  def update_stock_status
-    self.status = stock <= 0 ? 'out_of_stock' : 'active'
-  end
-
   # Métodos para restaurante
   def price_with_tax
     return price unless tax_rate
@@ -217,6 +207,26 @@ class Product < ApplicationRecord
 
   def display_name
     print_name.presence || name
+  end
+
+  def stock_status
+    if stock <= 0
+      'out_of_stock'
+    elsif stock <= min_stock
+      'low_stock'
+    else
+      'in_stock'
+    end
+  end
+
+  private
+
+  def generate_barcode
+    self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
+  end
+
+  def update_stock_status
+    self.status = stock <= 0 ? 'out_of_stock' : 'active'
   end
 
   def self.ransackable_attributes(auth_object = nil)

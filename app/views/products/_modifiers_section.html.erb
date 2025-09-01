@@ -1,0 +1,51 @@
+<div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+      <svg class="h-5 w-5 text-orange-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+      Grupos de Modificadores
+    </h3>
+  </div>
+  
+  <div class="p-6">
+    <div class="space-y-6">
+      <% @product.modifier_groups.each do |group| %>
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-md font-medium text-gray-900">
+              <%= group.name %>
+              <% if group.required %>
+                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                  Requerido
+                </span>
+              <% end %>
+            </h4>
+            <span class="text-sm text-gray-500">
+              <%= group.selection_range_text %>
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <% group.modifiers.each do |modifier| %>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                <span class="text-sm font-medium text-gray-900">
+                  <%= modifier.name %>
+                </span>
+                <span class="text-sm <%= modifier.price_delta > 0 ? 'text-green-600' : modifier.price_delta < 0 ? 'text-red-600' : 'text-gray-500' %>">
+                  <% if modifier.price_delta > 0 %>
+                    +<%= number_to_currency(modifier.price_delta, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                  <% elsif modifier.price_delta < 0 %>
+                    <%= number_to_currency(modifier.price_delta, delimiter: '.', precision: 0, unit: '₲s. ') %>
+                  <% else %>
+                    Gratis
+                  <% end %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

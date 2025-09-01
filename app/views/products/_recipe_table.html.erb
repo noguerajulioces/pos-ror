@@ -1,0 +1,93 @@
+<div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+      <svg class="h-5 w-5 text-purple-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      Receta e Ingredientes
+    </h3>
+  </div>
+  
+  <% if @product.recipe_components.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-300">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ingrediente</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo Unitario</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo Parcial</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Merma</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% total_cost = 0 %>
+          <% @product.recipe_components.each do |component| %>
+            <% ingredient_cost = component.ingredient.average_cost * component.quantity %>
+            <% total_cost += ingredient_cost %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= component.ingredient.name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= component.quantity %> <%= component.unit.abbreviation %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= number_to_currency(component.ingredient.average_cost, delimiter: '.', precision: 0, unit: '₲s. ') %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= number_to_currency(ingredient_cost, delimiter: '.', precision: 0, unit: '₲s. ') %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= number_to_percentage(component.waste_pct, precision: 1) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= component.ingredient.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                  <%= component.ingredient.stock %> <%= component.ingredient.unit.abbreviation %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Resumen de costos -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <span class="text-sm font-medium text-gray-500">Costo Total de Receta:</span>
+          <div class="text-lg font-bold text-gray-900">
+            <%= number_to_currency(total_cost, delimiter: '.', precision: 0, unit: '₲s. ') %>
+          </div>
+        </div>
+        
+        <% if @product.price > 0 && total_cost > 0 %>
+          <% margin = ((@product.price - total_cost) / total_cost * 100) %>
+          <div>
+            <span class="text-sm font-medium text-gray-500">Margen Teórico:</span>
+            <div class="text-lg font-bold <%= margin > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_percentage(margin, precision: 1) %>
+            </div>
+          </div>
+          
+          <div>
+            <span class="text-sm font-medium text-gray-500">Ganancia por Unidad:</span>
+            <div class="text-lg font-bold <%= margin > 0 ? 'text-green-600' : 'text-red-600' %>">
+              <%= number_to_currency(@product.price - total_cost, delimiter: '.', precision: 0, unit: '₲s. ') %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <p class="mt-2 text-sm text-gray-500">Aún sin receta configurada</p>
+    </div>
+  <% end %>
+</div>

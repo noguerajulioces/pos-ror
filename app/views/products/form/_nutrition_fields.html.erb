@@ -1,0 +1,22 @@
+<div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+  <div class="px-4 py-6 sm:p-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Nutricional</h3>
+    
+    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:grid-cols-2">
+      <div class="flex items-center">
+        <%= form.check_box :is_vegan, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
+        <label class="ml-2 text-sm text-gray-900">Vegano</label>
+      </div>
+      
+      <div class="flex items-center">
+        <%= form.check_box :is_vegetarian, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
+        <label class="ml-2 text-sm text-gray-900">Vegetariano</label>
+      </div>
+      
+      <div class="flex items-center">
+        <%= form.check_box :is_gluten_free, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
+        <label class="ml-2 text-sm text-gray-900">Sin Gluten</label>
+      </div>
+    </div>
+  </div>
+</div>
