@@ -42,6 +42,7 @@ class Ingredient < ApplicationRecord
   belongs_to :unit
   has_many :recipe_components, dependent: :destroy
   has_many :products, through: :recipe_components
+  has_many :purchase_items, as: :purchasable, dependent: :nullify
 
   # Scopes
   scope :ordered, -> { order(:name) }

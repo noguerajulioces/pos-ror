@@ -86,7 +86,7 @@
             <div class="product-sku"><%= product.sku %></div>
           </td>
           <td><%= product.category.name %></td>
-          <td class="<%= 'low-stock' if product.stock <= product.min_stock %>">
+                          <td class="<%= 'low-stock' if low_stock?(product) %>">
             <%= product.stock %> <%= product&.unit&.name %>
           </td>
           <td>

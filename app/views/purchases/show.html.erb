@@ -23,24 +23,56 @@
             Volver
           <% end %>
           
-          <%= link_to edit_purchase_path(@purchase), class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Editar
+          <% if @purchase.editable? %>
+            <%= link_to edit_purchase_path(@purchase), class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Editar
+            <% end %>
+            
+            <%= button_to post_purchase_path(@purchase), method: :post, class: "inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Postear
+            <% end %>
           <% end %>
           
-          <%= button_to purchase_path(@purchase), method: :delete, data: { turbo_confirm: '¿Estás seguro que deseas eliminar esta compra?' }, class: "inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-            Eliminar
+          <% if @purchase.draft? %>
+            <%= button_to cancel_purchase_path(@purchase), method: :post, data: { turbo_confirm: '¿Estás seguro que deseas cancelar esta compra?' }, class: "inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Cancelar
+            <% end %>
           <% end %>
         </div>
       </div>
       
+      <!-- Status Badge -->
+      <div class="px-6 py-3 bg-gray-50">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+          <%= case @purchase.status
+              when 'draft' then 'bg-yellow-100 text-yellow-800'
+              when 'posted' then 'bg-green-100 text-green-800'
+              when 'canceled' then 'bg-red-100 text-red-800'
+              else 'bg-gray-100 text-gray-800'
+              end %>">
+          <%= case @purchase.status
+              when 'draft' then 'Borrador'
+              when 'posted' then 'Posteada'
+              when 'canceled' then 'Cancelada'
+              else 'Desconocido'
+              end %>
+        </span>
+        <% if @purchase.posted? && @purchase.posted_at %>
+          <span class="ml-2 text-sm text-gray-500">Posteada el <%= l(@purchase.posted_at, format: :long) %></span>
+        <% end %>
+      </div>
+      
       <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
         <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <div class="flex items-center">
             <div class="bg-blue-100 rounded-full p-2 mr-3">
@@ -78,33 +110,75 @@
             </div>
             <div>
               <p class="text-xs font-medium text-gray-500 uppercase">Proveedor</p>
-              <p class="text-lg font-semibold text-gray-900"><%= @purchase.supplier.company_name %></p>
+              <p class="text-lg font-semibold text-gray-900"><%= @purchase.supplier.company_name.present? ? @purchase.supplier.company_name : @purchase.supplier.contact_name %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div class="flex items-center">
+            <div class="bg-orange-100 rounded-full p-2 mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-gray-500 uppercase">Factura</p>
+              <p class="text-lg font-semibold text-gray-900"><%= @purchase.invoice_number || "Sin número" %></p>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Additional Info -->
+      <% if @purchase.notes.present? || @purchase.payment_method.present? %>
+        <div class="px-6 py-4 border-t border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% if @purchase.payment_method.present? %>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Método de Pago</p>
+                <p class="text-sm text-gray-900"><%= @purchase.payment_method.humanize %></p>
+              </div>
+            <% end %>
+            <% if @purchase.notes.present? %>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Notas</p>
+                <p class="text-sm text-gray-900"><%= @purchase.notes %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
-    <!-- Products Table -->
+    <!-- Items Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h2 class="text-lg font-medium text-gray-900">Productos Adquiridos</h2>
-        <span class="text-sm text-gray-500"><%= @purchase_items.count %> productos</span>
+        <h2 class="text-lg font-medium text-gray-900">Items de Compra</h2>
+        <span class="text-sm text-gray-500"><%= @purchase.purchase_items.count %> items</span>
       </div>
       
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidad</th>
               <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
               <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
               <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <% @purchase_items.each do |item| %>
+            <% @purchase.purchase_items.each do |item| %>
               <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    <%= item.purchasable_type == 'Product' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' %>">
+                    <%= item.purchasable_type == 'Product' ? 'Producto' : 'Ingrediente' %>
+                  </span>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -113,26 +187,33 @@
                       </svg>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900"><%= item.product.name %></div>
-                      <div class="text-sm text-gray-500">Código: <%= item.product&.sku || item.product&.id %></div>
+                      <div class="text-sm font-medium text-gray-900">
+                        <%= link_to item.purchasable.name, 
+                            item.purchasable_type == 'Product' ? product_path(item.purchasable) : ingredient_path(item.purchasable),
+                            class: "text-indigo-600 hover:text-indigo-900" %>
+                      </div>
+                      <div class="text-sm text-gray-500">Código: <%= item.purchasable.sku || item.purchasable.id %></div>
                     </div>
                   </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= item.unit&.name || 'N/A' %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                   ₲s. <%= number_with_delimiter(item.unit_price.to_i, delimiter: '.') %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
-                  <%= item.quantity %>
+                  <%= number_with_delimiter(item.quantity, delimiter: '.') %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  ₲s. <%= number_with_delimiter((item.unit_price * item.quantity).to_i, delimiter: '.') %>
+                  ₲s. <%= number_with_delimiter(item.subtotal.to_i, delimiter: '.') %>
                 </td>
               </tr>
             <% end %>
           </tbody>
           <tfoot class="bg-gray-50">
             <tr>
-              <td colspan="3" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Total:</td>
+              <td colspan="5" class="px-6 py-4 text-right text-sm font-medium text-gray-900">Total:</td>
               <td class="px-6 py-4 text-right text-sm font-bold text-gray-900">
                 ₲s. <%= number_with_delimiter(@purchase.total_amount.to_i, delimiter: '.') %>
               </td>

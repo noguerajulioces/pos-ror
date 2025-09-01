@@ -89,7 +89,13 @@ Rails.application.routes.draw do
 
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos
   get 'print_message', to: 'print#print_message'
-  resources :purchases
+  resources :ingredients
+  resources :purchases do
+    member do
+      post :post
+      post :cancel
+    end
+  end
   resource :settings, only: [ :edit ] do
     patch :update_all, on: :collection
   end

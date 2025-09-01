@@ -1,0 +1,10 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">Editar Ingrediente</h1>
+      <p class="mt-2 text-sm text-gray-700">Modificar información del ingrediente <%= @ingredient.name %>.</p>
+    </div>
+  </div>
+
+  <%= render 'form', ingredient: @ingredient %>
+</div>

@@ -140,7 +140,7 @@
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm">
                 <div class="flex items-center">
-                  <span class="<%= product.stock <= product.min_stock ? 'text-red-600' : 'text-gray-900' %>">
+                  <span class="<%= low_stock?(product) ? 'text-red-600' : 'text-gray-900' %>">
                     <%= product.stock %> <%= product.unit&.name %>
                   </span>
                 </div>

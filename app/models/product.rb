@@ -73,7 +73,7 @@ class Product < ApplicationRecord
   has_many :inventory_movements, dependent: :destroy
   has_many :variants, class_name: 'ProductVariant', dependent: :destroy
   has_many :images, class_name: 'ProductImage', dependent: :destroy
-  has_many :purchase_items
+  has_many :purchase_items, as: :purchasable, dependent: :nullify
   has_many :purchases, through: :purchase_items
   has_many :product_images, dependent: :destroy
 
@@ -207,6 +207,10 @@ class Product < ApplicationRecord
 
   def display_name
     print_name.presence || name
+  end
+
+  def purchasable?
+    respond_to?(:kind) ? kind == 'simple' : true
   end
 
   def stock_status

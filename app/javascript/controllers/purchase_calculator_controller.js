@@ -1,54 +1,44 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static targets = ["quantity", "unitPrice", "subtotal", "totalAmount"]
+
   connect() {
-    console.log("Purchase Calculator Controller Connected!")
-    this.calculate()
+    this.calculateAll()
   }
 
-  calculate() {
-    console.log("Calculating totals...")
-    let grandTotal = 0
+  calculateSubtotal(event) {
+    const row = event.target.closest('[data-purchase-calculator-target="row"]')
+    const quantity = parseFloat(row.querySelector('[data-purchase-calculator-target="quantity"]').value) || 0
+    const unitPrice = parseFloat(row.querySelector('[data-purchase-calculator-target="unitPrice"]').value) || 0
+    const subtotal = quantity * unitPrice
     
-    // Get all nested form wrappers
-    const items = document.querySelectorAll('.nested-form-wrapper')
-    console.log(`Found ${items.length} items`)
+    row.querySelector('[data-purchase-calculator-target="subtotal"]').value = subtotal.toFixed(2)
     
-    items.forEach((item) => {
-      if (item.style.display !== 'none') { // Skip hidden items
-        const quantity = parseFloat(item.querySelector('.item-quantity')?.value) || 0
-        
-        // Get the unit price and remove thousand separators (dots or commas)
-        const unitPriceRaw = item.querySelector('.item-unit-price')?.value || '0'
-        const unitPrice = parseFloat(unitPriceRaw.replace(/[.,]/g, '')) || 0
-        
-        const subtotal = quantity * unitPrice
-        
-        console.log(`Calculating: ${quantity} x ${unitPrice} = ${subtotal}`)
-        
-        const subtotalField = item.querySelector('.item-total-price')
-        if (subtotalField) {
-          // Format the subtotal with thousand separators
-          const formattedSubtotal = this.formatNumber(subtotal)
-          subtotalField.value = formattedSubtotal
-          console.log(`Updated subtotal: ${formattedSubtotal}`)
-        }
-        
-        grandTotal += subtotal
-      }
+    this.calculateTotal()
+  }
+
+  calculateTotal() {
+    let total = 0
+    this.subtotalTargets.forEach(subtotal => {
+      total += parseFloat(subtotal.value) || 0
     })
     
-    const totalField = document.getElementById('purchase_total_amount')
-    if (totalField) {
-      // Format the grand total with thousand separators
-      const formattedGrandTotal = this.formatNumber(grandTotal)
-      totalField.value = formattedGrandTotal
-      console.log(`Updated grand total: ${formattedGrandTotal}`)
+    if (this.hasTotalAmountTarget) {
+      this.totalAmountTarget.value = total.toFixed(2)
     }
   }
-  
-  // Helper method to format numbers with thousand separators
-  formatNumber(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+
+  calculateAll() {
+    this.quantityTargets.forEach((quantity, index) => {
+      const row = quantity.closest('[data-purchase-calculator-target="row"]')
+      const unitPrice = parseFloat(row.querySelector('[data-purchase-calculator-target="unitPrice"]').value) || 0
+      const qty = parseFloat(quantity.value) || 0
+      const subtotal = qty * unitPrice
+      
+      row.querySelector('[data-purchase-calculator-target="subtotal"]').value = subtotal.toFixed(2)
+    })
+    
+    this.calculateTotal()
   }
 }

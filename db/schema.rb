@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_140008) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_194719) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -363,17 +363,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_140008) do
   end
 
   create_table "purchase_items", force: :cascade do |t|
-    t.bigint "product_id", null: false
     t.bigint "purchase_id", null: false
-    t.integer "quantity"
-    t.decimal "unit_price"
+    t.decimal "quantity", precision: 12, scale: 3
+    t.decimal "unit_price", precision: 12, scale: 2
     t.decimal "total_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "account_id", null: false
+    t.string "purchasable_type"
+    t.bigint "purchasable_id"
+    t.bigint "unit_id"
+    t.decimal "subtotal", precision: 12, scale: 2
     t.index ["account_id"], name: "index_purchase_items_on_account_id"
-    t.index ["product_id"], name: "index_purchase_items_on_product_id"
+    t.index ["purchasable_type", "purchasable_id"], name: "index_purchase_items_on_purchasable_type_and_purchasable_id"
     t.index ["purchase_id"], name: "index_purchase_items_on_purchase_id"
+    t.index ["unit_id"], name: "index_purchase_items_on_unit_id"
   end
 
   create_table "purchases", force: :cascade do |t|
@@ -383,7 +387,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_140008) do
     t.datetime "updated_at", null: false
     t.bigint "supplier_id"
     t.bigint "account_id", null: false
+    t.string "status", default: "draft"
+    t.datetime "posted_at"
+    t.string "invoice_number"
+    t.string "payment_method"
+    t.text "notes"
     t.index ["account_id"], name: "index_purchases_on_account_id"
+    t.index ["posted_at"], name: "index_purchases_on_posted_at"
+    t.index ["status"], name: "index_purchases_on_status"
     t.index ["supplier_id"], name: "index_purchases_on_supplier_id"
   end
 
@@ -541,8 +552,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_140008) do
   add_foreign_key "products", "tax_rates"
   add_foreign_key "products", "units"
   add_foreign_key "purchase_items", "accounts"
-  add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
+  add_foreign_key "purchase_items", "units"
   add_foreign_key "purchases", "accounts"
   add_foreign_key "purchases", "suppliers"
   add_foreign_key "recipe_components", "accounts"

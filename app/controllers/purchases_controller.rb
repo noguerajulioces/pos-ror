@@ -1,59 +1,75 @@
 class PurchasesController < ApplicationController
-  before_action :set_purchase, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_purchase, only: %i[show edit update destroy post cancel]
 
   def index
     @q = Purchase.ransack(params[:q])
-    @purchases = @q.result(distinct: true).includes(:supplier).paginate(page: params[:page], per_page: 10)
+    @purchases = @q.result(distinct: true).includes(:supplier).ordered.paginate(page: params[:page], per_page: 10)
   end
 
   def show
-    @purchase_items = @purchase.purchase_items.includes(:product)
   end
 
   def new
     @purchase = Purchase.new
+    @purchase.purchase_items.build
   end
 
   def create
-    ActiveRecord::Base.transaction do
-      @purchase = Purchase.new(purchase_params)
-      if @purchase.save
-        StockManager.update_stock_from_purchase(@purchase)
-        redirect_to @purchase, notice: 'Compra creada exitosamente.'
-      else
-        render :new
-      end
-    end
-  rescue ActiveRecord::RecordInvalid, StandardError => e
     @purchase = Purchase.new(purchase_params)
-    flash.now[:alert] = "No se pudo crear la compra: #{e.message}"
-    render :new
+
+    if @purchase.save
+      redirect_to @purchase, notice: 'Compra creada exitosamente.'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit
+    unless @purchase.editable?
+      redirect_to @purchase, alert: 'No se puede editar una compra ya posteada.'
+      nil
+    end
   end
 
   def update
-    ActiveRecord::Base.transaction do
-      if @purchase.update(purchase_params)
-        StockManager.update_stock_from_purchase(@purchase)
-        redirect_to @purchase, notice: 'Compra actualizada exitosamente.'
-      else
-        render :edit
-      end
+    unless @purchase.editable?
+      redirect_to @purchase, alert: 'No se puede editar una compra ya posteada.'
+      return
     end
-  rescue ActiveRecord::RecordInvalid, StandardError => e
-    redirect_to edit_purchase_path(@purchase), alert: "No se pudo actualizar la compra: #{e.message}"
+
+    if @purchase.update(purchase_params)
+      redirect_to @purchase, notice: 'Compra actualizada exitosamente.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
-    ActiveRecord::Base.transaction do
-      StockManager.revert_stock_from_purchase(@purchase)
-      @purchase.destroy!
+    unless @purchase.editable?
+      redirect_to @purchase, alert: 'No se puede eliminar una compra ya posteada.'
+      return
     end
+
+    @purchase.destroy
     redirect_to purchases_path, notice: 'Compra eliminada exitosamente.'
-  rescue ActiveRecord::RecordInvalid, StandardError => e
-    redirect_to purchases_path, alert: "No se pudo eliminar la compra: #{e.message}"
+  end
+
+  def post
+    begin
+      @purchase.post!
+      redirect_to @purchase, notice: 'Compra posteada exitosamente.'
+    rescue StandardError => e
+      redirect_to @purchase, alert: "Error al postear la compra: #{e.message}"
+    end
+  end
+
+  def cancel
+    begin
+      @purchase.cancel!
+      redirect_to @purchase, notice: 'Compra cancelada exitosamente.'
+    rescue StandardError => e
+      redirect_to @purchase, alert: "Error al cancelar la compra: #{e.message}"
+    end
   end
 
   private
@@ -64,10 +80,10 @@ class PurchasesController < ApplicationController
 
   def purchase_params
     params.require(:purchase).permit(
-      :purchase_date,
-      :supplier_id,
-      :total_amount,
-      purchase_items_attributes: [ :id, :product_id, :quantity, :unit_price, :total_price, :_destroy ]
+      :purchase_date, :supplier_id, :invoice_number, :payment_method, :notes,
+      purchase_items_attributes: [
+        :id, :purchasable_type, :purchasable_id, :unit_id, :quantity, :unit_price, :_destroy
+      ]
     )
   end
 end

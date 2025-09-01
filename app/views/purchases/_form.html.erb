@@ -1,6 +1,6 @@
 <%= form_with(model: purchase, class: "bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-3", 
     data: { 
-      controller: 'nested-form purchase-calculator',
+      controller: 'nested-form purchase-calculator purchase-item-type',
       nested_form_wrapper_selector_value: '.nested-form-wrapper' 
     }) do |form| %>
   <% if purchase.errors.any? %>
@@ -29,25 +29,63 @@
 
   <div class="px-4 py-6 sm:p-8">
     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-      <div class="sm:col-span-3">
+      <div class="sm:col-span-2">
         <%= form.label :purchase_date, "Fecha de Compra", class: "block text-sm/6 font-medium text-gray-900" %>
         <%= form.date_field :purchase_date, value: Date.current, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
 
-      <div class="sm:col-span-3">
+      <div class="sm:col-span-2">
         <%= form.label :supplier_id, "Proveedor", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= form.collection_select :supplier_id, 
-            Supplier.all, 
-            :id, 
-            ->(supplier) { "#{supplier.company_name.present? ? supplier.company_name : supplier.contact_name} (#{supplier&.document})" }, 
-            { include_blank: 'Seleccione un proveedor' }, 
-            class: "block w-full rounded-md bg-white px-3 py-2.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <div class="relative">
+          <%= form.collection_select :supplier_id, 
+              Supplier.all, 
+              :id, 
+              ->(supplier) { "#{supplier.company_name.present? ? supplier.company_name : supplier.contact_name} (#{supplier&.document})" }, 
+              { include_blank: 'Seleccione un proveedor' }, 
+              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= form.label :invoice_number, "Número de Factura", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= form.text_field :invoice_number, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= form.label :payment_method, "Método de Pago", class: "block text-sm/6 font-medium text-gray-900" %>
+        <div class="relative">
+          <%= form.select :payment_method, 
+              options_for_select([
+                ['Efectivo', 'cash'],
+                ['Tarjeta de Crédito', 'credit_card'],
+                ['Tarjeta de Débito', 'debit_card'],
+                ['Transferencia', 'transfer'],
+                ['Cheque', 'check']
+              ], purchase.payment_method), 
+              { include_blank: 'Seleccione método de pago' }, 
+              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="sm:col-span-3">
+        <%= form.label :notes, "Notas", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= form.text_area :notes, rows: 3, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
     </div>
   </div>
 
   <div class="px-4 py-6 sm:p-8 border-t border-gray-200">
-    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-6">Productos</h3>
+    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-6">Items de Compra</h3>
     
     <template data-nested-form-target="template">
       <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
@@ -71,7 +109,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Agregar Producto
+        Agregar Item
       </button>
     </div>
   </div>
@@ -99,5 +137,3 @@
     <% end %>
   </div>
 <% end %>
-
-<!-- Remove the script tag since we're using Stimulus -->
