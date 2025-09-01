@@ -1,4 +1,5 @@
 <%= form_with(model: customer, 
+              url: pos_customers_path,
               id: "new_customer_form", 
               class: "space-y-6", 
               data: { 
@@ -29,13 +30,13 @@
       <div>
         <%= f.label :first_name, "Nombre", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= f.text_field :first_name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          <%= f.text_field :first_name, placeholder: "Ingrese el nombre", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
       <div>
         <%= f.label :last_name, "Apellido", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= f.text_field :last_name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          <%= f.text_field :last_name, placeholder: "Ingrese el apellido", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
     </div>
@@ -44,13 +45,13 @@
       <div>
         <%= f.label :document, "C.I./RUC", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= f.text_field :document, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          <%= f.text_field :document, placeholder: "Ingrese C.I. o RUC", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
       <div>
         <%= f.label :phone, "Teléfono", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
-          <%= f.telephone_field :phone, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          <%= f.telephone_field :phone, placeholder: "3001234567", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
         </div>
       </div>
     </div>
@@ -58,14 +59,14 @@
     <div>
       <%= f.label :email, "Email", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="mt-2">
-        <%= f.email_field :email, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.email_field :email, placeholder: "ejemplo@email.com", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
     </div>
 
     <div>
       <%= f.label :address, "Dirección", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="mt-2">
-        <%= f.text_field :address, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.text_field :address, placeholder: "Dirección completa", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
       </div>
     </div>
   </div>

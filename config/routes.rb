@@ -58,6 +58,7 @@ Rails.application.routes.draw do
   end
   get 'pos', to: 'pos#show'
   namespace :pos do
+    resources :customers, only: [ :create ]
     namespace :modals do
       get 'order_type', to: 'order_types#show'
       get 'customer_search', to: 'customers#search'
