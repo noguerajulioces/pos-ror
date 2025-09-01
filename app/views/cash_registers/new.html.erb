@@ -1,6 +1,15 @@
 <div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
   <h1 class="text-2xl font-bold mb-6 text-center">Abrir Caja</h1>
 
+  <!-- Información adicional simple -->
+  <div class="mb-6 text-sm text-gray-600 space-y-2">
+    <p><strong>Abierto por:</strong> <%= current_user.name %></p>
+    <p><strong>Fecha:</strong> <%= l(Time.current, format: :long) %></p>
+    <% if current_user.super_user? %>
+      <p><strong>Rol:</strong> <span class="text-indigo-600">Super Usuario</span></p>
+    <% end %>
+  </div>
+
   <%= form_with(model: @cash_register, local: true, class: "space-y-4") do |form| %>
     <% if @cash_register.errors.any? %>
       <div class="bg-red-50 p-4 rounded-md mb-4">
@@ -15,20 +24,20 @@
       </div>
     <% end %>
 
-    <div>
-      <%= form.label :initial_amount, "Monto Inicial (₲s)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <div class="space-y-3">
+      <%= form.label :initial_amount, "Monto Inicial (₲s)", class: "block text-sm font-medium text-gray-700 mb-2" %>
       <div class="relative rounded-md shadow-sm" data-controller="number-format">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <span class="text-gray-500 sm:text-sm">₲s.</span>
         </div>
-        <%= form.text_field :initial_amount, class: "pl-12 block w-full pr-12 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 px-3 py-1.5", min: 0, step: 1000, data: { number_format_target: "input" } %>
+        <%= form.text_field :initial_amount, class: "pl-12 block w-full pr-12 sm:text-sm border-2 border-gray-300 rounded-md px-3 py-2 transition-colors duration-200", min: 0, step: 1000, data: { number_format_target: "input" } %>
       </div>
     </div>
 
-    <div class="flex items-center justify-between pt-4">
-      <%= link_to "Cancelar", root_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    <div class="flex items-center justify-between pt-6 space-x-4">
+      <%= link_to "Cancelar", root_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200" %>
       
-      <%= form.submit "Abrir Caja", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      <%= form.submit "Abrir Caja", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200" %>
     </div>
   <% end %>
 </div>
