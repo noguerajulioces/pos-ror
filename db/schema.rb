@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_140008) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
     t.index ["account_id"], name: "index_categories_on_account_id"
   end
 
+  create_table "combo_items", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "component_product_id", null: false
+    t.decimal "quantity", precision: 12, scale: 3, default: "1.0", null: false
+    t.boolean "optional", default: false
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "choice_group_id"
+    t.index ["account_id"], name: "index_combo_items_on_account_id"
+    t.index ["choice_group_id"], name: "index_combo_items_on_choice_group_id"
+    t.index ["component_product_id"], name: "index_combo_items_on_component_product_id"
+    t.index ["deleted_at"], name: "index_combo_items_on_deleted_at"
+    t.index ["product_id", "component_product_id"], name: "index_combo_items_on_product_id_and_component_product_id", unique: true
+    t.index ["product_id"], name: "index_combo_items_on_product_id"
+  end
+
   create_table "currencies", force: :cascade do |t|
     t.string "name"
     t.string "code"
@@ -144,6 +162,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "ingredients", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "sku"
+    t.bigint "unit_id", null: false
+    t.decimal "stock", precision: 12, scale: 3, default: "0.0"
+    t.decimal "min_stock", precision: 12, scale: 3, default: "0.0"
+    t.decimal "average_cost", precision: 12, scale: 2, default: "0.0"
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_ingredients_on_account_id"
+    t.index ["deleted_at"], name: "index_ingredients_on_deleted_at"
+    t.index ["name"], name: "index_ingredients_on_name"
+    t.index ["sku"], name: "index_ingredients_on_sku"
+    t.index ["unit_id"], name: "index_ingredients_on_unit_id"
+  end
+
   create_table "inventory_movements", force: :cascade do |t|
     t.bigint "product_id", null: false
     t.decimal "quantity", precision: 10, scale: 3
@@ -154,6 +190,48 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
     t.bigint "account_id", null: false
     t.index ["account_id"], name: "index_inventory_movements_on_account_id"
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
+  end
+
+  create_table "modifier_groups", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "min_select", default: 0
+    t.integer "max_select", default: 1
+    t.boolean "required", default: false
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_modifier_groups_on_account_id"
+    t.index ["deleted_at"], name: "index_modifier_groups_on_deleted_at"
+  end
+
+  create_table "modifier_groups_products", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "modifier_group_id", null: false
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_modifier_groups_products_on_account_id"
+    t.index ["deleted_at"], name: "index_modifier_groups_products_on_deleted_at"
+    t.index ["modifier_group_id"], name: "index_modifier_groups_products_on_modifier_group_id"
+    t.index ["product_id", "modifier_group_id"], name: "index_modifier_groups_products_unique", unique: true
+    t.index ["product_id"], name: "index_modifier_groups_products_on_product_id"
+  end
+
+  create_table "modifiers", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "price_delta", precision: 12, scale: 2, default: "0.0"
+    t.string "sku"
+    t.bigint "modifier_group_id", null: false
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_modifiers_on_account_id"
+    t.index ["deleted_at"], name: "index_modifiers_on_deleted_at"
+    t.index ["modifier_group_id"], name: "index_modifiers_on_modifier_group_id"
+    t.index ["sku"], name: "index_modifiers_on_sku"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -244,25 +322,43 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.text "description"
-    t.decimal "price"
+    t.decimal "price", precision: 12, scale: 2
     t.string "barcode"
     t.string "sku"
-    t.decimal "stock", precision: 10, scale: 3
-    t.decimal "min_stock", precision: 10, scale: 3
+    t.decimal "stock", precision: 12, scale: 3
+    t.decimal "min_stock", precision: 12, scale: 3
     t.string "status"
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "average_cost"
+    t.decimal "average_cost", precision: 12, scale: 2
     t.bigint "unit_id"
     t.string "slug"
     t.datetime "deleted_at"
-    t.decimal "manual_purchase_price"
+    t.decimal "manual_purchase_price", precision: 12, scale: 2
     t.bigint "account_id", null: false
+    t.string "kind", default: "simple"
+    t.string "kitchen_station"
+    t.string "print_name"
+    t.string "menu_section"
+    t.integer "prep_time_seconds", default: 0
+    t.integer "sort_order", default: 0
+    t.string "availability_channels", default: [], array: true
+    t.boolean "is_featured", default: false
+    t.boolean "is_vegan", default: false
+    t.boolean "is_vegetarian", default: false
+    t.boolean "is_gluten_free", default: false
+    t.bigint "tax_rate_id"
     t.index ["account_id"], name: "index_products_on_account_id"
+    t.index ["availability_channels"], name: "index_products_on_availability_channels", using: :gin
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
+    t.index ["kind"], name: "index_products_on_kind"
+    t.index ["kitchen_station"], name: "index_products_on_kitchen_station"
+    t.index ["menu_section"], name: "index_products_on_menu_section"
     t.index ["slug"], name: "index_products_on_slug", unique: true
+    t.index ["sort_order"], name: "index_products_on_sort_order"
+    t.index ["tax_rate_id"], name: "index_products_on_tax_rate_id"
     t.index ["unit_id"], name: "index_products_on_unit_id"
   end
 
@@ -289,6 +385,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
     t.bigint "account_id", null: false
     t.index ["account_id"], name: "index_purchases_on_account_id"
     t.index ["supplier_id"], name: "index_purchases_on_supplier_id"
+  end
+
+  create_table "recipe_components", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "ingredient_id", null: false
+    t.bigint "unit_id", null: false
+    t.decimal "quantity", precision: 12, scale: 3, null: false
+    t.decimal "waste_pct", precision: 5, scale: 2, default: "0.0"
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_recipe_components_on_account_id"
+    t.index ["deleted_at"], name: "index_recipe_components_on_deleted_at"
+    t.index ["ingredient_id"], name: "index_recipe_components_on_ingredient_id"
+    t.index ["product_id", "ingredient_id"], name: "index_recipe_components_on_product_id_and_ingredient_id", unique: true
+    t.index ["product_id"], name: "index_recipe_components_on_product_id"
+    t.index ["unit_id"], name: "index_recipe_components_on_unit_id"
   end
 
   create_table "sale_items", force: :cascade do |t|
@@ -339,6 +453,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
     t.index ["document"], name: "index_suppliers_on_document", unique: true
   end
 
+  create_table "tax_rates", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "percentage", precision: 5, scale: 2, null: false
+    t.boolean "is_active", default: true
+    t.bigint "account_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tax_rates_on_account_id"
+    t.index ["deleted_at"], name: "index_tax_rates_on_deleted_at"
+    t.index ["is_active"], name: "index_tax_rates_on_is_active"
+  end
+
   create_table "units", force: :cascade do |t|
     t.string "name"
     t.string "abbreviation"
@@ -375,13 +502,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
   add_foreign_key "cash_registers", "accounts"
   add_foreign_key "cash_registers", "users"
   add_foreign_key "categories", "accounts"
+  add_foreign_key "combo_items", "accounts"
+  add_foreign_key "combo_items", "modifier_groups", column: "choice_group_id"
+  add_foreign_key "combo_items", "products"
+  add_foreign_key "combo_items", "products", column: "component_product_id"
   add_foreign_key "currencies", "accounts"
   add_foreign_key "customers", "accounts"
   add_foreign_key "expenses", "accounts"
   add_foreign_key "expenses", "payment_methods"
   add_foreign_key "expenses", "purchases"
+  add_foreign_key "ingredients", "accounts"
+  add_foreign_key "ingredients", "units"
   add_foreign_key "inventory_movements", "accounts"
   add_foreign_key "inventory_movements", "products"
+  add_foreign_key "modifier_groups", "accounts"
+  add_foreign_key "modifier_groups_products", "accounts"
+  add_foreign_key "modifier_groups_products", "modifier_groups"
+  add_foreign_key "modifier_groups_products", "products"
+  add_foreign_key "modifiers", "accounts"
+  add_foreign_key "modifiers", "modifier_groups"
   add_foreign_key "order_items", "accounts"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
@@ -399,18 +538,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_133735) do
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "accounts"
   add_foreign_key "products", "categories"
+  add_foreign_key "products", "tax_rates"
   add_foreign_key "products", "units"
   add_foreign_key "purchase_items", "accounts"
   add_foreign_key "purchase_items", "products"
   add_foreign_key "purchase_items", "purchases"
   add_foreign_key "purchases", "accounts"
   add_foreign_key "purchases", "suppliers"
+  add_foreign_key "recipe_components", "accounts"
+  add_foreign_key "recipe_components", "ingredients"
+  add_foreign_key "recipe_components", "products"
+  add_foreign_key "recipe_components", "units"
   add_foreign_key "sale_items", "accounts"
   add_foreign_key "sale_items", "products"
   add_foreign_key "sale_items", "sales"
   add_foreign_key "sales", "accounts"
   add_foreign_key "settings", "accounts"
   add_foreign_key "suppliers", "accounts"
+  add_foreign_key "tax_rates", "accounts"
   add_foreign_key "units", "accounts"
   add_foreign_key "users", "accounts"
 end
