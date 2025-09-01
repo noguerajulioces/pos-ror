@@ -1,5 +1,5 @@
 class CurrenciesController < ApplicationController
-  before_action :set_currency, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_currency, only: [ :show, :edit, :update, :destroy, :toggle_display ]
 
   def index
     @currencies = Currency.all
@@ -37,6 +37,13 @@ class CurrenciesController < ApplicationController
   end
 
   def show; end
+
+  def toggle_display
+    @currency.update!(display: !@currency.display)
+
+    status_message = @currency.display? ? 'mostrada' : 'oculta'
+    redirect_to currencies_path, notice: "Moneda #{status_message} exitosamente."
+  end
 
   private
 

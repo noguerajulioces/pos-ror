@@ -36,7 +36,11 @@ Rails.application.routes.draw do
     end
   end
   resources :expenses, except: [ :show ]
-  resources :currencies
+  resources :currencies do
+    member do
+      patch :toggle_display
+    end
+  end
   resource :pos, only: [ :show ]
   patch 'pos/update_order_type', to: 'pos#update_order_type'
   get 'pos/subcategories', to: 'pos#subcategories'

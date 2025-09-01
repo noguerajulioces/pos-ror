@@ -55,9 +55,15 @@
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Editar", edit_currency_path(currency), class: "text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Eliminar", currency_path(currency), 
-                        data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                        class: "ml-2 text-red-600 hover:text-red-900" %>
+                    <% if currency.display? %>
+                      <%= link_to "Ocultar", toggle_display_currency_path(currency), 
+                          data: { turbo_method: :patch, turbo_confirm: "¿Ocultar esta moneda del POS?" }, 
+                          class: "ml-2 text-orange-600 hover:text-orange-900" %>
+                    <% else %>
+                      <%= link_to "Mostrar", toggle_display_currency_path(currency), 
+                          data: { turbo_method: :patch, turbo_confirm: "¿Mostrar esta moneda en el POS?" }, 
+                          class: "ml-2 text-green-600 hover:text-green-900" %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>
