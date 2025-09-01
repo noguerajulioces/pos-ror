@@ -35,7 +35,7 @@ export default class extends Controller {
               </svg>
             </button>
           </div>
-          <div class="p-4" id="modal-content">
+          <div class="p-0" id="modal-content">
             <turbo-frame id="${frameId}" src="${frameSrc}">
             </turbo-frame>
           </div>

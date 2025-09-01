@@ -34,55 +34,88 @@
           </div>
         <% end %>
 
-        <div class="mb-4 bg-gray-50 p-4 rounded-md">
+        <!-- Información de la sesión -->
+        <div class="mb-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+            <svg class="h-4 w-4 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Información de la Sesión
+          </h3>
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-gray-700"><strong>Monto Inicial:</strong></p>
-              <p class="text-lg font-semibold"><%= number_to_currency(@cash_register.initial_amount, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
+            <div class="bg-white p-3 rounded border border-blue-100">
+              <p class="text-xs font-medium text-gray-600 mb-1">Monto Inicial</p>
+              <p class="text-lg font-bold text-blue-900"><%= number_to_currency(@cash_register.initial_amount, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
             </div>
-            <div>
-              <p class="text-gray-700"><strong>Fecha de Apertura:</strong></p>
-              <p class="text-sm"><%= l(@cash_register.open_at, format: :long) %></p>
+            <div class="bg-white p-3 rounded border border-blue-100">
+              <p class="text-xs font-medium text-gray-600 mb-1">Fecha de Apertura</p>
+              <p class="text-sm font-semibold text-gray-900"><%= l(@cash_register.open_at, format: :long) %></p>
               <p class="text-xs text-gray-500">Hace <%= time_ago_in_words(@cash_register.open_at) %></p>
             </div>
           </div>
         </div>
 
-        <!-- Replace the calculation section in the view with this -->
-        <div class="mb-4 bg-gray-50 p-4 rounded-md">
+        <!-- Resumen de ventas -->
+        <div class="mb-4 bg-green-50 p-4 rounded-lg border border-green-200">
+          <h3 class="text-sm font-semibold text-green-900 mb-3 flex items-center">
+            <svg class="h-4 w-4 text-green-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Resumen de Ventas
+          </h3>
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-gray-700"><strong>Total Ventas:</strong></p>
-              <p class="text-lg font-semibold text-green-600"><%= number_to_currency(@sales_total, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
+            <div class="bg-white p-3 rounded border border-green-100">
+              <p class="text-xs font-medium text-gray-600 mb-1">Total de Ventas</p>
+              <p class="text-lg font-bold text-green-700"><%= number_to_currency(@sales_total, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
             </div>
-            <div>
-              <p class="text-gray-700"><strong>Monto Esperado:</strong></p>
-              <p class="text-lg font-semibold"><%= number_to_currency(@expected_amount, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
+            <div class="bg-white p-3 rounded border border-green-100">
+              <p class="text-xs font-medium text-gray-600 mb-1">Monto Esperado en Caja</p>
+              <p class="text-lg font-bold text-gray-900"><%= number_to_currency(@expected_amount, delimiter: '.', precision: 0, unit: '₲s. ') %></p>
+              <p class="text-xs text-gray-500">Inicial + Ventas</p>
             </div>
           </div>
         </div>
 
-        <div>
-          <%= form.label :final_amount, "Monto Final (₲s)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <div class="relative rounded-md shadow-sm" data-controller="number-format">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500 sm:text-sm">₲s.</span>
+        <!-- Input para monto final -->
+        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+          <h3 class="text-sm font-semibold text-orange-900 mb-3 flex items-center">
+            <svg class="h-4 w-4 text-orange-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            Monto Final en Efectivo
+          </h3>
+          <div class="bg-white p-3 rounded border border-orange-100">
+            <%= form.label :final_amount, "Ingresa el monto real que tienes en efectivo", class: "block text-xs font-medium text-gray-600 mb-2" %>
+            <div class="relative" data-controller="number-format">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="text-gray-500 text-sm font-medium">₲s.</span>
+              </div>
+              <%= form.text_field :final_amount, value: @expected_amount.to_i, 
+                  class: "pl-12 block w-full text-base font-semibold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 px-3 py-2.5 transition-colors duration-200", 
+                  min: 0, 
+                  step: 1000,
+                  placeholder: "0",
+                  data: { number_format_target: "input" } %>
             </div>
-            <%= form.text_field :final_amount, value: @expected_amount.to_i, 
-                class: "pl-12 block w-full pr-12 sm:text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 px-3 py-1.5", 
-                min: 0, 
-                step: 1000,
-                data: { number_format_target: "input" } %>
+            <div class="flex items-center mt-2 text-xs text-gray-600">
+              <svg class="h-3 w-3 text-gray-400 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Este monto puede ser diferente del esperado si hay diferencias en efectivo
+            </div>
           </div>
-          <p class="text-xs text-gray-500 mt-1">El monto final puede ser diferente del esperado si hay diferencias en efectivo.</p>
         </div>
 
-        <div class="flex items-center justify-end pt-4 space-x-3">
-          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" data-action="modal#close">
+        <!-- Botones de acción -->
+        <div class="flex items-center justify-end pt-4 space-x-3 border-t border-gray-200">
+          <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200" data-action="modal#close">
+            <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
             Cancelar
           </button>
           
-          <%= form.submit "Cerrar Caja", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500" %>
+          <%= form.submit "Cerrar Caja", class: "inline-flex items-center px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200" %>
         </div>
       <% end %>
     <% end %>
