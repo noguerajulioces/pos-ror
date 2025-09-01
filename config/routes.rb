@@ -29,7 +29,12 @@ Rails.application.routes.draw do
     end
   end
   resources :suppliers
-  resources :users
+  resources :users do
+    member do
+      patch :activate
+      patch :deactivate
+    end
+  end
   resources :expenses, except: [ :show ]
   resources :currencies
   resource :pos, only: [ :show ]

@@ -7,43 +7,54 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-Account.create!(name: 'Ferreteria el Rey')
 
-User.create(name: 'Administrator', email: 'admin@admin.com', password: 123456, account_id: Account.first.id)
+# Create the main account
+account = Account.find_or_create_by!(name: 'Ferreteria el Rey')
 
-# db/seeds.rb
-
-# Asegúrate de que exista una unidad para los productos
-unit = Unit.find_or_create_by!(name: 'Pieza')
-
-# Add currency seeds
-currencies = [
-  { name: 'Dólar', code: 'USD', symbol: '$', exchange_rate: 7350, flag_url: 'https://flagcdn.com/w20/us.png', display: true },
-  { name: 'Peso Argentino', code: 'ARS', symbol: '$', exchange_rate: 85.5, flag_url: 'https://flagcdn.com/w20/ar.png', display: true },
-  { name: 'Real Brasileño', code: 'BRL', symbol: 'R$', exchange_rate: 1250, flag_url: 'https://flagcdn.com/w20/br.png', display: true },
-  { name: 'Guarani', code: 'PYG', symbol: '₲', exchange_rate: 1, flag_url: 'https://flagcdn.com/w20/py.png', display: true }
-]
-
-currencies.each do |currency_data|
-  Currency.find_or_create_by!(code: currency_data[:code]) do |currency|
-    currency.update(currency_data)
-  end
+# Create the admin user for this account
+user = User.find_or_create_by!(email: 'admin@admin.com') do |u|
+  u.name = 'Administrator'
+  u.password = '123456'
+  u.account_id = account.id
+  u.super_user = true
+  u.active = true
 end
 
-company_settings = [
-  { var: 'company_name', value: 'TU EMPRESA' },
-  { var: 'company_owner', value: 'JUAN PEREZ PEREZ' },
-  { var: 'company_address', value: 'RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION' },
-  { var: 'company_ruc', value: '000000000-0' },
-  { var: 'company_phone', value: '0975 000000' },
-  { var: 'company_email', value: 'contacto@tuempresa.com' },
-  { var: 'company_invoice_number', value: '001-002-0001516' },
-  { var: 'company_stamp_number', value: '17304657' },
-  { var: 'company_stamp_validity', value: '01/07/2024 al 31/07/2025' },
-  { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' },
-  { var: 'company_economic_activity', value: 'VENTA DE PRODUCTOS ELECTRÓNICOS' }
-]
+# Set the current tenant to the account for all subsequent operations
+ActsAsTenant.with_tenant(account) do
+  # Asegúrate de que exista una unidad para los productos
+  unit = Unit.find_or_create_by!(name: 'Pieza')
 
-company_settings.each do |setting|
-  Setting.set(setting[:var], setting[:value])
+  # Add currency seeds
+  currencies = [
+    { name: 'Dólar', code: 'USD', symbol: '$', exchange_rate: 7350, flag_url: 'https://flagcdn.com/w20/us.png', display: true },
+    { name: 'Peso Argentino', code: 'ARS', symbol: '$', exchange_rate: 85.5, flag_url: 'https://flagcdn.com/w20/ar.png', display: true },
+    { name: 'Real Brasileño', code: 'BRL', symbol: 'R$', exchange_rate: 1250, flag_url: 'https://flagcdn.com/w20/br.png', display: true },
+    { name: 'Guarani', code: 'PYG', symbol: '₲', exchange_rate: 1, flag_url: 'https://flagcdn.com/w20/py.png', display: true }
+  ]
+
+  currencies.each do |currency_data|
+    Currency.find_or_create_by!(code: currency_data[:code]) do |currency|
+      currency.update(currency_data)
+    end
+  end
+
+  # Company settings
+  company_settings = [
+    { var: 'company_name', value: 'TU EMPRESA' },
+    { var: 'company_owner', value: 'JUAN PEREZ PEREZ' },
+    { var: 'company_address', value: 'RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION' },
+    { var: 'company_ruc', value: '000000000-0' },
+    { var: 'company_phone', value: '0975 000000' },
+    { var: 'company_email', value: 'contacto@tuempresa.com' },
+    { var: 'company_invoice_number', value: '001-002-0001516' },
+    { var: 'company_stamp_number', value: '17304657' },
+    { var: 'company_stamp_validity', value: '01/07/2024 al 31/07/2025' },
+    { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' },
+    { var: 'company_economic_activity', value: 'VENTA DE PRODUCTOS ELECTRÓNICOS' }
+  ]
+
+  company_settings.each do |setting|
+    Setting.set(setting[:var], setting[:value])
+  end
 end
