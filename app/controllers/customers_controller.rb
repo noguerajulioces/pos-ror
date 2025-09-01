@@ -2,7 +2,7 @@ class CustomersController < ApplicationController
   before_action :set_customer, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @q = Customer.ransack(params[:q])
+    @q = Customer.where(account_id: current_user.account_id).ransack(params[:q])
     @customers = @q.result(distinct: true).paginate(page: params[:page], per_page: 10)
   end
 
@@ -10,7 +10,7 @@ class CustomersController < ApplicationController
   end
 
   def new
-    @customer = Customer.new
+    @customer = Customer.new(account_id: current_user.account_id)
   end
 
   def edit
@@ -24,37 +24,18 @@ class CustomersController < ApplicationController
 
   def create
     @customer = Customer.new(customer_params)
+    @customer.account_id = current_user.account_id
 
-    respond_to do |format|
-      if @customer.save
-        session[:customer_id] = @customer.id
-        session[:customer_name] = @customer.full_name
-        # Close the modal and update customer info in the POS view
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.remove('modal'),
-            turbo_stream.update('customer-info', @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
-            turbo_stream.update('selected-customer-id', @customer.id)
-          ]
-        }
-        format.html { redirect_back fallback_location: customer_url(@customer), notice: 'Cliente creado con éxito.' }
-        format.json { render json: { success: true, customer: @customer } }
-      else
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            'new_customer_form',
-            partial: 'customers/modal_form',
-            locals: { customer: @customer }
-          ), status: :unprocessable_entity
-        }
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
-      end
+    if @customer.save
+      redirect_to @customer, notice: 'Cliente creado exitosamente.'
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   def create_form
     @customer = Customer.new(customer_params)
+    @customer.account_id = current_user.account_id
 
     respond_to do |format|
       if @customer.save
@@ -89,7 +70,7 @@ class CustomersController < ApplicationController
   private
 
   def set_customer
-    @customer = Customer.find(params[:id])
+    @customer = Customer.where(account_id: current_user.account_id).find(params[:id])
   end
 
   def customer_params

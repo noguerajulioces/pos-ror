@@ -33,8 +33,9 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :destroy
   # Validaciones para asegurar la integridad de los datos
   validates :first_name, :last_name, presence: true
-  validates :document, presence: true, uniqueness: true
+  validates :document, uniqueness: true, allow_blank: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :email, uniqueness: true, allow_blank: true
 
   def full_name
     "#{first_name} #{last_name}".strip
@@ -51,11 +52,11 @@ class Customer < ApplicationRecord
   def initials
     first_initial = first_name.present? ? first_name[0].upcase : ''
     last_initial = last_name.present? ? last_name[0].upcase : ''
-    
+
     if first_initial.present? || last_initial.present?
       "#{first_initial}#{last_initial}"
     else
-      document.present? ? document[0..1].upcase : "CG"
+      document.present? ? document[0..1].upcase : 'CG'
     end
   end
 end
