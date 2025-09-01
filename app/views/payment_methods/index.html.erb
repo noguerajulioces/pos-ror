@@ -35,7 +35,7 @@
                     <%= payment_method.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= payment_method.description %>
+                    <%= truncate(payment_method.description, length: 25, omission: '...', separator: ' ') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <span class="<%= payment_method.active ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">

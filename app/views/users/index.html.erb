@@ -59,7 +59,14 @@
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Editar", edit_user_path(user), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    
+                    <% if current_user.super_user? || user == current_user %>
+                      <%= link_to "Editar", edit_user_path(user), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% else %>
+                      <span class="ml-2 text-gray-400 cursor-not-allowed" title="Solo puedes editar tu propio usuario">
+                        Editar
+                      </span>
+                    <% end %>
                     
                     <% if user.active? %>
                       <% if current_user.can_deactivate_users? && user != current_user %>

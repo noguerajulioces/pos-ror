@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[show edit update destroy activate]
   before_action :check_super_user_permissions, only: [ :deactivate ]
+  before_action :check_edit_permissions, only: [ :edit, :update ]
 
   def index
     @users = User.where(account_id: current_user.account_id).paginate(page: params[:page], per_page: 10)
@@ -78,12 +79,20 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation, :super_user)
+    permitted_params = [ :name, :email, :password, :password_confirmation ]
+    permitted_params << :super_user if current_user.super_user?
+    params.require(:user).permit(permitted_params)
   end
 
   def check_super_user_permissions
     unless current_user.can_deactivate_users?
       redirect_to users_path, alert: 'No tienes permisos para realizar esta acción.'
+    end
+  end
+
+  def check_edit_permissions
+    unless current_user.super_user? || @user == current_user
+      redirect_to users_path, alert: 'Solo puedes editar tu propio usuario.'
     end
   end
 end

@@ -17,32 +17,32 @@
   <% end %>
 
   <div class="px-4 py-6 sm:p-8">
-    <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-      <div class="sm:col-span-4">
-        <%= f.label :name, "Nombre", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.text_field :name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+    <div class="space-y-6">
+      <div>
+        <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.text_field :name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
       </div>
 
-      <div class="sm:col-span-4">
-        <%= f.label :email, "Email", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.email_field :email, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      <div>
+        <%= f.label :email, "Email", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.email_field :email, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
       </div>
 
-      <div class="sm:col-span-4">
-        <%= f.label :password, "Contraseña", class: "block text-sm/6 font-medium text-gray-900" %>
+      <div>
+        <%= f.label :password, "Contraseña", class: "block text-sm font-medium text-gray-900 mb-2" %>
         <% if user.persisted? %>
           <div class="text-xs text-gray-500 mb-1">Dejar en blanco si no desea cambiarla</div>
         <% end %>
-        <%= f.password_field :password, autocomplete: "new-password", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        <%= f.password_field :password, autocomplete: "new-password", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
       </div>
 
-      <div class="sm:col-span-4">
-        <%= f.label :password_confirmation, "Confirmar Contraseña", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+      <div>
+        <%= f.label :password_confirmation, "Confirmar Contraseña", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
       </div>
 
       <% if current_user&.super_user? %>
-        <div class="sm:col-span-4">
+        <div>
           <div class="flex items-center">
             <%= f.check_box :super_user, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
             <%= f.label :super_user, "Super Usuario", class: "ml-2 block text-sm text-gray-900" %>
