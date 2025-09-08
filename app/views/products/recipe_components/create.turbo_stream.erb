@@ -1,0 +1,6 @@
+<%= turbo_stream.append "recipe_components_container" do %>
+  <%= render "products/recipe_components/row", component: @recipe_component %>
+<% end %>
+
+<%= turbo_stream.update "modal" do %>
+<% end %>

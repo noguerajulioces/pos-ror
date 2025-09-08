@@ -32,7 +32,7 @@ class Ingredient < ApplicationRecord
   acts_as_paranoid
 
   # Validaciones
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :sku, uniqueness: { scope: :account_id }, allow_blank: true
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
   validates :min_stock, numericality: { greater_than_or_equal_to: 0 }

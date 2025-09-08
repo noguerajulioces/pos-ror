@@ -16,9 +16,18 @@ Rails.application.routes.draw do
   resources :categories do
     resources :subcategories, only: [ :new, :create ]
   end
+  resources :ingredients do
+    collection do
+      get :search
+    end
+  end
+
   resources :products do
     resources :product_images, only: [ :destroy ]
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'
+    namespace :products do
+      resources :recipe_components, only: [ :create, :destroy ]
+    end
   end
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]

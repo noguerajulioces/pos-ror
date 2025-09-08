@@ -17,9 +17,40 @@ class IngredientsController < ApplicationController
     @ingredient = Ingredient.new(ingredient_params)
 
     if @ingredient.save
-      redirect_to @ingredient, notice: 'Ingrediente creado exitosamente.'
+      if params[:product_id].present?
+        # Create recipe component for the product
+        product = Product.find(params[:product_id])
+        recipe_component = product.recipe_components.create!(
+          ingredient: @ingredient,
+          quantity: 1,
+          unit_id: @ingredient.unit_id,
+          waste_pct: 0
+        )
+
+        respond_to do |format|
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.append('recipe_components_container', partial: 'products/recipe_components/row', locals: { component: recipe_component }),
+              turbo_stream.update('modal', '')
+            ]
+          end
+          format.html { redirect_to @ingredient, notice: 'Ingrediente creado exitosamente.' }
+        end
+      else
+        redirect_to @ingredient, notice: 'Ingrediente creado exitosamente.'
+      end
     else
-      render :new, status: :unprocessable_entity
+      if params[:product_id].present?
+        @product = Product.find(params[:product_id])
+        respond_to do |format|
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.update('modal', partial: 'ingredients/form_inline', locals: { ingredient: @ingredient, product: @product })
+          end
+          format.html { render :new, status: :unprocessable_entity }
+        end
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 
@@ -37,6 +68,27 @@ class IngredientsController < ApplicationController
   def destroy
     @ingredient.destroy
     redirect_to ingredients_path, notice: 'Ingrediente eliminado exitosamente.'
+  end
+
+  def search
+    @product = Product.find(params[:product_id]) if params[:product_id].present?
+    @ingredients = Ingredient
+                   .where('name ILIKE ?', "%#{params[:q]}%")
+                   .includes(:unit)
+                   .limit(10)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.update('search_results', partial: 'ingredients/search_results', locals: { ingredients: @ingredients, query: params[:q] })
+      end
+      format.html do
+        if params[:product_id].present?
+          render :search
+        else
+          render partial: 'ingredients/search_results', locals: { ingredients: @ingredients, query: params[:q] }
+        end
+      end
+    end
   end
 
   private
