@@ -6,7 +6,7 @@ class PosController < ApplicationController
   before_action :check_cash_register, only: [ :show ]
 
   def show
-    @products = Product.all
+    @products = Product.available
     @categories = Category.where(parent_id: nil)
   end
 
@@ -30,7 +30,7 @@ class PosController < ApplicationController
     subcategory = Category.find(params[:subcategory_id])
     products = subcategory.products.order(:name)
 
-    products_with_images = products.map do |product|
+    products_with_images = products.available.map do |product|
       product_json = product.as_json(only: [ :id, :name, :price, :stock ])
 
       first_image = product.product_images.first

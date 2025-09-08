@@ -2,14 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-
 @layer components {
-  .btn-primary {
-    @apply py-2 px-4 bg-blue-200;
+  .sidebar-collapsed {
+    @apply lg:w-16;
+  }
+  
+  .sidebar-collapsed .sidebar-item-text {
+    @apply hidden;
+  }
+  
+  .sidebar-collapsed .sidebar-item-icon {
+    @apply justify-center;
+  }
+
+  /* Ensure no text is visible when sidebar is collapsed */
+  .sidebar-collapsed span:not([data-sidebar-collapse-target="toggleButton"] span) {
+    @apply hidden;
+  }
+
+  .sidebar-collapsed [data-sidebar-collapse-target="content"] {
+    @apply hidden;
+  }
+
+  /* Main content adjustments when sidebar is collapsed */
+  .main-content-collapsed {
+    @apply lg:pl-16;
+  }
+
+  .main-content-expanded {
+    @apply lg:pl-72;
+  }
+
+  /* Enhanced tooltip styles for collapsed sidebar */
+  [data-tooltip] {
+    @apply relative;
+  }
+
+  [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    @apply absolute left-full top-1/2 transform -translate-y-1/2 ml-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-xl whitespace-nowrap z-50 font-medium;
+    animation: tooltipFadeIn 0.2s ease-out;
+  }
+
+  [data-tooltip]:hover::before {
+    content: '';
+    @apply absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900 z-50;
+  }
+
+  /* Disable tooltip for toggle button to avoid overlap */
+  [data-sidebar-collapse-target="toggleButton"]:hover::after,
+  [data-sidebar-collapse-target="toggleButton"]:hover::before {
+    display: none !important;
+  }
+
+  /* Smooth animations */
+  @keyframes tooltipFadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  /* Sidebar item hover effects */
+  .sidebar-item {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .sidebar-item:hover {
+    @apply transform scale-105;
+  }
+
+  /* Gradient backgrounds for active states */
+  .sidebar-active {
+    @apply bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 shadow-sm;
+  }
+
+  /* Enhanced focus states */
+  .sidebar-item:focus {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
   }
 }
-*/
 
 @layer utilities {
   .text-xxs {
@@ -31,6 +107,24 @@
 
   .no-spinner {
     -moz-appearance: textfield;
+  }
+
+  /* Custom scrollbar for sidebar */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 2px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
   }
 }
 

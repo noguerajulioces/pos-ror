@@ -24,10 +24,10 @@
   </head>
 
   <body class="h-full">
-    <div data-controller="sidebar">
+    <div data-controller="sidebar sidebar-collapse">
       <%= render 'layouts/shared/sidebar' %>
 
-      <div class="lg:pl-72">
+      <div class="lg:pl-72 transition-all duration-300 main-content-expanded" data-sidebar-collapse-target="mainContent">
         <%= render 'layouts/shared/navbar' %>
 
         <main class="py-10">
