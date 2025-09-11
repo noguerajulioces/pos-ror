@@ -1,6 +1,7 @@
-<div class="nested-form-wrapper" data-new-record="<%= f.object.new_record? %>" data-purchase-calculator-target="row">
-  <div class="grid grid-cols-12 gap-4 w-full">
-    <div class="col-span-2">
+<div class="nested-form-wrapper w-full" data-new-record="<%= f.object.new_record? %>" data-purchase-calculator-target="row" data-controller="purchase-item-type">
+  <div class="flex items-start gap-2 w-full">
+    <div class="grid grid-cols-6 gap-2 sm:gap-4 flex-1 min-w-0">
+    <div class="col-span-6 sm:col-span-1">
       <%= f.label :purchasable_type, "Tipo", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.select :purchasable_type, 
@@ -24,7 +25,7 @@
       </div>
     </div>
 
-    <div class="col-span-2" data-purchase-item-type-target="productSelect" style="<%= f.object.purchasable_type == 'Product' ? 'display: block;' : 'display: none;' %>">
+    <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="productSelect" style="<%= f.object.purchasable_type == 'Product' ? 'display: block;' : 'display: none;' %>">
       <%= f.label :purchasable_id, "Producto", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :purchasable_id, 
@@ -44,7 +45,7 @@
       </div>
     </div>
 
-    <div class="col-span-2" data-purchase-item-type-target="ingredientSelect" style="<%= f.object.purchasable_type == 'Ingredient' ? 'display: block;' : 'display: none;' %>">
+    <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="ingredientSelect" style="<%= f.object.purchasable_type == 'Ingredient' ? 'display: block;' : 'display: none;' %>">
       <%= f.label :purchasable_id, "Ingrediente", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :purchasable_id, 
@@ -64,7 +65,7 @@
       </div>
     </div>
 
-    <div class="col-span-2">
+    <div class="col-span-6 sm:col-span-1">
       <%= f.label :unit_id, "Unidad", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :unit_id, 
@@ -81,21 +82,21 @@
       </div>
     </div>
     
-    <div class="col-span-1">
+    <div class="col-span-2 sm:col-span-1">
       <%= f.label :quantity, "Cantidad", class: "block text-sm/6 font-medium text-gray-900" %>
       <%= f.number_field :quantity, min: 0.001, step: 0.001,
-          class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
+          class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
           data: { 
             "purchase-calculator-target": "quantity",
             action: "input->purchase-calculator#calculateSubtotal"
           } %>
     </div>
     
-    <div class="col-span-1">
+    <div class="col-span-3 sm:col-span-1">
       <%= f.label :unit_price, "Precio Unit.", class: "block text-sm/6 font-medium text-gray-900" %>
       <div data-controller="number-format">
         <%= f.text_field :unit_price, 
-            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
+            class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
             data: { 
               "purchase-calculator-target": "unitPrice",
               "number-format-target": "input",
@@ -104,17 +105,19 @@
       </div>
     </div>
     
-    <div class="col-span-1">
+    <div class="col-span-2 sm:col-span-1">
       <%= f.label :subtotal, "Subtotal", class: "block text-sm/6 font-medium text-gray-900" %>
       <%= f.text_field :subtotal, readonly: true, 
-          class: "block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 text-right font-medium sm:text-sm/6",
+          class: "block w-full rounded-md bg-gray-50 px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 text-right font-medium sm:text-sm/6",
           data: { "purchase-calculator-target": "subtotal" } %>
     </div>
     
-    <div class="col-span-1 flex items-end justify-center">
+    </div>
+    
+    <div class="flex-shrink-0 flex items-center mt-6">
       <button type="button" 
               data-action="nested-form#remove" 
-              class="inline-flex items-center justify-center rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 mt-6">
+              class="inline-flex items-center justify-center rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
         </svg>

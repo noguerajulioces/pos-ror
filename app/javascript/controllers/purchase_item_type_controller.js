@@ -25,30 +25,42 @@ export default class extends Controller {
   showProductSelect() {
     if (this.hasProductSelectTarget) {
       this.productSelectTarget.style.display = 'block'
-      this.productSelectTarget.disabled = false
+      const selectElement = this.productSelectTarget.querySelector('select')
+      if (selectElement) {
+        selectElement.disabled = false
+      }
     }
   }
 
   hideProductSelect() {
     if (this.hasProductSelectTarget) {
       this.productSelectTarget.style.display = 'none'
-      this.productSelectTarget.disabled = true
-      this.productSelectTarget.value = ''
+      const selectElement = this.productSelectTarget.querySelector('select')
+      if (selectElement) {
+        selectElement.disabled = true
+        selectElement.value = ''
+      }
     }
   }
 
   showIngredientSelect() {
     if (this.hasIngredientSelectTarget) {
       this.ingredientSelectTarget.style.display = 'block'
-      this.ingredientSelectTarget.disabled = false
+      const selectElement = this.ingredientSelectTarget.querySelector('select')
+      if (selectElement) {
+        selectElement.disabled = false
+      }
     }
   }
 
   hideIngredientSelect() {
     if (this.hasIngredientSelectTarget) {
       this.ingredientSelectTarget.style.display = 'none'
-      this.ingredientSelectTarget.disabled = true
-      this.ingredientSelectTarget.value = ''
+      const selectElement = this.ingredientSelectTarget.querySelector('select')
+      if (selectElement) {
+        selectElement.disabled = true
+        selectElement.value = ''
+      }
     }
   }
 }
