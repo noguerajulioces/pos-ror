@@ -29,13 +29,13 @@
       <%= f.label :purchasable_id, "Producto", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :purchasable_id, 
-            Product.where(kind: 'simple').or(Product.where(kind: nil)), 
+            Product.available.where(kind: ['simple', nil]).or(Product.available.where(kind: '')).ordered, 
             :id, 
             ->(product) { "#{product.name} (Stock: #{product.stock})" },
             { include_blank: 'Seleccione un producto' }, 
             { 
               class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none",
-              disabled: f.object.purchasable_type != 'Product'
+              data: { action: "change->purchase-item-type#productSelected" }
             } %>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -49,13 +49,13 @@
       <%= f.label :purchasable_id, "Ingrediente", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :purchasable_id, 
-            Ingredient.all, 
+            Ingredient.ordered, 
             :id, 
             ->(ingredient) { "#{ingredient.name} (Stock: #{ingredient.stock})" },
             { include_blank: 'Seleccione un ingrediente' }, 
             { 
               class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none",
-              disabled: f.object.purchasable_type != 'Ingredient'
+              data: { action: "change->purchase-item-type#ingredientSelected" }
             } %>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <div class="col-span-6 sm:col-span-1">
+    <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="unitSelect">
       <%= f.label :unit_id, "Unidad", class: "block text-sm/6 font-medium text-gray-900" %>
       <div class="relative">
         <%= f.collection_select :unit_id, 

@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     collection do
       get :search
     end
+    member do
+      get :unit
+    end
   end
 
   # Ruta específica para el modal picker de ingredientes
@@ -30,6 +33,9 @@ Rails.application.routes.draw do
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'
     namespace :products do
       resources :recipe_components, only: [ :create, :destroy ]
+    end
+    member do
+      get :unit
     end
   end
   resources :stocks, only: [ :index ]

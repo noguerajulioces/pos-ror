@@ -61,6 +61,11 @@ class ProductsController < ApplicationController
     redirect_to products_path, notice: 'Producto inactivado exitosamente.'
   end
 
+  def unit
+    @product = Product.find(params[:id])
+    render json: { unit_id: @product.unit_id }
+  end
+
   private
 
   def set_product

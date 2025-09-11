@@ -96,6 +96,11 @@ class IngredientsController < ApplicationController
     render partial: 'ingredients/modal_picker', locals: { product: @product }
   end
 
+  def unit
+    @ingredient = Ingredient.find(params[:id])
+    render json: { unit_id: @ingredient.unit_id }
+  end
+
   private
 
   def set_ingredient
