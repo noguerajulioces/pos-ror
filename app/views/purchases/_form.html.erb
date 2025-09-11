@@ -120,10 +120,16 @@
     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       <div class="sm:col-span-3 sm:col-start-4">
         <%= form.label :total_amount, "Monto Total", class: "block text-sm/6 font-medium text-gray-900" %>
-        <%= form.text_field :total_amount, 
-            class: "block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 text-right font-medium sm:text-sm/6", 
-            id: "purchase_total_amount",
-            readonly: true %>
+        <div data-controller="number-format">
+          <%= form.text_field :total_amount, 
+              class: "block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 text-right font-medium sm:text-sm/6", 
+              id: "purchase_total_amount",
+              readonly: true,
+              data: { 
+                "purchase-calculator-target": "totalAmount",
+                "number-format-target": "input"
+              } %>
+        </div>
       </div>
     </div>
   </div>

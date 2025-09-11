@@ -5,6 +5,15 @@ export default class extends Controller {
 
   connect() {
     this.calculateAll()
+    
+    // Listen for when rows are added or removed
+    this.element.addEventListener('nested-form:added', () => {
+      setTimeout(() => this.calculateAll(), 100)
+    })
+    
+    this.element.addEventListener('nested-form:removed', () => {
+      setTimeout(() => this.calculateTotal(), 100)
+    })
   }
 
   // Helper function to parse formatted numbers (integers only for Guaraníes)
