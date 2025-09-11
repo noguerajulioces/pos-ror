@@ -9,10 +9,14 @@ export default class extends Controller {
   }
 
   formatNumber(e) {
-    // Remueve caracteres que no sean dígitos
-    let value = e.target.value.replace(/\D/g, '')
-    // Agrega puntos como separadores de miles
+    let value = e.target.value
+    
+    // Allow only digits (no decimals for Guaraníes)
+    value = value.replace(/\D/g, '')
+    
+    // Add thousand separators (dots)
     value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    
     e.target.value = value
   }
 }
