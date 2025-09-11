@@ -1,54 +1,150 @@
-<div class="flex items-center space-x-4 p-4 bg-white rounded-lg border border-blue-200" data-nested-form-target="item" id="<%= dom_id(component) %>">
-  <div class="flex-1">
-    <label class="block text-sm font-medium text-gray-700 mb-1">Ingrediente</label>
-    <div class="relative">
-      <%= select_tag "product[recipe_components_attributes][][ingredient_id]", 
-                     options_from_collection_for_select(Ingredient.ordered, :id, :name, component.ingredient_id),
-                     class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" %>
-      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
-        </svg>
+<div id="<%= dom_id(component) %>" class="recipe-component-row bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+  <div class="grid grid-cols-12 gap-4 items-center">
+    
+    <!-- Ingredient Info -->
+    <div class="col-span-4">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+          <svg class="h-5 w-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-medium text-gray-900"><%= component.ingredient.name %></p>
+          <p class="text-xs text-gray-500">
+            SKU: <%= component.ingredient.sku.present? ? component.ingredient.sku : 'N/A' %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quantity -->
+    <div class="col-span-2">
+      <div class="text-center">
+        <p class="text-lg font-semibold text-gray-900"><%= component.quantity %></p>
+        <p class="text-xs text-gray-500"><%= component.unit.abbreviation %></p>
+      </div>
+    </div>
+
+    <!-- Waste Percentage -->
+    <div class="col-span-2">
+      <div class="text-center">
+        <p class="text-sm font-medium text-gray-900"><%= component.waste_pct %>%</p>
+        <p class="text-xs text-gray-500">Desperdicio</p>
+      </div>
+    </div>
+
+    <!-- Total with Waste -->
+    <div class="col-span-2">
+      <div class="text-center">
+        <p class="text-sm font-semibold text-orange-600"><%= component.total_quantity_with_waste.round(3) %></p>
+        <p class="text-xs text-gray-500">Total + desperdicio</p>
+      </div>
+    </div>
+
+    <!-- Stock Status -->
+    <div class="col-span-1">
+      <div class="text-center">
+        <% if component.ingredient.stock >= component.total_quantity_with_waste %>
+          <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            ✓ OK
+          </div>
+        <% else %>
+          <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            ⚠ Bajo
+          </div>
+        <% end %>
+        <p class="text-xs text-gray-500 mt-1">
+          Stock: <%= component.ingredient.stock %> <%= component.ingredient.unit.abbreviation %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-span-1">
+      <div class="flex justify-end space-x-2">
+        <!-- Edit Button -->
+        <button type="button" 
+                data-action="click->recipe-component#edit"
+                data-component-id="<%= component.id %>"
+                class="text-indigo-600 hover:text-indigo-800 p-1"
+                title="Editar">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+
+        <!-- Delete Button -->
+        <%= link_to product_recipe_component_path(component.product, component),
+                    method: :delete,
+                    data: { 
+                      turbo_method: :delete, 
+                      turbo_confirm: "¿Estás seguro de eliminar #{component.ingredient.name}?" 
+                    },
+                    class: "text-red-600 hover:text-red-800 p-1",
+                    title: "Eliminar" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        <% end %>
       </div>
     </div>
   </div>
-  <div class="flex-1">
-    <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
-    <%= number_field_tag "product[recipe_components_attributes][][quantity]", 
-                         component.quantity, 
-                         step: "0.001", 
-                         min: "0",
-                         class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-  </div>
-  <div class="flex-1">
-    <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
-    <div class="relative">
-      <%= select_tag "product[recipe_components_attributes][][unit_id]", 
-                     options_from_collection_for_select(Unit.all, :id, :name, component.unit_id),
-                     class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" %>
-      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
-        </svg>
+
+  <!-- Expanded Edit Form (Hidden by default) -->
+  <div id="edit-form-<%= component.id %>" class="hidden mt-4 pt-4 border-t border-gray-200">
+    <%= form_with model: [component.product, component], 
+                  data: { turbo: true },
+                  class: "grid grid-cols-12 gap-4 items-end" do |form| %>
+      
+      <div class="col-span-3">
+        <%= form.label :quantity, "Cantidad", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= form.number_field :quantity, 
+                             step: 0.001, 
+                             min: 0.001,
+                             max: component.ingredient.stock,
+                             class: "block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" %>
       </div>
+
+      <div class="col-span-3">
+        <%= form.label :waste_pct, "Desperdicio %", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= form.number_field :waste_pct, 
+                             step: 0.1, 
+                             min: 0,
+                             max: 100,
+                             class: "block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+
+      <div class="col-span-3">
+        <%= form.label :unit_id, "Unidad", class: "block text-xs font-medium text-gray-700 mb-1" %>
+        <%= form.collection_select :unit_id, 
+                                  Unit.all, 
+                                  :id, 
+                                  :name, 
+                                  { selected: component.unit_id },
+                                  class: "block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" %>
+      </div>
+
+      <div class="col-span-3">
+        <div class="flex space-x-2">
+          <%= form.submit "Guardar", 
+                         class: "px-3 py-1 text-xs font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          <button type="button" 
+                  data-action="click->recipe-component#cancelEdit"
+                  data-component-id="<%= component.id %>"
+                  class="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Cost Information (Optional) -->
+  <div class="mt-3 pt-3 border-t border-gray-100">
+    <div class="flex justify-between items-center text-xs text-gray-500">
+      <span>Costo por unidad: ₲s. <%= number_with_delimiter(component.ingredient.average_cost, delimiter: '.') %></span>
+      <span>Costo total: ₲s. <%= number_with_delimiter((component.ingredient.average_cost * component.total_quantity_with_waste).round(0), delimiter: '.') %></span>
     </div>
   </div>
-  <div class="flex-1">
-    <label class="block text-sm font-medium text-gray-700 mb-1">Desperdicio (%)</label>
-    <%= number_field_tag "product[recipe_components_attributes][][waste_pct]", 
-                         component.waste_pct, 
-                         step: "0.1", 
-                         min: "0", 
-                         max: "100",
-                         class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-  </div>
-  <button type="button" 
-          class="text-red-600 hover:text-red-800 p-2" 
-          data-action="click->nested-form#removeItem"
-          data-url="<%= product_products_recipe_component_path(component.product, component) %>"
-          data-method="delete">
-    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-  </button>
 </div>

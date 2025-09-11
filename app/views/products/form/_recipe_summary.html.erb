@@ -1,0 +1,171 @@
+<% if @product.recipe_components.any? %>
+  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mt-6" data-controller="recipe-summary">
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="text-lg font-semibold text-blue-900 flex items-center">
+        <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Resumen de Receta
+      </h4>
+      <button type="button" 
+              data-action="click->recipe-summary#toggleDetails"
+              class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        Ver Detalles
+      </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <!-- Total Components -->
+      <div class="bg-white rounded-lg p-4 border border-blue-100">
+        <div class="text-2xl font-bold text-blue-600"><%= @product.recipe_components.count %></div>
+        <div class="text-sm text-gray-600">Ingredientes</div>
+      </div>
+
+      <!-- Recipe Cost -->
+      <div class="bg-white rounded-lg p-4 border border-blue-100">
+        <div class="text-2xl font-bold text-green-600">
+          ₲s. <%= number_with_delimiter(@product.recipe_cost.round(0), delimiter: '.') %>
+        </div>
+        <div class="text-sm text-gray-600">Costo Receta</div>
+      </div>
+
+      <!-- Max Producible -->
+      <div class="bg-white rounded-lg p-4 border border-blue-100">
+        <div class="text-2xl font-bold text-orange-600"><%= @product.max_producible_quantity %></div>
+        <div class="text-sm text-gray-600">Max. Producible</div>
+      </div>
+
+      <!-- Stock Status -->
+      <div class="bg-white rounded-lg p-4 border border-blue-100">
+        <% if @product.can_produce? %>
+          <div class="text-2xl font-bold text-green-600">✓</div>
+          <div class="text-sm text-green-600">Puede Producir</div>
+        <% else %>
+          <div class="text-2xl font-bold text-red-600">✗</div>
+          <div class="text-sm text-red-600">Stock Insuficiente</div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Critical Ingredients Alert -->
+    <% critical_ingredients = @product.critical_ingredients %>
+    <% if critical_ingredients.any? %>
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center mb-2">
+          <svg class="h-5 w-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <h5 class="text-sm font-medium text-yellow-800">Ingredientes Críticos</h5>
+        </div>
+        <div class="text-sm text-yellow-700">
+          Los siguientes ingredientes tienen stock bajo:
+          <ul class="list-disc list-inside mt-1">
+            <% critical_ingredients.each do |ingredient| %>
+              <li>
+                <strong><%= ingredient[:name] %></strong>: 
+                <%= ingredient[:current_stock] %> <%= ingredient[:unit] %> disponible
+                (necesario: <%= ingredient[:needed_per_unit] %> <%= ingredient[:unit] %> por unidad)
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Detailed Breakdown (Hidden by default) -->
+    <div id="recipe-details" class="hidden" data-recipe-summary-target="details">
+      <div class="bg-white rounded-lg border border-blue-100 p-4">
+        <h5 class="text-sm font-medium text-gray-900 mb-3">Desglose Detallado</h5>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ingrediente</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Desperdicio</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Costo</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @product.recipe_components.includes(:ingredient, :unit).each do |component| %>
+                <tr>
+                  <td class="px-3 py-2 text-sm font-medium text-gray-900">
+                    <%= component.ingredient.name %>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-500">
+                    <%= component.quantity %> <%= component.unit.abbreviation %>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-500">
+                    <%= component.waste_pct %>%
+                  </td>
+                  <td class="px-3 py-2 text-sm font-medium text-gray-900">
+                    <%= component.total_quantity_with_waste.round(3) %> <%= component.unit.abbreviation %>
+                  </td>
+                  <td class="px-3 py-2 text-sm">
+                    <div class="flex items-center">
+                      <span class="<%= component.ingredient.stock >= component.total_quantity_with_waste ? 'text-green-600' : 'text-red-600' %>">
+                        <%= component.ingredient.stock %> <%= component.ingredient.unit.abbreviation %>
+                      </span>
+                      <% if component.ingredient.stock < component.total_quantity_with_waste %>
+                        <svg class="h-4 w-4 text-red-500 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-gray-500">
+                    ₲s. <%= number_with_delimiter(((component.ingredient.average_cost || 0) * component.total_quantity_with_waste).round(0), delimiter: '.') %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot class="bg-gray-50">
+              <tr>
+                <td colspan="5" class="px-3 py-2 text-sm font-medium text-gray-900 text-right">
+                  Total Costo:
+                </td>
+                <td class="px-3 py-2 text-sm font-bold text-gray-900">
+                  ₲s. <%= number_with_delimiter(@product.recipe_cost.round(0), delimiter: '.') %>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Production Actions -->
+    <div class="flex items-center justify-between pt-4 border-t border-blue-200">
+      <div class="text-sm text-gray-600">
+        Margen de ganancia: 
+        <span class="font-medium text-green-600">
+          <%= ((@product.price - @product.recipe_cost) / @product.recipe_cost * 100).round(1) %>%
+        </span>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <% if @product.can_produce? %>
+          <button type="button" 
+                  data-action="click->recipe-summary#simulateProduction"
+                  class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200">
+            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Simular Producción
+          </button>
+        <% else %>
+          <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
+            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            Stock Insuficiente
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

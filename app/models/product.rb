@@ -133,7 +133,11 @@ class Product < ApplicationRecord
   end
 
   def current_purchase_price
-    manual_purchase_price.presence || average_cost || 0
+    if kind == 'recipe'
+      recipe_service.calculate_recipe_cost
+    else
+      manual_purchase_price.presence || average_cost || 0
+    end
   end
 
   # Calculate the weighted average purchase price based on purchase history
@@ -223,8 +227,6 @@ class Product < ApplicationRecord
     end
   end
 
-  private
-
   def generate_barcode
     self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
   end
@@ -250,12 +252,70 @@ class Product < ApplicationRecord
     @skip_recipe_validation = value
   end
 
+  # Métodos para productos tipo receta
+  def recipe_service
+    @recipe_service ||= ProductServices::RecipeService.new(self)
+  end
+
+  def can_produce?(quantity = 1)
+    return true unless kind == 'recipe'
+    recipe_service.validate_stock_availability(quantity)[:sufficient]
+  end
+
+  def max_producible_quantity
+    return stock unless kind == 'recipe'
+    recipe_service.calculate_max_producible_quantity
+  end
+
+  def produce!(quantity = 1)
+    return false unless kind == 'recipe'
+    return false unless can_produce?(quantity)
+
+    result = recipe_service.deduct_ingredients_stock(quantity)
+    if result[:success]
+      # Agregar al stock del producto final
+      self.stock += quantity
+      save
+    end
+    result[:success]
+  end
+
+  def recipe_cost
+    return 0 unless kind == 'recipe'
+    recipe_service.calculate_recipe_cost
+  end
+
+  def recipe_summary
+    return {} unless kind == 'recipe'
+    recipe_service.recipe_summary
+  end
+
+  def critical_ingredients
+    return [] unless kind == 'recipe'
+    recipe_service.check_critical_ingredients
+  end
+
   private
+
+  def generate_barcode
+    self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
+  end
+
+  def update_stock_status
+    self.status = stock <= 0 ? 'out_of_stock' : 'active'
+  end
 
   def recipe_must_have_components
     return unless recipe?
     return if recipe_components.any?
+    return if skip_recipe_validation
 
-    errors.add(:base, 'Los productos de receta deben tener al menos un ingrediente')
+    # Solo validar si el producto ya existe y se está intentando activar/usar
+    if persisted? && status == 'active'
+      errors.add(:base, 'Los productos de receta activos deben tener al menos un ingrediente. Agrega ingredientes antes de activar el producto.')
+    elsif persisted?
+      # Para productos existentes pero inactivos, solo advertir
+      errors.add(:base, 'Este producto de receta no tiene ingredientes. Agrégalos para poder activarlo y venderlo.')
+    end
   end
 end

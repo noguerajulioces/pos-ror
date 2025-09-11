@@ -16,11 +16,22 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
 
+    if @product.kind == 'recipe'
+      @product.skip_recipe_validation = true
+    end
+
     ActiveRecord::Base.transaction do
       if @product.save
         StockManager.create_initial_stock(@product)
         attach_image if params[:product][:image].present?
-        redirect_to @product, notice: 'Producto creado exitosamente.'
+
+        notice_message = if @product.kind == 'recipe'
+          'Producto de receta creado exitosamente. Ahora puedes agregar ingredientes editando el producto.'
+        else
+          'Producto creado exitosamente.'
+        end
+
+        redirect_to @product, notice: notice_message
       else
         render :new, status: :unprocessable_entity
       end
@@ -31,6 +42,11 @@ class ProductsController < ApplicationController
   end
 
   def update
+    # Para productos de receta, permitir actualización sin ingredientes si se están editando datos básicos
+    if @product.kind == 'recipe' && params[:allow_empty_recipe].present?
+      @product.skip_recipe_validation = true
+    end
+
     if @product.update(product_params)
       attach_image if params[:product][:image].present?
       redirect_to @product, notice: 'Producto actualizado exitosamente.'

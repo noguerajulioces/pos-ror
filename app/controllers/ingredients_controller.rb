@@ -91,6 +91,11 @@ class IngredientsController < ApplicationController
     end
   end
 
+  def modal_picker
+    @product = Product.find(params[:product_id])
+    render partial: 'ingredients/modal_picker', locals: { product: @product }
+  end
+
   private
 
   def set_ingredient

@@ -1,4 +1,6 @@
 <%= form_with(model: @product, class: "space-y-8", data: { controller: "product-kind nested-form image-preview" }) do |form| %>
+  <!-- Campo oculto para permitir edición de productos de receta sin ingredientes -->
+  <%= hidden_field_tag :allow_empty_recipe, "1" if @product.kind == 'recipe' %>
   <% if @product.errors.any? %>
     <div class="rounded-md bg-red-50 p-4">
       <div class="flex">

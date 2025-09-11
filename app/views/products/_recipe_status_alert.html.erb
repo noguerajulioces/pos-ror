@@ -1,0 +1,61 @@
+<% if @product.kind == 'recipe' && @product.recipe_components.empty? %>
+  <div class="rounded-md bg-amber-50 p-4 mb-6 border border-amber-200">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-amber-800">
+          Producto de Receta Incompleto
+        </h3>
+        <div class="mt-2 text-sm text-amber-700">
+          <p>
+            Este producto de receta no tiene ingredientes configurados. 
+            <%= link_to "Haz clic aquí para agregar ingredientes", 
+                        edit_product_path(@product), 
+                        class: "font-medium underline text-amber-800 hover:text-amber-600" %>
+            y completar la receta.
+          </p>
+        </div>
+        <div class="mt-4">
+          <div class="flex">
+            <%= link_to edit_product_path(@product),
+                        class: "bg-amber-100 px-2 py-1.5 rounded-md text-sm font-medium text-amber-800 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500" do %>
+              <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Agregar Ingredientes
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% elsif @product.kind == 'recipe' && @product.recipe_components.any? %>
+  <div class="rounded-md bg-green-50 p-4 mb-6 border border-green-200">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L8.23 10.661a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-green-800">
+          Receta Completa
+        </h3>
+        <div class="mt-2 text-sm text-green-700">
+          <p>
+            Este producto tiene <%= @product.recipe_components.count %> ingrediente(s) configurado(s).
+            <% if @product.can_produce? %>
+              <span class="font-medium">✓ Stock disponible para producir</span>
+            <% else %>
+              <span class="font-medium text-amber-700">⚠ Stock insuficiente para producir</span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

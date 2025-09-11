@@ -45,7 +45,17 @@ class StockManager
 
   def update_stock_from_order
     @document.order_items.each do |item|
+      product = item.product
+
+      # Deducir stock del producto final
       create_inventory_movement(item, -item.quantity, 'sale')
+
+      # Si es un producto tipo receta, deducir ingredientes
+      if product.kind == 'recipe'
+        deduct_recipe_ingredients(product, item.quantity)
+      elsif product.kind == 'combo'
+        deduct_combo_components(product, item.quantity)
+      end
     end
   end
 
@@ -63,6 +73,54 @@ class StockManager
       movement_type: movement_type,
       quantity: quantity,
       reason: movement_reason(quantity, movement_type)
+    )
+  end
+
+  def deduct_recipe_ingredients(product, quantity_sold)
+    product.recipe_components.includes(:ingredient).each do |component|
+      needed_quantity = component.total_quantity_with_waste * quantity_sold
+
+      if component.ingredient.deduct_stock(needed_quantity)
+        # Crear movimiento de inventario para el ingrediente
+        create_ingredient_movement(
+          component.ingredient,
+          -needed_quantity,
+          'recipe_production',
+          "Usado en receta: #{product.name} (#{quantity_sold} unidades)"
+        )
+      else
+        Rails.logger.warn "No se pudo deducir stock suficiente del ingrediente #{component.ingredient.name} para #{product.name}"
+      end
+    end
+  end
+
+  def deduct_combo_components(product, quantity_sold)
+    product.combo_items.includes(:component_product).each do |combo_item|
+      component_product = combo_item.component_product
+      needed_quantity = combo_item.quantity * quantity_sold
+
+      # Crear movimiento para el componente del combo
+      create_inventory_movement_for_product(
+        component_product,
+        -needed_quantity,
+        'combo_sale',
+        "Usado en combo: #{product.name} (#{quantity_sold} unidades)"
+      )
+    end
+  end
+
+  def create_ingredient_movement(ingredient, quantity, movement_type, reason)
+    # Crear un registro de movimiento para ingredientes (si tienes una tabla similar)
+    # Por ahora, solo registramos en logs
+    Rails.logger.info "Ingredient Movement: #{ingredient.name} - #{quantity} #{ingredient.unit.abbreviation} - #{reason}"
+  end
+
+  def create_inventory_movement_for_product(product, quantity, movement_type, reason)
+    InventoryMovement.create!(
+      product: product,
+      movement_type: movement_type,
+      quantity: quantity,
+      reason: reason
     )
   end
 

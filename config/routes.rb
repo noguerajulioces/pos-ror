@@ -22,6 +22,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Ruta específica para el modal picker de ingredientes
+  get 'ingredients/modal_picker/:product_id', to: 'ingredients#modal_picker', as: :ingredients_modal_picker
+
   resources :products do
     resources :product_images, only: [ :destroy ]
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'
