@@ -31,6 +31,7 @@ class CashRegister < ApplicationRecord
 
   belongs_to :user
   belongs_to :cash_movement, optional: true
+  has_many :cash_movements
 
   validates :open_at, :initial_amount, :status, presence: true
   validates :initial_amount, numericality: { greater_than_or_equal_to: 0 }
@@ -69,16 +70,16 @@ class CashRegister < ApplicationRecord
       # created during the time this register was open
       # Assuming orders are associated with the register's time period
       order_time_range = register.open_at..(register.close_at || Time.current)
-      
+
       # Find orders created by this user during the register's open period
       total_sales_amount = Order.where(
         user_id: register.user_id,
         created_at: order_time_range
       ).sum(:total_amount) || 0
-      
+
       # El monto final debería ser el monto inicial más las ventas
       final_amount = register.initial_amount + total_sales_amount
-      
+
       # Cerrar forzadamente la caja con el monto calculado
       register.force_close!(final_amount)
     end

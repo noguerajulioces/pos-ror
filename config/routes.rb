@@ -59,7 +59,7 @@ Rails.application.routes.draw do
   post 'pos/set_order_type', to: 'pos#set_order_type'
   get 'pos/search_products', to: 'pos#search_products'
 
-  resources :cash_registers, only: [ :index, :new, :create ] do
+  resources :cash_registers, only: [ :index, :new, :create, :show ] do
     member do
       get :close
       patch :process_close

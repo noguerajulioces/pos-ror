@@ -1,0 +1,307 @@
+<div class="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Detalle de Caja #<%= @cash_register.id %></h1>
+        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+          <span class="font-medium"><%= @cash_register.user.name %></span>
+          <span>•</span>
+          <span><%= l(@cash_register.open_at.to_date, format: :long) %></span>
+          <span>•</span>
+          <% case @cash_register.status %>
+          <% when 'open' %>
+            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">🟢 Abierta</span>
+          <% when 'closed' %>
+            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">⚫ Cerrada</span>
+          <% when 'forced_closed' %>
+            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">🔴 Cierre Forzado</span>
+          <% end %>
+        </div>
+      </div>
+      <%= link_to "← Volver", cash_registers_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS CRÍTICAS -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    
+    <!-- MÉTRICA 1: RESUMEN DE CAJA -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+        <h2 class="text-xl font-bold text-white flex items-center">
+          💰 Resumen de Caja
+        </h2>
+      </div>
+      <div class="p-6 space-y-4">
+        <!-- Saldo Inicial -->
+        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+          <span class="text-sm font-medium text-gray-600">Saldo Inicial</span>
+          <span class="text-lg font-bold text-gray-900">
+            <%= number_to_currency(@cash_summary[:saldo_inicial], precision: 0, unit: '₲s. ', delimiter: '.') %>
+          </span>
+        </div>
+        
+        <!-- Ingresos -->
+        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+          <span class="text-sm font-medium text-green-600">+ Ventas</span>
+          <span class="text-lg font-bold text-green-700">
+            <%= number_to_currency(@cash_summary[:ingresos_ventas], precision: 0, unit: '₲s. ', delimiter: '.') %>
+          </span>
+        </div>
+        
+        <% if @cash_summary[:ingresos_extra] > 0 %>
+          <div class="flex justify-between items-center py-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-green-600">+ Ingresos Extra</span>
+            <span class="text-lg font-bold text-green-700">
+              <%= number_to_currency(@cash_summary[:ingresos_extra], precision: 0, unit: '₲s. ', delimiter: '.') %>
+            </span>
+          </div>
+        <% end %>
+        
+        <% if @cash_summary[:egresos] > 0 %>
+          <div class="flex justify-between items-center py-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-red-600">- Egresos</span>
+            <span class="text-lg font-bold text-red-700">
+              <%= number_to_currency(@cash_summary[:egresos], precision: 0, unit: '₲s. ', delimiter: '.') %>
+            </span>
+          </div>
+        <% end %>
+        
+        <!-- Saldo Esperado -->
+        <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-yellow-700">Saldo Esperado</span>
+            <span class="text-xl font-bold text-yellow-800">
+              <%= number_to_currency(@cash_summary[:saldo_esperado], precision: 0, unit: '₲s. ', delimiter: '.') %>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Saldo Real y Diferencia -->
+        <% if @cash_summary[:saldo_real].present? %>
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700">Saldo Real</span>
+              <span class="text-xl font-bold text-gray-800">
+                <%= number_to_currency(@cash_summary[:saldo_real], precision: 0, unit: '₲s. ', delimiter: '.') %>
+              </span>
+            </div>
+            
+            <!-- DIFERENCIA - CRÍTICO -->
+            <% if @cash_summary[:diferencia].present? %>
+              <div class="mt-3 pt-3 border-t border-gray-200">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium">Diferencia</span>
+                  <div class="text-right">
+                    <span class="text-2xl font-bold <%= @cash_summary[:diferencia].zero? ? 'text-green-600' : 'text-red-600' %>">
+                      <%= @cash_summary[:diferencia] >= 0 ? '+' : '' %><%= number_to_currency(@cash_summary[:diferencia], precision: 0, unit: '₲s. ', delimiter: '.') %>
+                    </span>
+                    <div class="text-xs font-medium mt-1 <%= @cash_summary[:cuadra] ? 'text-green-600' : 'text-red-600' %>">
+                      <%= @cash_summary[:cuadra] ? '✅ CUADRA' : '❌ NO CUADRA' %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div class="text-center">
+              <span class="text-sm font-medium text-blue-700">🔄 Caja aún abierta</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- MÉTRICA 2: VENTAS POR MÉTODO DE PAGO -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+        <h2 class="text-xl font-bold text-white flex items-center">
+          💳 Métodos de Pago
+        </h2>
+      </div>
+      <div class="p-6">
+        <% if @payment_breakdown[:breakdown].any? %>
+          <div class="space-y-4">
+            <% @payment_breakdown[:breakdown].each do |payment| %>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                  <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span class="font-medium text-gray-900"><%= payment[:name] %></span>
+                </div>
+                <div class="text-right">
+                  <div class="text-lg font-bold text-gray-900">
+                    <%= number_to_currency(payment[:amount], precision: 0, unit: '₲s. ', delimiter: '.') %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= payment[:percentage] %>%
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Barra de progreso -->
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: <%= payment[:percentage] %>%"></div>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- Total -->
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-medium text-gray-700">Total Cobrado</span>
+              <span class="text-2xl font-bold text-gray-900">
+                <%= number_to_currency(@payment_breakdown[:total], precision: 0, unit: '₲s. ', delimiter: '.') %>
+              </span>
+            </div>
+          </div>
+        <% else %>
+          <div class="text-center py-8 text-gray-500">
+            <div class="text-4xl mb-2">💳</div>
+            <p>No hay pagos registrados</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- MÉTRICA 3: TICKET PROMEDIO -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
+        <h2 class="text-xl font-bold text-white flex items-center">
+          🎫 Ticket Promedio
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="text-center space-y-6">
+          <!-- Ticket Promedio Principal -->
+          <div class="bg-purple-50 rounded-lg p-6 border border-purple-200">
+            <div class="text-sm font-medium text-purple-600 mb-2">Ticket Promedio</div>
+            <div class="text-4xl font-bold text-purple-800">
+              <%= number_to_currency(@ticket_metrics[:ticket_promedio], precision: 0, unit: '₲s. ', delimiter: '.') %>
+            </div>
+          </div>
+          
+          <!-- Métricas de soporte -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="text-xs font-medium text-gray-600 mb-1">Total Tickets</div>
+              <div class="text-2xl font-bold text-gray-900">
+                <%= number_with_delimiter(@ticket_metrics[:total_tickets]) %>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="text-xs font-medium text-gray-600 mb-1">Total Ventas</div>
+              <div class="text-lg font-bold text-gray-900">
+                <%= number_to_currency(@ticket_metrics[:total_sales], precision: 0, unit: '₲s. ', delimiter: '.') %>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Fórmula visual -->
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div class="text-xs font-medium text-blue-600 mb-2">Cálculo</div>
+            <div class="text-sm text-blue-800">
+              <%= number_to_currency(@ticket_metrics[:total_sales], precision: 0, unit: '₲s. ', delimiter: '.') %>
+              ÷ <%= @ticket_metrics[:total_tickets] %> tickets
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL "MÁS DETALLES" (Colapsable) -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden" x-data="{ open: false }">
+    <button @click="open = !open" class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex justify-between items-center">
+      <h3 class="text-lg font-medium text-gray-900">📊 Más detalles</h3>
+      <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
+    
+    <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95" class="border-t border-gray-200">
+      <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          <!-- Movimientos de Caja -->
+          <% if @cash_movements.any? %>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900 mb-4">💸 Movimientos de Caja</h4>
+              <div class="space-y-3 max-h-80 overflow-y-auto">
+                <% @cash_movements.each do |movement| %>
+                  <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <div class="font-medium text-sm text-gray-900">
+                        <% if movement.movement_type == 'ingreso' %>
+                          <span class="text-green-600">↗️ Ingreso</span>
+                        <% else %>
+                          <span class="text-red-600">↘️ Egreso</span>
+                        <% end %>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        <%= movement.created_at.strftime("%H:%M") %> - <%= movement.reason.present? ? movement.reason : 'Sin razón' %>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="font-bold <%= movement.movement_type == 'ingreso' ? 'text-green-600' : 'text-red-600' %>">
+                        <%= movement.movement_type == 'ingreso' ? '+' : '-' %><%= number_to_currency(movement.amount.abs, precision: 0, unit: '₲s. ', delimiter: '.') %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          
+          <!-- Últimas Órdenes -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">🧾 Últimas Órdenes (<%= @orders.count %>)</h4>
+            <div class="space-y-3 max-h-80 overflow-y-auto">
+              <% @orders.limit(10).each do |order| %>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <div class="font-medium text-sm text-gray-900">#<%= order.id %></div>
+                    <div class="text-xs text-gray-500">
+                      <%= order.created_at.strftime("%H:%M") %> - <%= order.customer&.full_name || 'Cliente genérico' %>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold text-gray-900">
+                      <%= number_to_currency(order.total_amount, precision: 0, unit: '₲s. ', delimiter: '.') %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+              
+              <% if @orders.count > 10 %>
+                <div class="text-center py-2">
+                  <span class="text-sm text-gray-500">... y <%= @orders.count - 10 %> órdenes más</span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información de tiempo -->
+  <div class="mt-6 text-center text-sm text-gray-500">
+    <div class="flex justify-center items-center space-x-4">
+      <span>🕐 Apertura: <%= @cash_register.open_at.strftime("%d/%m/%Y %H:%M") %></span>
+      <% if @cash_register.close_at.present? %>
+        <span>•</span>
+        <span>🕐 Cierre: <%= @cash_register.close_at.strftime("%d/%m/%Y %H:%M") %></span>
+      <% elsif @cash_register.status == 'forced_closed' %>
+        <span>•</span>
+        <span class="text-red-600">🔴 Cerrado forzadamente</span>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Alpine.js para el panel colapsable -->
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
