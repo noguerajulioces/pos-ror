@@ -4,6 +4,9 @@ export default class extends Controller {
   static targets = ["quantity", "unitPrice", "subtotal", "totalAmount"]
 
   connect() {
+    // Initialize timeout variable
+    this.calculationTimeout = null
+    
     // Format existing values on page load
     this.formatExistingValues()
     
@@ -24,39 +27,63 @@ export default class extends Controller {
     })
   }
 
+  disconnect() {
+    // Clean up timeout when controller is disconnected
+    if (this.calculationTimeout) {
+      clearTimeout(this.calculationTimeout)
+      this.calculationTimeout = null
+    }
+  }
+
   // Helper function to parse formatted numbers (integers only for Guaraníes)
   parseFormattedNumber(value) {
     if (!value) return 0
     
     let cleanValue = value.toString().trim()
     
-    // Remove any decimal part (for values like 23000.0)
-    if (cleanValue.includes('.')) {
-      // Check if it's a decimal number (like 23000.0) or thousand separator (like 23.000)
-      let parts = cleanValue.split('.')
-      if (parts.length === 2 && parts[1].length <= 2 && parseInt(parts[1]) === 0) {
-        // It's a decimal like 23000.0, take only the integer part
-        cleanValue = parts[0]
-      } else {
-        // It's thousand separators like 23.000, remove all dots
-        cleanValue = cleanValue.replace(/\./g, '')
-      }
+    // If it's empty or just dots, return 0
+    if (cleanValue === '' || cleanValue.replace(/\./g, '') === '') {
+      return 0
     }
     
-    return parseInt(cleanValue) || 0
+    // For Guaraníes, we only have thousand separators (dots), no decimals
+    // Simply remove all dots and parse as integer
+    cleanValue = cleanValue.replace(/\./g, '')
+    
+    // Handle edge cases where user might be in the middle of editing
+    if (cleanValue === '') {
+      return 0
+    }
+    
+    const result = parseInt(cleanValue) || 0
+    
+    // Debug log for troubleshooting (remove in production)
+    console.log(`parseFormattedNumber: "${value}" -> "${cleanValue}" -> ${result}`)
+    
+    return result
   }
 
   calculateSubtotal(event) {
-    const row = event.target.closest('[data-purchase-calculator-target="row"]')
-    const quantity = parseFloat(row.querySelector('[data-purchase-calculator-target="quantity"]').value) || 0
-    const unitPriceValue = row.querySelector('[data-purchase-calculator-target="unitPrice"]').value
-    const unitPrice = this.parseFormattedNumber(unitPriceValue)
-    const subtotal = quantity * unitPrice
+    // Clear any existing timeout
+    if (this.calculationTimeout) {
+      clearTimeout(this.calculationTimeout)
+    }
     
-    // Format subtotal with thousand separators
-    row.querySelector('[data-purchase-calculator-target="subtotal"]').value = this.formatNumber(subtotal)
-    
-    this.calculateTotal()
+    // Add a small delay to avoid calculations while user is actively typing
+    this.calculationTimeout = setTimeout(() => {
+      const row = event.target.closest('[data-purchase-calculator-target="row"]')
+      const quantity = parseFloat(row.querySelector('[data-purchase-calculator-target="quantity"]').value) || 0
+      const unitPriceValue = row.querySelector('[data-purchase-calculator-target="unitPrice"]').value
+      const unitPrice = this.parseFormattedNumber(unitPriceValue)
+      const subtotal = quantity * unitPrice
+      
+      console.log(`Calculation: ${quantity} × ${unitPrice} = ${subtotal}`)
+      
+      // Format subtotal with thousand separators
+      row.querySelector('[data-purchase-calculator-target="subtotal"]').value = this.formatNumber(subtotal)
+      
+      this.calculateTotal()
+    }, 300) // 300ms delay
   }
 
   // Helper function to format integers with thousand separators (for Guaraníes)

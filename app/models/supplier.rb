@@ -35,6 +35,10 @@ class Supplier < ApplicationRecord
     [ 'address', 'company_name', 'contact_name', 'created_at', 'document', 'email', 'id', 'id_value', 'notes', 'phone', 'updated_at' ]
   end
 
+  def self.ransackable_associations(auth_object = nil)
+    [ 'account' ]
+  end
+
   private
 
   def company_name_or_contact_name_present

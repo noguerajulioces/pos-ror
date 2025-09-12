@@ -11,12 +11,30 @@ export default class extends Controller {
   formatNumber(e) {
     let value = e.target.value
     
+    // Store cursor position
+    const cursorPosition = e.target.selectionStart
+    const oldValue = e.target.value
+    
     // Allow only digits (no decimals for Guaraníes)
     value = value.replace(/\D/g, '')
     
-    // Add thousand separators (dots)
-    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    // Don't format if empty
+    if (value === '') {
+      e.target.value = ''
+      return
+    }
     
-    e.target.value = value
+    // Add thousand separators (dots)
+    const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    
+    // Only update if the value actually changed (to avoid infinite loops)
+    if (formattedValue !== oldValue) {
+      e.target.value = formattedValue
+      
+      // Restore cursor position approximately
+      const dotsAdded = (formattedValue.match(/\./g) || []).length - (oldValue.match(/\./g) || []).length
+      const newCursorPosition = Math.min(cursorPosition + dotsAdded, formattedValue.length)
+      e.target.setSelectionRange(newCursorPosition, newCursorPosition)
+    }
   }
 }

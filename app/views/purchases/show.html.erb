@@ -197,7 +197,7 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= item.unit&.name || 'N/A' %>
+                  <%= item.purchasable&.unit&.name || 'N/A' %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                   ₲s. <%= number_with_delimiter(item.unit_price.to_i, delimiter: '.') %>

@@ -120,15 +120,19 @@
     <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
       <div class="sm:col-span-3 sm:col-start-4">
         <%= form.label :total_amount, "Monto Total", class: "block text-sm/6 font-medium text-gray-900" %>
-        <div data-controller="number-format">
-          <%= form.text_field :total_amount, 
-              class: "block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 text-right font-medium sm:text-sm/6", 
-              id: "purchase_total_amount",
-              readonly: true,
-              data: { 
-                "purchase-calculator-target": "totalAmount",
-                "number-format-target": "input"
-              } %>
+        <div class="mt-2">
+          <div class="flex items-center rounded-md bg-gray-50 px-3 outline outline-1 -outline-offset-1 outline-gray-300" data-controller="number-format">
+            <div class="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 font-medium">Gs.</div>
+            <%= form.text_field :total_amount, 
+                placeholder: "0",
+                class: "block min-w-0 grow bg-gray-50 py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 text-right font-bold text-lg", 
+                id: "purchase_total_amount",
+                readonly: true,
+                data: { 
+                  "purchase-calculator-target": "totalAmount",
+                  "number-format-target": "input"
+                } %>
+          </div>
         </div>
       </div>
     </div>
