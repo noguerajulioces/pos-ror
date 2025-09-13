@@ -86,16 +86,21 @@
           </h3>
           <div class="bg-white p-3 rounded border border-orange-100">
             <%= form.label :final_amount, "Ingresa el monto real que tienes en la caja", class: "block text-xs font-medium text-gray-600 mb-2" %>
-            <div class="relative" data-controller="number-format">
+            <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500 text-sm font-medium">₲s.</span>
               </div>
-              <%= form.text_field :final_amount, value: @expected_amount.to_i, 
+              <%= form.text_field :final_amount, 
+                  value: number_with_delimiter(@expected_amount.to_i, delimiter: '.'), 
                   class: "pl-12 block w-full text-base font-semibold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 px-3 py-2.5 transition-colors duration-200", 
                   min: 0, 
                   step: 1000,
                   placeholder: "0",
-                  data: { number_format_target: "input" } %>
+                  data: { 
+                    controller: "number-format",
+                    "number-format-target": "input",
+                    action: "input->number-format#formatNumber"
+                  } %>
             </div>
             <div class="flex items-center mt-2 text-xs text-gray-600">
               <svg class="h-3 w-3 text-gray-400 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
