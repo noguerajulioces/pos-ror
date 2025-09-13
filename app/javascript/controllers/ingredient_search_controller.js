@@ -5,17 +5,17 @@ export default class extends Controller {
   static values = { selectedValue: String }
 
   connect() {
-    this.products = []
-    this.filteredProducts = []
+    this.ingredients = []
+    this.filteredIngredients = []
     this.selectedIndex = -1
     this.isOpen = false
     
-    // Load products on connect
-    this.loadProducts()
+    // Load ingredients on connect
+    this.loadIngredients()
     
     // Set initial value if provided
     if (this.selectedValueValue) {
-      this.setSelectedProduct(this.selectedValueValue)
+      this.setSelectedIngredient(this.selectedValueValue)
     }
     
     // Close dropdown when clicking outside
@@ -32,9 +32,9 @@ export default class extends Controller {
     window.removeEventListener('resize', this.handleResize.bind(this))
   }
 
-  async loadProducts() {
+  async loadIngredients() {
     try {
-      const response = await fetch('/products/search.json?q=', {
+      const response = await fetch('/ingredients/search.json?q=', {
         headers: {
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
@@ -42,11 +42,11 @@ export default class extends Controller {
       })
       
       if (response.ok) {
-        this.products = await response.json()
-        this.filteredProducts = this.products
+        this.ingredients = await response.json()
+        this.filteredIngredients = this.ingredients
       }
     } catch (error) {
-      console.error('Error loading products:', error)
+      console.error('Error loading ingredients:', error)
     }
   }
 
@@ -54,11 +54,11 @@ export default class extends Controller {
     const query = event.target.value.toLowerCase().trim()
     
     if (query === '') {
-      this.filteredProducts = this.products
+      this.filteredIngredients = this.ingredients
     } else {
-      this.filteredProducts = this.products.filter(product => 
-        product.name.toLowerCase().includes(query) ||
-        (product.code && product.code.toLowerCase().includes(query))
+      this.filteredIngredients = this.ingredients.filter(ingredient => 
+        ingredient.name.toLowerCase().includes(query) ||
+        (ingredient.code && ingredient.code.toLowerCase().includes(query))
       )
     }
     
@@ -114,7 +114,7 @@ export default class extends Controller {
   }
 
   renderOptions() {
-    if (this.filteredProducts.length === 0) {
+    if (this.filteredIngredients.length === 0) {
       this.optionsListTarget.innerHTML = ''
       this.noResultsTarget.classList.remove('hidden')
       return
@@ -122,20 +122,20 @@ export default class extends Controller {
     
     this.noResultsTarget.classList.add('hidden')
     
-    const optionsHtml = this.filteredProducts.map((product, index) => `
+    const optionsHtml = this.filteredIngredients.map((ingredient, index) => `
       <div class="block px-3 py-2 text-gray-900 cursor-pointer select-none hover:bg-indigo-600 hover:text-white ${index === this.selectedIndex ? 'bg-indigo-600 text-white' : ''}"
-           data-action="click->product-search#selectProduct"
-           data-product-id="${product.id}"
-           data-product-name="${product.name}"
+           data-action="click->ingredient-search#selectIngredient"
+           data-ingredient-id="${ingredient.id}"
+           data-ingredient-name="${ingredient.name}"
            data-index="${index}">
         <div class="flex justify-between items-center">
           <div class="flex-1 min-w-0">
-            <div class="font-medium truncate">${product.name}</div>
-            ${product.code ? `<div class="text-xs opacity-75">Código: ${product.code}</div>` : ''}
+            <div class="font-medium truncate">${ingredient.name}</div>
+            ${ingredient.code ? `<div class="text-xs opacity-75">Código: ${ingredient.code}</div>` : ''}
           </div>
           <div class="ml-3 text-xs opacity-75 text-right flex-shrink-0">
             <div>Stock:</div>
-            <div class="font-medium">${product.stock || 0}</div>
+            <div class="font-medium">${ingredient.stock || 0}</div>
           </div>
         </div>
       </div>
@@ -144,21 +144,21 @@ export default class extends Controller {
     this.optionsListTarget.innerHTML = optionsHtml
   }
 
-  selectProduct(event) {
-    const productId = event.currentTarget.dataset.productId
-    const productName = event.currentTarget.dataset.productName
+  selectIngredient(event) {
+    const ingredientId = event.currentTarget.dataset.ingredientId
+    const ingredientName = event.currentTarget.dataset.ingredientName
     
-    this.inputTarget.value = productName
-    this.hiddenFieldTarget.value = productId
+    this.inputTarget.value = ingredientName
+    this.hiddenFieldTarget.value = ingredientId
     this.hideOptions()
     
     // Trigger change event for purchase-item-type controller
     const changeEvent = new Event('change', { bubbles: true })
     this.hiddenFieldTarget.dispatchEvent(changeEvent)
     
-    // Notify parent controller about product selection
-    this.element.dispatchEvent(new CustomEvent('product:selected', {
-      detail: { id: productId, name: productName },
+    // Notify parent controller about ingredient selection
+    this.element.dispatchEvent(new CustomEvent('ingredient:selected', {
+      detail: { id: ingredientId, name: ingredientName },
       bubbles: true
     }))
   }
@@ -175,7 +175,7 @@ export default class extends Controller {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault()
-        this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredProducts.length - 1)
+        this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredIngredients.length - 1)
         this.renderOptions()
         break
         
@@ -187,10 +187,10 @@ export default class extends Controller {
         
       case 'Enter':
         event.preventDefault()
-        if (this.selectedIndex >= 0 && this.filteredProducts[this.selectedIndex]) {
-          const product = this.filteredProducts[this.selectedIndex]
-          this.inputTarget.value = product.name
-          this.hiddenFieldTarget.value = product.id
+        if (this.selectedIndex >= 0 && this.filteredIngredients[this.selectedIndex]) {
+          const ingredient = this.filteredIngredients[this.selectedIndex]
+          this.inputTarget.value = ingredient.name
+          this.hiddenFieldTarget.value = ingredient.id
           this.hideOptions()
           
           // Trigger change event
@@ -198,8 +198,8 @@ export default class extends Controller {
           this.hiddenFieldTarget.dispatchEvent(changeEvent)
           
           // Notify parent controller
-          this.element.dispatchEvent(new CustomEvent('product:selected', {
-            detail: { id: product.id, name: product.name },
+          this.element.dispatchEvent(new CustomEvent('ingredient:selected', {
+            detail: { id: ingredient.id, name: ingredient.name },
             bubbles: true
           }))
         }
@@ -229,11 +229,11 @@ export default class extends Controller {
     }
   }
 
-  setSelectedProduct(productId) {
-    const product = this.products.find(p => p.id == productId)
-    if (product) {
-      this.inputTarget.value = product.name
-      this.hiddenFieldTarget.value = product.id
+  setSelectedIngredient(ingredientId) {
+    const ingredient = this.ingredients.find(i => i.id == ingredientId)
+    if (ingredient) {
+      this.inputTarget.value = ingredient.name
+      this.hiddenFieldTarget.value = ingredient.id
     }
   }
 }

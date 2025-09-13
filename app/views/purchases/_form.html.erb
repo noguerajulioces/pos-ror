@@ -42,7 +42,7 @@
               :id, 
               ->(supplier) { "#{supplier.company_name.present? ? supplier.company_name : supplier.contact_name} (#{supplier&.document})" }, 
               { include_blank: 'Seleccione un proveedor' }, 
-              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
+              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none", required: true } %>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
@@ -68,7 +68,7 @@
                 ['Cheque', 'check']
               ], purchase.payment_method), 
               { include_blank: 'Seleccione método de pago' }, 
-              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
+              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none", required: true } %>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />

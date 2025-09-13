@@ -61,6 +61,33 @@ class ProductsController < ApplicationController
     redirect_to products_path, notice: 'Producto inactivado exitosamente.'
   end
 
+  def search
+    base_query = Product.available
+                        .where(kind: [ 'simple', nil ])
+                        .or(Product.available.where(kind: ''))
+                        .ordered
+
+    @products = if params[:q].present? && params[:q].strip != ''
+                  base_query.where('name ILIKE ? OR sku ILIKE ?', "%#{params[:q]}%", "%#{params[:q]}%")
+                            .limit(20)
+    else
+                  base_query.limit(20)
+    end
+
+    respond_to do |format|
+      format.json do
+        render json: @products.map { |product|
+          {
+            id: product.id,
+            name: product.name,
+            code: product.sku,
+            stock: product.stock
+          }
+        }
+      end
+    end
+  end
+
   def unit
     @product = Product.find(params[:id])
     render json: { unit_id: @product.unit_id }

@@ -5,6 +5,10 @@ export default class extends Controller {
 
   connect() {
     this.toggleSelects()
+    
+    // Listen for custom events from search components
+    this.element.addEventListener('product:selected', this.handleProductSelected.bind(this))
+    this.element.addEventListener('ingredient:selected', this.handleIngredientSelected.bind(this))
   }
 
   toggleSelects(event) {
@@ -26,9 +30,15 @@ export default class extends Controller {
     if (this.hasProductSelectTarget) {
       this.productSelectTarget.style.display = 'block'
       const selectElement = this.productSelectTarget.querySelector('select')
+      const hiddenField = this.productSelectTarget.querySelector('input[type="hidden"]')
+      
       if (selectElement) {
         selectElement.disabled = false
         selectElement.name = selectElement.name.replace('_destroy', '').replace('[_destroy]', '')
+      }
+      
+      if (hiddenField) {
+        hiddenField.disabled = false
       }
     }
   }
@@ -37,9 +47,21 @@ export default class extends Controller {
     if (this.hasProductSelectTarget) {
       this.productSelectTarget.style.display = 'none'
       const selectElement = this.productSelectTarget.querySelector('select')
+      const hiddenField = this.productSelectTarget.querySelector('input[type="hidden"]')
+      const textInput = this.productSelectTarget.querySelector('input[type="text"]')
+      
       if (selectElement) {
         selectElement.disabled = true
         selectElement.value = ''
+      }
+      
+      if (hiddenField) {
+        hiddenField.disabled = true
+        hiddenField.value = ''
+      }
+      
+      if (textInput) {
+        textInput.value = ''
       }
     }
   }
@@ -48,9 +70,15 @@ export default class extends Controller {
     if (this.hasIngredientSelectTarget) {
       this.ingredientSelectTarget.style.display = 'block'
       const selectElement = this.ingredientSelectTarget.querySelector('select')
+      const hiddenField = this.ingredientSelectTarget.querySelector('input[type="hidden"]')
+      
       if (selectElement) {
         selectElement.disabled = false
         selectElement.name = selectElement.name.replace('_destroy', '').replace('[_destroy]', '')
+      }
+      
+      if (hiddenField) {
+        hiddenField.disabled = false
       }
     }
   }
@@ -59,9 +87,21 @@ export default class extends Controller {
     if (this.hasIngredientSelectTarget) {
       this.ingredientSelectTarget.style.display = 'none'
       const selectElement = this.ingredientSelectTarget.querySelector('select')
+      const hiddenField = this.ingredientSelectTarget.querySelector('input[type="hidden"]')
+      const textInput = this.ingredientSelectTarget.querySelector('input[type="text"]')
+      
       if (selectElement) {
         selectElement.disabled = true
         selectElement.value = ''
+      }
+      
+      if (hiddenField) {
+        hiddenField.disabled = true
+        hiddenField.value = ''
+      }
+      
+      if (textInput) {
+        textInput.value = ''
       }
     }
   }
@@ -125,6 +165,22 @@ export default class extends Controller {
     const unitSelect = this.unitSelectTarget.querySelector('select')
     if (unitSelect && unitId) {
       unitSelect.value = unitId
+    }
+  }
+
+  // Handle product selection from search component
+  handleProductSelected(event) {
+    const productId = event.detail.id
+    if (productId && this.hasUnitSelectTarget) {
+      this.fetchProductUnit(productId)
+    }
+  }
+
+  // Handle ingredient selection from search component
+  handleIngredientSelected(event) {
+    const ingredientId = event.detail.id
+    if (ingredientId && this.hasUnitSelectTarget) {
+      this.fetchIngredientUnit(ingredientId)
     }
   }
 }

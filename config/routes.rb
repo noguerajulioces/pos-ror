@@ -34,6 +34,9 @@ Rails.application.routes.draw do
     namespace :products do
       resources :recipe_components, only: [ :create, :destroy ]
     end
+    collection do
+      get :search
+    end
     member do
       get :unit
     end

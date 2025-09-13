@@ -72,12 +72,27 @@ class IngredientsController < ApplicationController
 
   def search
     @product = Product.find(params[:product_id]) if params[:product_id].present?
-    @ingredients = Ingredient
-                   .where('name ILIKE ?', "%#{params[:q]}%")
-                   .includes(:unit)
-                   .limit(10)
+
+    base_query = Ingredient.includes(:unit).ordered
+
+    @ingredients = if params[:q].present? && params[:q].strip != ''
+                     base_query.where('name ILIKE ? OR sku ILIKE ?', "%#{params[:q]}%", "%#{params[:q]}%")
+                               .limit(20)
+    else
+                     base_query.limit(20)
+    end
 
     respond_to do |format|
+      format.json do
+        render json: @ingredients.map { |ingredient|
+          {
+            id: ingredient.id,
+            name: ingredient.name,
+            code: ingredient.sku,
+            stock: ingredient.stock
+          }
+        }
+      end
       format.turbo_stream do
         render turbo_stream: turbo_stream.update('search_results', partial: 'ingredients/search_results', locals: { ingredients: @ingredients, query: params[:q] })
       end

@@ -15,7 +15,8 @@
               data: {
                 "purchase-item-type-target": "typeSelect",
                 action: "change->purchase-item-type#toggleSelects"
-              }
+              },
+              required: true
             } %>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -27,40 +28,66 @@
 
     <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="productSelect" style="<%= f.object.purchasable_type == 'Product' ? 'display: block;' : 'display: none;' %>">
       <%= f.label :purchasable_id, "Producto", class: "block text-sm/6 font-medium text-gray-900" %>
-      <div class="relative">
-        <%= f.collection_select :purchasable_id, 
-            Product.available.where(kind: ['simple', nil]).or(Product.available.where(kind: '')).ordered, 
-            :id, 
-            ->(product) { "#{product.name} (Stock: #{product.stock})" },
-            { include_blank: 'Seleccione un producto' }, 
-            { 
-              class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none",
-              data: { action: "change->purchase-item-type#productSelected" }
-            } %>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+      <div class="relative" data-controller="product-search" data-product-search-selected-value="<%= f.object.purchasable_id %>">
+        <%= f.hidden_field :purchasable_id, data: { "product-search-target": "hiddenField" } %>
+        <input type="text" 
+               placeholder="Buscar producto..." 
+               class="block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+               data-product-search-target="input"
+               data-action="input->product-search#search focus->product-search#showOptions click->product-search#showOptions keydown->product-search#handleKeydown"
+               autocomplete="off"
+               value="<%= f.object.purchasable_id ? Product.find_by(id: f.object.purchasable_id)&.name : '' %>" />
+        <button type="button" 
+                class="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+                data-action="click->product-search#toggleOptions"
+                data-product-search-target="toggleButton">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
           </svg>
+        </button>
+        
+        <div class="fixed z-50 max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg border border-gray-300 focus:outline-none sm:text-sm hidden"
+             data-product-search-target="options"
+             style="z-index: 9999; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+          <div data-product-search-target="optionsList">
+            <!-- Options will be populated by JavaScript -->
+          </div>
+          <div class="px-3 py-2 text-gray-500 text-sm hidden" data-product-search-target="noResults">
+            No se encontraron productos
+          </div>
         </div>
       </div>
     </div>
 
     <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="ingredientSelect" style="<%= f.object.purchasable_type == 'Ingredient' ? 'display: block;' : 'display: none;' %>">
       <%= f.label :purchasable_id, "Ingrediente", class: "block text-sm/6 font-medium text-gray-900" %>
-      <div class="relative">
-        <%= f.collection_select :purchasable_id, 
-            Ingredient.ordered, 
-            :id, 
-            ->(ingredient) { "#{ingredient.name} (Stock: #{ingredient.stock})" },
-            { include_blank: 'Seleccione un ingrediente' }, 
-            { 
-              class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none",
-              data: { action: "change->purchase-item-type#ingredientSelected" }
-            } %>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+      <div class="relative" data-controller="ingredient-search" data-ingredient-search-selected-value="<%= f.object.purchasable_id %>">
+        <%= f.hidden_field :purchasable_id, data: { "ingredient-search-target": "hiddenField" } %>
+        <input type="text" 
+               placeholder="Buscar ingrediente..." 
+               class="block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+               data-ingredient-search-target="input"
+               data-action="input->ingredient-search#search focus->ingredient-search#showOptions click->ingredient-search#showOptions keydown->ingredient-search#handleKeydown"
+               autocomplete="off"
+               value="<%= f.object.purchasable_id ? Ingredient.find_by(id: f.object.purchasable_id)&.name : '' %>" />
+        <button type="button" 
+                class="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+                data-action="click->ingredient-search#toggleOptions"
+                data-ingredient-search-target="toggleButton">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
           </svg>
+        </button>
+        
+        <div class="fixed z-50 max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg border border-gray-300 focus:outline-none sm:text-sm hidden"
+             data-ingredient-search-target="options"
+             style="z-index: 9999; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
+          <div data-ingredient-search-target="optionsList">
+            <!-- Options will be populated by JavaScript -->
+          </div>
+          <div class="px-3 py-2 text-gray-500 text-sm hidden" data-ingredient-search-target="noResults">
+            No se encontraron ingredientes
+          </div>
         </div>
       </div>
     </div>
@@ -93,7 +120,8 @@
           data: { 
             "purchase-calculator-target": "quantity",
             action: "input->purchase-calculator#calculateSubtotal"
-          } %>
+          },
+          required: true %>
     </div>
     
     <div class="col-span-3 sm:col-span-1">
@@ -108,7 +136,8 @@
                 "purchase-calculator-target": "unitPrice",
                 "number-format-target": "input",
                 action: "input->purchase-calculator#calculateSubtotal"
-              } %>
+              },
+              required: true %>
         </div>
       </div>
     </div>
