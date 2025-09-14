@@ -66,10 +66,11 @@
           <%= form.label :price, "Precio del Combo", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
             <%= form.number_field :price, 
-                step: "0.01",
+                step: "1",
                 min: "0",
+                value: (form.object.price.present? ? form.object.price.to_i : nil),
                 class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
-                placeholder: "0.00" %>
+                placeholder: "0" %>
           </div>
         </div>
 
@@ -237,107 +238,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
-
-  // Manejar cambios en selectores de productos
-  container.addEventListener('change', function(e) {
-    if (e.target.classList.contains('product-selector')) {
-      updateProductInfo(e.target);
-    }
-  });
-
-  // Manejar cambios en cantidad
-  container.addEventListener('input', function(e) {
-    if (e.target.type === 'number' && e.target.name && e.target.name.includes('[quantity]')) {
-      const componentDiv = e.target.closest('.combo-component-item');
-      const productSelector = componentDiv.querySelector('.product-selector');
-      if (productSelector.value) {
-        updateProductInfo(productSelector);
-      }
-    }
-  });
-
-  // Inicializar información de productos ya seleccionados
-  document.querySelectorAll('.product-selector').forEach(function(selector) {
-    if (selector.value) {
-      updateProductInfo(selector);
-    }
-  });
-
-  function updateProductInfo(selector) {
-    const selectedOption = selector.options[selector.selectedIndex];
-    const componentDiv = selector.closest('.combo-component-item');
-    const infoDiv = componentDiv.querySelector(`#${selector.dataset.productInfoTarget}`);
-    const quantityInput = componentDiv.querySelector('input[type="number"]');
-    
-    if (!selectedOption.value) {
-      // No hay producto seleccionado
-      infoDiv.querySelector('.no-product-selected').classList.remove('hidden');
-      infoDiv.querySelector('.product-details').classList.add('hidden');
-      return;
-    }
-    
-    // Obtener datos del producto
-    const productData = {
-      name: selectedOption.dataset.productName,
-      price: parseFloat(selectedOption.dataset.productPrice) || 0,
-      stock: parseFloat(selectedOption.dataset.productStock) || 0,
-      unit: selectedOption.dataset.productUnit,
-      category: selectedOption.dataset.productCategory
-    };
-    
-    const quantity = parseFloat(quantityInput.value) || 1;
-    
-    // Mostrar información del producto
-    infoDiv.querySelector('.no-product-selected').classList.add('hidden');
-    infoDiv.querySelector('.product-details').classList.remove('hidden');
-    
-    // Actualizar valores
-    infoDiv.querySelector('.product-price').textContent = formatCurrency(productData.price);
-    infoDiv.querySelector('.product-stock').textContent = `${formatNumber(productData.stock)} ${productData.unit}`;
-    infoDiv.querySelector('.product-unit').textContent = productData.unit;
-    infoDiv.querySelector('.product-category').textContent = productData.category;
-    
-    // Manejar alertas de stock
-    const stockWarning = infoDiv.querySelector('.stock-warning');
-    const noStockWarning = infoDiv.querySelector('.no-stock-warning');
-    
-    // Ocultar todas las alertas primero
-    stockWarning.classList.add('hidden');
-    noStockWarning.classList.add('hidden');
-    
-    if (productData.stock === 0) {
-      noStockWarning.classList.remove('hidden');
-    } else if (productData.stock < quantity) {
-      stockWarning.classList.remove('hidden');
-      stockWarning.querySelector('.stock-warning-text').textContent = 
-        `Stock insuficiente. Necesitas ${quantity} ${productData.unit} pero solo hay ${formatNumber(productData.stock)} ${productData.unit} disponibles.`;
-    }
-    
-    // Cambiar color del stock según disponibilidad
-    const stockElement = infoDiv.querySelector('.product-stock');
-    stockElement.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
-    
-    if (productData.stock === 0) {
-      stockElement.classList.add('text-red-600');
-    } else if (productData.stock < quantity) {
-      stockElement.classList.add('text-yellow-600');
-    } else {
-      stockElement.classList.add('text-green-600');
-    }
-  }
-  
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-PY', {
-      style: 'currency',
-      currency: 'PYG',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount).replace('PYG', '₲s.');
-  }
-  
-  function formatNumber(number) {
-    return new Intl.NumberFormat('es-PY').format(number);
-  }
 
   function generateComboSKU(name) {
     const cleanName = name.toUpperCase()

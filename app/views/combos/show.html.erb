@@ -89,7 +89,6 @@
         <div class="flex justify-between items-center px-4 py-4 sm:px-6">
           <span class="text-sm font-medium text-gray-500">Costo Estimado</span>
           <span class="text-sm text-gray-900">
-            <% byebug %>
             <% estimated_cost = @combo_items.sum { |item| (item.component_product.current_purchase_price || 0) * item.quantity } %>
             <%= number_to_currency(estimated_cost.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
           </span>

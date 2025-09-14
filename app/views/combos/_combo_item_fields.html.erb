@@ -1,7 +1,8 @@
 <% is_template = local_assigns[:is_template] || false %>
 <% item_id = item&.id %>
 
-<div class="combo-component-item bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+<div class="combo-component-item bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200" 
+     data-controller="product-info">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
     
     <!-- Campo hidden para ID si existe -->
@@ -17,7 +18,8 @@
       <% if is_template %>
         <select name="combo_items[__INDEX__][component_product_id]" 
                 class="product-selector block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                data-product-info-target="product-info-__INDEX__"
+                data-product-info-target="selector"
+                data-action="change->product-info#updateProductInfo"
                 required>
           <option value="">Selecciona un producto...</option>
           <% products.each do |product| %>
@@ -34,7 +36,8 @@
       <% else %>
         <select name="combo_items[<%= index %>][component_product_id]" 
                 class="product-selector block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                data-product-info-target="product-info-<%= index %>"
+                data-product-info-target="selector"
+                data-action="change->product-info#updateProductInfo"
                 required>
           <option value="">Selecciona un producto...</option>
           <% products.each do |product| %>
@@ -64,6 +67,8 @@
                step="0.001" 
                value="1"
                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-right"
+               data-product-info-target="quantityInput"
+               data-action="input->product-info#updateQuantity"
                required>
       <% else %>
         <input type="number" 
@@ -72,6 +77,8 @@
                step="0.001" 
                value="<%= item&.quantity || 1 %>"
                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-right"
+               data-product-info-target="quantityInput"
+               data-action="input->product-info#updateQuantity"
                required>
       <% end %>
     </div>
@@ -112,10 +119,11 @@
 
   <!-- Información adicional del producto seleccionado -->
   <div class="mt-3 p-3 bg-white rounded border border-gray-100" 
-       id="<%= is_template ? 'product-info-__INDEX__' : "product-info-#{index}" %>">
+       data-product-info-target="infoContainer">
     
     <!-- Estado inicial: sin producto seleccionado -->
-    <div class="no-product-selected flex items-center text-sm text-gray-600">
+    <div class="flex items-center text-sm text-gray-600" 
+         data-product-info-target="noProductSelected">
       <svg class="h-4 w-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
@@ -123,38 +131,40 @@
     </div>
     
     <!-- Información del producto (inicialmente oculta) -->
-    <div class="product-details hidden">
+    <div class="hidden" data-product-info-target="productDetails">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div class="text-center">
           <div class="text-gray-500 text-xs uppercase tracking-wide mb-1">Precio</div>
-          <div class="product-price font-semibold text-green-600">-</div>
+          <div class="font-semibold text-green-600" data-product-info-target="productPrice">-</div>
         </div>
         <div class="text-center">
           <div class="text-gray-500 text-xs uppercase tracking-wide mb-1">Stock</div>
-          <div class="product-stock font-semibold">-</div>
+          <div class="font-semibold" data-product-info-target="productStock">-</div>
         </div>
         <div class="text-center">
           <div class="text-gray-500 text-xs uppercase tracking-wide mb-1">Unidad</div>
-          <div class="product-unit font-medium text-gray-700">-</div>
+          <div class="font-medium text-gray-700" data-product-info-target="productUnit">-</div>
         </div>
         <div class="text-center">
           <div class="text-gray-500 text-xs uppercase tracking-wide mb-1">Categoría</div>
-          <div class="product-category font-medium text-gray-700">-</div>
+          <div class="font-medium text-gray-700" data-product-info-target="productCategory">-</div>
         </div>
       </div>
       
       <!-- Alerta de stock bajo -->
-      <div class="stock-warning hidden mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+      <div class="hidden mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-md" 
+           data-product-info-target="stockWarning">
         <div class="flex items-center text-sm text-yellow-800">
           <svg class="h-4 w-4 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
           </svg>
-          <span class="stock-warning-text">Stock insuficiente para la cantidad solicitada</span>
+          <span data-product-info-target="stockWarningText">Stock insuficiente para la cantidad solicitada</span>
         </div>
       </div>
       
       <!-- Alerta de sin stock -->
-      <div class="no-stock-warning hidden mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+      <div class="hidden mt-3 p-2 bg-red-50 border border-red-200 rounded-md" 
+           data-product-info-target="noStockWarning">
         <div class="flex items-center text-sm text-red-800">
           <svg class="h-4 w-4 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
