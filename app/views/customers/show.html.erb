@@ -77,20 +77,26 @@
   </div>
 
   <!-- Customer Information Tabs -->
-  <div class="bg-white shadow sm:rounded-lg mb-6">
+  <div class="bg-white shadow sm:rounded-lg mb-6" data-controller="customer-tabs">
     <div class="border-b border-gray-200">
       <nav class="-mb-px flex" aria-label="Tabs">
-        <button class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm" id="tab-details">
+        <button class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm" 
+                data-customer-tabs-target="tab" 
+                data-tab="details" 
+                data-action="click->customer-tabs#switchTab">
           Detalles
         </button>
-        <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm" id="tab-orders">
+        <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm" 
+                data-customer-tabs-target="tab" 
+                data-tab="orders" 
+                data-action="click->customer-tabs#switchTab">
           Historial de Órdenes
         </button>
       </nav>
     </div>
 
     <!-- Details Tab Content -->
-    <div id="details-content" class="p-6">
+    <div data-customer-tabs-target="content" data-tab="details" class="p-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Contact Information -->
         <div>
@@ -141,7 +147,7 @@
     </div>
 
     <!-- Orders Tab Content -->
-    <div id="orders-content" class="p-6 hidden">
+    <div data-customer-tabs-target="content" data-tab="orders" class="p-6 hidden">
       <% if @customer.orders.any? %>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-300">
@@ -212,36 +218,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabDetails = document.getElementById('tab-details');
-    const tabOrders = document.getElementById('tab-orders');
-    const detailsContent = document.getElementById('details-content');
-    const ordersContent = document.getElementById('orders-content');
-
-    tabDetails.addEventListener('click', function() {
-      // Update tab styles
-      tabDetails.classList.add('border-indigo-500', 'text-indigo-600');
-      tabDetails.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-      tabOrders.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-      tabOrders.classList.remove('border-indigo-500', 'text-indigo-600');
-      
-      // Show/hide content
-      detailsContent.classList.remove('hidden');
-      ordersContent.classList.add('hidden');
-    });
-
-    tabOrders.addEventListener('click', function() {
-      // Update tab styles
-      tabOrders.classList.add('border-indigo-500', 'text-indigo-600');
-      tabOrders.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-      tabDetails.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-      tabDetails.classList.remove('border-indigo-500', 'text-indigo-600');
-      
-      // Show/hide content
-      ordersContent.classList.remove('hidden');
-      detailsContent.classList.add('hidden');
-    });
-  });
-</script>
