@@ -184,8 +184,10 @@
                       <%= link_to "Editar", edit_combo_path(combo), class: "text-indigo-600 hover:text-indigo-900" %>
                       <%= link_to combo.status == 'active' ? 'Desactivar' : 'Activar', 
                           toggle_status_combo_path(combo), 
-                          method: :patch,
-                          data: { turbo_confirm: "¿Estás seguro?" },
+                          data: { 
+                            turbo_method: :patch,
+                            turbo_confirm: "¿Estás seguro?" 
+                          },
                           class: combo.status == 'active' ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900" %>
                     </div>
                   </td>
