@@ -43,6 +43,12 @@ Rails.application.routes.draw do
       get :unit
     end
   end
+
+  resources :combos do
+    member do
+      patch :toggle_status
+    end
+  end
   resources :stocks, only: [ :index ]
   resources :units, except: %i[show]
   resources :customers do

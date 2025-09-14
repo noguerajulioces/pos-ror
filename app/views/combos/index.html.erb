@@ -1,0 +1,224 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header con estadísticas -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">Gestión de Combos</h1>
+      <p class="mt-2 text-sm text-gray-700">Administra tus combos y su disponibilidad en tiempo real.</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <%= link_to "Nuevo Combo", new_combo_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Combos</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @total_combos %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Combos Activos</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @active_combos %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Combos Inactivos</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= @inactive_combos %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros de búsqueda -->
+  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
+      <div class="px-4 py-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :name_cont, "Nombre del Combo", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.search_field :name_cont, 
+                placeholder: "Buscar por nombre",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :status_eq, "Estado", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.select :status_eq,
+                [['Todos', ''], ['Activo', 'active'], ['Inactivo', 'inactive']],
+                {},
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.collection_select :category_id_eq,
+                Category.all,
+                :id,
+                :name,
+                { include_blank: "Todas las categorías" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+
+          <div>
+            <%= f.label :price_gteq, "Precio mínimo", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.number_field :price_gteq,
+                placeholder: "Precio desde",
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Limpiar", combos_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Lista de combos -->
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nombre</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Componentes</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Disponibles</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <% @combos.each.with_index(1) do |combo, index| %>
+                <tr>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                    <%= index %>
+                  </td>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                    <%= combo.name %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <strong>
+                      <%= number_to_currency(combo.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+                    </strong>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex flex-wrap gap-1">
+                      <% combo.combo_items.limit(3).each do |item| %>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <%= item.quantity %>× <%= item.component_product.name %>
+                        </span>
+                      <% end %>
+                      <% if combo.combo_items.count > 3 %>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          +<%= combo.combo_items.count - 3 %> más
+                        </span>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <% available = combo.virtual_stock %>
+                    <% availability_class = available > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100" %>
+                    <span class="<%= availability_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+                      <%= available %> disponibles
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% status_class = combo.status == 'active' ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100" %>
+                    <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+                      <%= combo.status == 'active' ? 'Activo' : 'Inactivo' %>
+                    </span>
+                  </td>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <div class="flex justify-end gap-2">
+                      <%= link_to "Ver", combo_path(combo), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Editar", edit_combo_path(combo), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to combo.status == 'active' ? 'Desactivar' : 'Activar', 
+                          toggle_status_combo_path(combo), 
+                          method: :patch,
+                          data: { turbo_confirm: "¿Estás seguro?" },
+                          class: combo.status == 'active' ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay combos -->
+  <% if @combos.empty? %>
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H3a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No hay combos</h3>
+      <p class="mt-1 text-sm text-gray-500">Comienza creando tu primer combo de productos.</p>
+      <div class="mt-6">
+        <%= link_to new_combo_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" do %>
+          <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+          </svg>
+          Crear Primer Combo
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Paginación -->
+<div class="mt-4 justify-center border-t flex">
+  <%= will_paginate @combos, renderer: TailwindPaginateRenderer %>
+</div>

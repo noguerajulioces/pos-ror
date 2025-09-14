@@ -40,7 +40,7 @@ class ComboItem < ApplicationRecord
   # Asociaciones
   belongs_to :product
   belongs_to :component_product, class_name: 'Product'
-  belongs_to :choice_group, optional: true
+  belongs_to :choice_group, class_name: 'ModifierGroup', optional: true
 
   # Scopes
   scope :required, -> { where(optional: false) }

@@ -1,0 +1,369 @@
+<%= form_with(model: combo, 
+    url: combo.persisted? ? combo_path(combo) : combos_path, 
+    method: combo.persisted? ? :patch : :post,
+    local: true, 
+    class: "mt-8") do |form| %>
+  <% if combo.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Hay errores que corregir:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% combo.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información Básica del Combo -->
+  <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+    <div class="px-4 py-6 sm:p-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Básica</h3>
+      
+      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <!-- Nombre -->
+        <div class="sm:col-span-3">
+          <%= form.label :name, "Nombre del Combo", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.text_field :name, 
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "Ej: Combo Hamburguesa Completa" %>
+          </div>
+        </div>
+        
+        <!-- SKU -->
+        <div class="sm:col-span-3">
+          <%= form.label :sku, "SKU", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <div class="flex gap-2">
+              <%= form.text_field :sku, 
+                  class: "flex-1 rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                  placeholder: "Ej: COMBO-001" %>
+              <button type="button" 
+                      id="generate-combo-sku-btn" 
+                      class="rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Autogenerar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div class="sm:col-span-2">
+          <%= form.label :price, "Precio del Combo", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.number_field :price, 
+                step: "0.01",
+                min: "0",
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 text-right",
+                placeholder: "0.00" %>
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="sm:col-span-2">
+          <%= form.label :category_id, "Categoría", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.collection_select :category_id,
+                Category.all,
+                :id,
+                :name,
+                { prompt: "Selecciona una categoría" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="sm:col-span-2">
+          <%= form.label :status, "Estado", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.select :status,
+                [['Activo', 'active'], ['Inactivo', 'inactive']],
+                { selected: combo.status.presence || 'active' },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="sm:col-span-6">
+          <%= form.label :description, "Descripción", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.text_area :description, 
+                rows: 3,
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "Describe tu combo..." %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Componentes del Combo -->
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+    <div class="px-4 py-6 sm:p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-900">Componentes del Combo</h3>
+        <button type="button" 
+                id="add-component-btn"
+                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Agregar Producto
+        </button>
+      </div>
+
+      <div id="combo-components-container">
+        <% if combo.persisted? && combo.combo_items.any? %>
+          <% combo.combo_items.each_with_index do |item, index| %>
+            <%= render 'combo_item_fields', f: form, item: item, index: index, products: @available_products %>
+          <% end %>
+        <% else %>
+          <%= render 'combo_item_fields', f: form, item: nil, index: 0, products: @available_products %>
+        <% end %>
+      </div>
+
+      <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Tip:</strong> La disponibilidad del combo se calculará automáticamente basada en el stock de los productos componentes. Agrega al menos un producto para que el combo esté disponible.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="mt-8 flex items-center justify-end gap-x-6">
+    <%= link_to "Cancelar", combos_path, class: "text-sm/6 font-semibold text-gray-900" %>
+    <%= form.submit combo.persisted? ? "Actualizar Combo" : "Crear Combo", 
+        class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+  </div>
+<% end %>
+
+<!-- Template para nuevos componentes -->
+<template id="combo-item-template">
+  <%= render 'combo_item_fields', f: nil, item: nil, index: '__INDEX__', products: @available_products, is_template: true %>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const addComponentBtn = document.getElementById('add-component-btn');
+  const generateSkuBtn = document.getElementById('generate-combo-sku-btn');
+  const container = document.getElementById('combo-components-container');
+  const template = document.getElementById('combo-item-template');
+  let componentIndex = <%= combo.persisted? ? combo.combo_items.count : 1 %>;
+
+  // Generar SKU automáticamente
+  if (generateSkuBtn) {
+    generateSkuBtn.addEventListener('click', function() {
+      const nameField = document.getElementById('product_name');
+      const skuField = document.getElementById('product_sku');
+      
+      if (!nameField.value.trim()) {
+        alert('Por favor, ingresa un nombre para el combo primero.');
+        nameField.focus();
+        return;
+      }
+      
+      const sku = generateComboSKU(nameField.value);
+      skuField.value = sku;
+      
+      // Feedback visual
+      skuField.classList.add('ring-2', 'ring-green-500');
+      setTimeout(() => {
+        skuField.classList.remove('ring-2', 'ring-green-500');
+      }, 1000);
+    });
+  }
+
+  // Agregar nuevo componente
+  if (addComponentBtn && template) {
+    addComponentBtn.addEventListener('click', function() {
+      const newComponent = template.content.cloneNode(true);
+      const html = newComponent.querySelector('div').outerHTML.replace(/__INDEX__/g, componentIndex);
+      container.insertAdjacentHTML('beforeend', html);
+      
+      // Inicializar eventos para el nuevo componente
+      const newSelector = container.querySelector(`[data-product-info-target="product-info-${componentIndex}"]`);
+      if (newSelector) {
+        newSelector.addEventListener('change', function() {
+          updateProductInfo(this);
+        });
+        
+        const quantityInput = newSelector.closest('.combo-component-item').querySelector('input[type="number"]');
+        if (quantityInput) {
+          quantityInput.addEventListener('input', function() {
+            if (newSelector.value) {
+              updateProductInfo(newSelector);
+            }
+          });
+        }
+      }
+      
+      componentIndex++;
+    });
+  }
+
+  // Eliminar componente
+  container.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-component-btn')) {
+      e.preventDefault();
+      const componentDiv = e.target.closest('.combo-component-item');
+      if (container.children.length > 1) {
+        componentDiv.remove();
+      } else {
+        alert('Debe haber al menos un componente en el combo.');
+      }
+    }
+  });
+
+  // Manejar cambios en selectores de productos
+  container.addEventListener('change', function(e) {
+    if (e.target.classList.contains('product-selector')) {
+      updateProductInfo(e.target);
+    }
+  });
+
+  // Manejar cambios en cantidad
+  container.addEventListener('input', function(e) {
+    if (e.target.type === 'number' && e.target.name && e.target.name.includes('[quantity]')) {
+      const componentDiv = e.target.closest('.combo-component-item');
+      const productSelector = componentDiv.querySelector('.product-selector');
+      if (productSelector.value) {
+        updateProductInfo(productSelector);
+      }
+    }
+  });
+
+  // Inicializar información de productos ya seleccionados
+  document.querySelectorAll('.product-selector').forEach(function(selector) {
+    if (selector.value) {
+      updateProductInfo(selector);
+    }
+  });
+
+  function updateProductInfo(selector) {
+    const selectedOption = selector.options[selector.selectedIndex];
+    const componentDiv = selector.closest('.combo-component-item');
+    const infoDiv = componentDiv.querySelector(`#${selector.dataset.productInfoTarget}`);
+    const quantityInput = componentDiv.querySelector('input[type="number"]');
+    
+    if (!selectedOption.value) {
+      // No hay producto seleccionado
+      infoDiv.querySelector('.no-product-selected').classList.remove('hidden');
+      infoDiv.querySelector('.product-details').classList.add('hidden');
+      return;
+    }
+    
+    // Obtener datos del producto
+    const productData = {
+      name: selectedOption.dataset.productName,
+      price: parseFloat(selectedOption.dataset.productPrice) || 0,
+      stock: parseFloat(selectedOption.dataset.productStock) || 0,
+      unit: selectedOption.dataset.productUnit,
+      category: selectedOption.dataset.productCategory
+    };
+    
+    const quantity = parseFloat(quantityInput.value) || 1;
+    
+    // Mostrar información del producto
+    infoDiv.querySelector('.no-product-selected').classList.add('hidden');
+    infoDiv.querySelector('.product-details').classList.remove('hidden');
+    
+    // Actualizar valores
+    infoDiv.querySelector('.product-price').textContent = formatCurrency(productData.price);
+    infoDiv.querySelector('.product-stock').textContent = `${formatNumber(productData.stock)} ${productData.unit}`;
+    infoDiv.querySelector('.product-unit').textContent = productData.unit;
+    infoDiv.querySelector('.product-category').textContent = productData.category;
+    
+    // Manejar alertas de stock
+    const stockWarning = infoDiv.querySelector('.stock-warning');
+    const noStockWarning = infoDiv.querySelector('.no-stock-warning');
+    
+    // Ocultar todas las alertas primero
+    stockWarning.classList.add('hidden');
+    noStockWarning.classList.add('hidden');
+    
+    if (productData.stock === 0) {
+      noStockWarning.classList.remove('hidden');
+    } else if (productData.stock < quantity) {
+      stockWarning.classList.remove('hidden');
+      stockWarning.querySelector('.stock-warning-text').textContent = 
+        `Stock insuficiente. Necesitas ${quantity} ${productData.unit} pero solo hay ${formatNumber(productData.stock)} ${productData.unit} disponibles.`;
+    }
+    
+    // Cambiar color del stock según disponibilidad
+    const stockElement = infoDiv.querySelector('.product-stock');
+    stockElement.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
+    
+    if (productData.stock === 0) {
+      stockElement.classList.add('text-red-600');
+    } else if (productData.stock < quantity) {
+      stockElement.classList.add('text-yellow-600');
+    } else {
+      stockElement.classList.add('text-green-600');
+    }
+  }
+  
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-PY', {
+      style: 'currency',
+      currency: 'PYG',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount).replace('PYG', '₲s.');
+  }
+  
+  function formatNumber(number) {
+    return new Intl.NumberFormat('es-PY').format(number);
+  }
+
+  function generateComboSKU(name) {
+    const cleanName = name.toUpperCase()
+                         .replace(/[ÁÀÄÂ]/g, 'A')
+                         .replace(/[ÉÈËÊ]/g, 'E')
+                         .replace(/[ÍÌÏÎ]/g, 'I')
+                         .replace(/[ÓÒÖÔ]/g, 'O')
+                         .replace(/[ÚÙÜÛ]/g, 'U')
+                         .replace(/Ñ/g, 'N')
+                         .replace(/[^A-Z0-9\s]/g, '')
+                         .replace(/\s+/g, ' ')
+                         .trim();
+    
+    const words = cleanName.split(' ').slice(0, 2);
+    let acronym = '';
+    
+    words.forEach(word => {
+      if (word.length > 0) {
+        acronym += word.length > 4 ? word.substring(0, 3) : word;
+      }
+    });
+    
+    acronym = acronym.substring(0, 6);
+    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    
+    return `COMBO-${acronym}-${randomNum}`;
+  }
+});
+</script>

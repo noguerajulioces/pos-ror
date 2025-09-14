@@ -1,0 +1,376 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900"><%= @combo.name %></h1>
+      <p class="mt-2 text-sm text-gray-700">Detalles completos del combo y su disponibilidad</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="flex space-x-3">
+        <%= link_to edit_combo_path(@combo), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Editar
+        <% end %>
+        <%= link_to combos_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información del combo en dos columnas -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Información básica -->
+    <div class="bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900">Información Básica</h3>
+      </div>
+      <div class="divide-y divide-gray-200">
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Nombre</span>
+          <span class="text-sm font-medium text-gray-900"><%= @combo.name %></span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">SKU</span>
+          <span class="text-sm text-gray-900"><%= @combo.sku %></span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Precio</span>
+          <span class="text-sm font-medium text-gray-900">
+            <strong><%= number_to_currency(@combo.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %></strong>
+          </span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Categoría</span>
+          <span class="text-sm text-gray-900"><%= @combo.category.name %></span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Estado</span>
+          <span class="text-sm text-gray-900">
+            <% status_class = @combo.status == 'active' ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100" %>
+            <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+              <%= @combo.status == 'active' ? 'Activo' : 'Inactivo' %>
+            </span>
+          </span>
+        </div>
+        <% if @combo.description.present? %>
+          <div class="px-4 py-4 sm:px-6">
+            <span class="text-sm font-medium text-gray-500 block mb-2">Descripción</span>
+            <p class="text-sm text-gray-900 bg-gray-50 p-3 rounded border"><%= @combo.description %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Disponibilidad y estadísticas -->
+    <div class="bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900">Disponibilidad y Estadísticas</h3>
+      </div>
+      <div class="divide-y divide-gray-200">
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Disponibles Ahora</span>
+          <span class="text-sm font-medium text-gray-900">
+            <% availability_class = @available_quantity > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100" %>
+            <span class="<%= availability_class %> inline-flex rounded-full px-3 py-1 text-sm font-semibold">
+              <%= @available_quantity %> combos
+            </span>
+          </span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Componentes</span>
+          <span class="text-sm text-gray-900"><%= @combo_items.count %> productos</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Costo Estimado</span>
+          <span class="text-sm text-gray-900">
+            <% byebug %>
+            <% estimated_cost = @combo_items.sum { |item| (item.component_product.current_purchase_price || 0) * item.quantity } %>
+            <%= number_to_currency(estimated_cost.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+          </span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Margen Estimado</span>
+          <span class="text-sm text-gray-900">
+            <% estimated_cost = @combo_items.sum { |item| (item.component_product.current_purchase_price || 0) * item.quantity } %>
+            <% margin = @combo.price - estimated_cost %>
+            <% margin_class = margin > 0 ? "text-green-600" : "text-red-600" %>
+            <span class="<%= margin_class %> font-medium">
+              <%= number_to_currency(margin.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+            </span>
+          </span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+          <span class="text-sm font-medium text-gray-500">Fecha de Creación</span>
+          <span class="text-sm text-gray-900"><%= l(@combo.created_at, format: :short) %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas de ventas -->
+  <div class="mt-8 bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+    <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+      <h3 class="text-sm font-semibold text-gray-900">Estadísticas de Ventas</h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        
+        <!-- Total vendido -->
+        <div class="bg-blue-50 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Vendido</dt>
+                  <dd class="text-lg font-medium text-gray-900"><%= @sales_stats[:total_sold] %> combos</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingresos totales -->
+        <div class="bg-green-50 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Ingresos Totales</dt>
+                  <dd class="text-lg font-medium text-gray-900">
+                    <%= number_to_currency(@sales_stats[:revenue].to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ventas este mes -->
+        <div class="bg-purple-50 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 012 0v4h4V3a1 1 0 012 0v4h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2h1z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Este Mes</dt>
+                  <dd class="text-lg font-medium text-gray-900"><%= @sales_stats[:sales_this_month] %> combos</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Última venta -->
+        <div class="bg-yellow-50 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Última Venta</dt>
+                  <dd class="text-sm font-medium text-gray-900">
+                    <% if @sales_stats[:last_sale] %>
+                      <%= time_ago_in_words(@sales_stats[:last_sale]) %> atrás
+                    <% else %>
+                      Nunca vendido
+                    <% end %>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- Información adicional de rendimiento -->
+      <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-900 mb-2">Rendimiento del Mes</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Ingresos del mes:</span>
+              <span class="font-medium text-gray-900">
+                <%= number_to_currency(@sales_stats[:revenue_this_month].to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Promedio por combo:</span>
+              <span class="font-medium text-gray-900">
+                <% avg_price = @sales_stats[:sales_this_month] > 0 ? @sales_stats[:revenue_this_month] / @sales_stats[:sales_this_month] : 0 %>
+                <%= number_to_currency(avg_price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="text-sm font-medium text-gray-900 mb-2">Análisis de Rentabilidad</h4>
+          <div class="space-y-2">
+            <% estimated_cost = @combo_items.sum { |item| (item.component_product.current_purchase_price || 0) * item.quantity } %>
+            <% margin_per_combo = @combo.price - estimated_cost %>
+            <% total_margin = margin_per_combo * @sales_stats[:total_sold] %>
+            
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Margen por combo:</span>
+              <span class="font-medium <%= margin_per_combo > 0 ? 'text-green-600' : 'text-red-600' %>">
+                <%= number_to_currency(margin_per_combo.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Ganancia total estimada:</span>
+              <span class="font-medium <%= total_margin > 0 ? 'text-green-600' : 'text-red-600' %>">
+                <%= number_to_currency(total_margin.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Componentes del combo -->
+  <div class="mt-8 bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+    <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+      <h3 class="text-sm font-semibold text-gray-900">Componentes del Combo</h3>
+    </div>
+    <div class="overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-300">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Producto</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Disponible</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Combos Posibles</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio Unitario</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Costo Total</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 bg-white">
+          <% @combo_items.each do |item| %>
+            <tr>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                <%= item.component_product.name %>
+                <% if item.optional? %>
+                  <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Opcional
+                  </span>
+                <% end %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <% stock = item.component_product.virtual_stock %>
+                <% stock_class = stock > item.quantity ? "text-green-600" : stock > 0 ? "text-yellow-600" : "text-red-600" %>
+                <span class="<%= stock_class %> font-medium">
+                  <%= stock %> <%= item.component_product.unit&.abbreviation %>
+                </span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <% possible = (item.component_product.virtual_stock / item.quantity).floor %>
+                <% possible_class = possible > 0 ? "text-green-600" : "text-red-600" %>
+                <span class="<%= possible_class %> font-medium">
+                  <%= possible %>
+                </span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <%= number_to_currency((item.component_product.current_purchase_price || 0).to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <strong>
+                  <%= number_to_currency(((item.component_product.current_purchase_price || 0) * item.quantity).to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+                </strong>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <%= item.component_product.kind&.humanize || 'Simple' %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Alerta si no hay disponibilidad -->
+  <% if @available_quantity == 0 %>
+    <div class="mt-6 rounded-md bg-yellow-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Combo sin disponibilidad</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>Este combo no está disponible actualmente debido a falta de stock en uno o más de sus componentes. Revisa el stock de los productos componentes para restaurar la disponibilidad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información adicional si hay componentes críticos -->
+  <% critical_components = @combo_items.select { |item| item.component_product.virtual_stock < item.quantity } %>
+  <% if critical_components.any? %>
+    <div class="mt-6 rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Componentes con stock insuficiente</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% critical_components.each do |item| %>
+                <li>
+                  <strong><%= item.component_product.name %></strong>: 
+                  Necesitas <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>, 
+                  pero solo tienes <%= item.component_product.virtual_stock %> <%= item.component_product.unit&.abbreviation %> disponibles.
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

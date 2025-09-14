@@ -67,7 +67,7 @@ class Product < ApplicationRecord
 
   # Asociaciones existentes
   belongs_to :category
-  belongs_to :unit
+  belongs_to :unit, optional: true
   belongs_to :tax_rate, optional: true
   has_many :sale_items
   has_many :inventory_movements, dependent: :destroy
@@ -232,6 +232,7 @@ class Product < ApplicationRecord
   end
 
   def update_stock_status
+    return if kind == 'combo' || stock.nil?
     self.status = stock <= 0 ? 'out_of_stock' : 'active'
   end
 
@@ -299,10 +300,6 @@ class Product < ApplicationRecord
 
   def generate_barcode
     self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
-  end
-
-  def update_stock_status
-    self.status = stock <= 0 ? 'out_of_stock' : 'active'
   end
 
   def recipe_must_have_components
