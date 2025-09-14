@@ -1,6 +1,8 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[show edit update destroy]
 
+  def hub; end
+
   def index
     @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)

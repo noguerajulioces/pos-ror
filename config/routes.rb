@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
     collection do
       get :search
+      get :hub
     end
     member do
       get :unit
