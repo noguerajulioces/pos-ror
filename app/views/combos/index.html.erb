@@ -74,7 +74,7 @@
   </div>
 
   <!-- Filtros de búsqueda -->
-  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%= search_form_for @q, url: combos_path, method: :get, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
