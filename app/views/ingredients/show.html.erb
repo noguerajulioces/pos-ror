@@ -5,66 +5,95 @@
       <h1 class="text-base font-semibold leading-6 text-gray-900"><%= @ingredient.name %></h1>
       <p class="mt-2 text-sm text-gray-700">Detalles del ingrediente</p>
     </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none space-x-3">
-      <%= link_to "Editar", edit_ingredient_path(@ingredient), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-      <%= link_to "Volver", ingredients_path, class: "block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="flex space-x-3">
+        <%= link_to edit_ingredient_path(@ingredient), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Editar
+        <% end %>
+        <%= link_to ingredients_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver
+        <% end %>
+      </div>
     </div>
   </div>
 
   <!-- Información del ingrediente -->
   <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
     <div class="px-4 py-6 sm:p-8">
-      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+      <!-- Información del ingrediente en dos columnas -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <!-- Información básica -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Nombre:</span>
+        <div class="bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+          <!-- Header -->
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-900">Información Básica</h3>
+          </div>
+          <!-- Content -->
+          <div class="divide-y divide-gray-200">
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Nombre</span>
               <span class="text-sm font-medium text-gray-900"><%= @ingredient.name %></span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">SKU:</span>
-              <span class="text-sm font-medium text-gray-900"><%= @ingredient.sku %></span>
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">SKU</span>
+              <span class="text-sm text-gray-900"><%= @ingredient.sku %></span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Unidad:</span>
-              <span class="text-sm font-medium text-gray-900"><%= @ingredient.unit.name %></span>
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Unidad</span>
+              <span class="text-sm text-gray-900"><%= @ingredient.unit.name %></span>
             </div>
           </div>
         </div>
 
         <!-- Stock y costos -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Stock y Costos</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Stock actual:</span>
-              <span class="text-sm font-medium text-gray-900"><%= number_with_delimiter(@ingredient.stock, delimiter: '.') %></span>
+        <div class="bg-white shadow ring-1 ring-black/5 sm:rounded-lg">
+          <!-- Header -->
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-900">Stock y Costos</h3>
+          </div>
+          <!-- Content -->
+          <div class="divide-y divide-gray-200">
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Stock Actual</span>
+              <span class="text-sm font-medium text-gray-900">
+                <%= number_with_delimiter(@ingredient.stock, delimiter: '.') %> <%= @ingredient.unit.abbreviation %>
+              </span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Stock mínimo:</span>
-              <span class="text-sm font-medium text-gray-900"><%= number_with_delimiter(@ingredient.min_stock, delimiter: '.') %></span>
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Stock Mínimo</span>
+              <span class="text-sm text-gray-900">
+                <%= number_with_delimiter(@ingredient.min_stock, delimiter: '.') %> <%= @ingredient.unit.abbreviation %>
+              </span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Costo promedio:</span>
-              <span class="text-sm font-medium text-gray-900"><%= number_to_currency(@ingredient.average_cost, delimiter: '.', precision: 0, unit: '₲s. ') %></span>
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Costo Promedio</span>
+              <span class="text-sm text-gray-900">
+                <strong><%= number_to_currency(@ingredient.average_cost.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %></strong>
+              </span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-500">Estado:</span>
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                <%= case @ingredient.stock_status
-                    when 'in_stock' then 'bg-green-100 text-green-800'
-                    when 'low_stock' then 'bg-yellow-100 text-yellow-800'
-                    when 'out_of_stock' then 'bg-red-100 text-red-800'
-                    else 'bg-gray-100 text-gray-800'
-                    end %>">
-                <%= case @ingredient.stock_status
-                    when 'in_stock' then 'En Stock'
-                    when 'low_stock' then 'Stock Bajo'
-                    when 'out_of_stock' then 'Sin Stock'
-                    else 'Desconocido'
-                    end %>
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
+              <span class="text-sm font-medium text-gray-500">Estado</span>
+              <span class="text-sm text-gray-900">
+                <% status_class = case @ingredient.stock_status
+                   when 'in_stock' then "text-green-600 bg-green-100"
+                   when 'low_stock' then "text-yellow-600 bg-yellow-100"
+                   when 'out_of_stock' then "text-red-600 bg-red-100"
+                   else "text-gray-600 bg-gray-100"
+                   end %>
+                <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
+                  <%= case @ingredient.stock_status
+                      when 'in_stock' then 'En Stock'
+                      when 'low_stock' then 'Stock Bajo'
+                      when 'out_of_stock' then 'Sin Stock'
+                      else 'Desconocido'
+                      end %>
+                </span>
               </span>
             </div>
           </div>
@@ -75,27 +104,35 @@
       <div class="mt-8">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Productos que usan este ingrediente</h3>
         <% if @ingredient.products.any? %>
-          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-300">
               <thead class="bg-gray-50">
                 <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad en receta</th>
+                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Producto</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad en Receta</th>
+                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <span class="sr-only">Acciones</span>
+                  </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="divide-y divide-gray-200 bg-white">
                 <% @ingredient.products.each do |product| %>
                   <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <%= link_to product.name, product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <%= product.name %>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <%= product.kind&.humanize || 'N/A' %>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <%= product.kind&.humanize || 'N/A' %>
+                      </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       <% component = product.recipe_components.find_by(ingredient: @ingredient) %>
                       <%= component ? "#{component.quantity} #{component.unit.name}" : 'N/A' %>
+                    </td>
+                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                      <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
                     </td>
                   </tr>
                 <% end %>

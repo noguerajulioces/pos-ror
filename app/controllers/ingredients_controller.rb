@@ -1,6 +1,21 @@
 class IngredientsController < ApplicationController
   before_action :set_ingredient, only: %i[show edit update destroy]
 
+  def check_name_uniqueness
+    name = params[:name]&.strip
+    current_id = params[:current_id]
+
+    if name.blank?
+      render json: { exists: false }
+      return
+    end
+
+    query = Ingredient.where('LOWER(name) = ?', name.downcase)
+    query = query.where.not(id: current_id) if current_id.present?
+
+    render json: { exists: query.exists? }
+  end
+
   def index
     @q = Ingredient.ransack(params[:q])
     @ingredients = @q.result(distinct: true).includes(:unit).paginate(page: params[:page], per_page: 10)

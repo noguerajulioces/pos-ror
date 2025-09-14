@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :ingredients do
     collection do
       get :search
+      post :check_name_uniqueness
     end
     member do
       get :unit
