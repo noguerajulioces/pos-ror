@@ -94,12 +94,12 @@
           </div>
 
           <div>
-            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :category_id_eq, "Subcategoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
             <%= f.collection_select :category_id_eq,
-                Category.all,
+                Category.where.not(parent_id: nil).includes(:parent),
                 :id,
-                :name,
-                { include_blank: "Todas las categorías" },
+                ->(subcategory) { "#{subcategory.parent.name} > #{subcategory.name}" },
+                { include_blank: "Todas las subcategorías" },
                 class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
           </div>
 
