@@ -6,6 +6,8 @@ export default class extends Controller {
 
   connect() {
     this.inputTarget.addEventListener('input', this.formatNumber.bind(this))
+    // Limpiar formato antes de enviar el formulario
+    this.element.closest('form').addEventListener('submit', this.cleanForSubmit.bind(this))
   }
 
   formatNumber(e) {
@@ -36,5 +38,11 @@ export default class extends Controller {
       const newCursorPosition = Math.min(cursorPosition + dotsAdded, formattedValue.length)
       e.target.setSelectionRange(newCursorPosition, newCursorPosition)
     }
+  }
+
+  cleanForSubmit(e) {
+    // Eliminar los puntos del formato antes de enviar
+    const rawValue = this.inputTarget.value.replace(/\./g, '')
+    this.inputTarget.value = rawValue
   }
 }
