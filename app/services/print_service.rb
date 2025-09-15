@@ -122,16 +122,16 @@ class PrintService
       windows_temp = temp_file.gsub('/mnt/c/', 'C:\\').gsub('/', '\\')
 
       if device_type == 'WINDOWS_PRINTER_FTX'
-        # Métodos para impresora configurada en Windows
+        # Métodos para impresora configurada en Windows (Generic / Text Only)
         methods = [
-          # Método 1: PowerShell Get-Content (buscar nombre exacto)
-          "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name (Get-Printer | Where-Object {$_.Name -like '*FTX*' -or $_.Name -like '*TDR*'} | Select-Object -First 1).Name\"",
-          # Método 2: CMD copy a PRN
+          # Método 1: PowerShell directo (el que funciona!)
+          "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name 'Generic / Text Only'\"",
+          # Método 2: PowerShell Get-Content
+          "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name 'Generic / Text Only'\"",
+          # Método 3: CMD copy a PRN
           "cmd.exe /c \"copy #{windows_temp} PRN\"",
-          # Método 3: PowerShell directo
-          "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {$_.Name -like '*FTX*'} | Select-Object -First 1).Name\"",
-          # Método 4: Usar lpr si está disponible
-          "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-File -FilePath 'PRN' -Encoding ASCII\""
+          # Método 4: Buscar automáticamente la impresora
+          "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {$_.Name -like '*Generic*' -or $_.Name -like '*Text*'} | Select-Object -First 1).Name\""
         ]
       else
         # Métodos para dispositivo USB directo
@@ -195,15 +195,15 @@ class PrintService
       # Método 1: Buscar en impresoras instaladas de Windows
       printers_output = `powershell.exe -Command "Get-Printer | Select-Object Name" 2>/dev/null`.strip
       
-      if printers_output.include?('FTX') || printers_output.include?('TDR')
-        Rails.logger.info "🖨️ FTX encontrada en impresoras de Windows"
-        return ['WINDOWS_PRINTER_FTX']  # Marcador especial para usar Windows
+      if printers_output.include?('FTX') || printers_output.include?('TDR') || printers_output.include?('Generic / Text Only')
+        Rails.logger.info '🖨️ Impresora térmica encontrada en Windows (Generic / Text Only)'
+        return [ 'WINDOWS_PRINTER_FTX' ]  # Marcador especial para usar Windows
       end
-      
+
       # Método 2: Buscar por USB si no está en Windows
       lsusb_output = `lsusb 2>/dev/null`.strip
       ftx_line = lsusb_output.lines.find { |line| line.include?('2aaf:6001') || line.include?('FTX') }
-      
+
       if ftx_line
         # Extraer Bus y Device del formato: "Bus 001 Device 002: ID 2aaf:6001 FTX TDRO58U"
         if ftx_line.match(/Bus (\d+) Device (\d+)/)
@@ -211,13 +211,13 @@ class PrintService
           device = $2.rjust(3, '0')
           usb_path = "/dev/bus/usb/#{bus}/#{device}"
           Rails.logger.info "🔍 FTX detectada por USB: #{usb_path}"
-          return [usb_path]
+          return [ usb_path ]
         end
       end
-      
+
       Rails.logger.warn '⚠️ FTX TDRO58U no detectada'
       []
-      
+
     rescue => e
       Rails.logger.error "❌ Error detectando FTX: #{e.message}"
       []
