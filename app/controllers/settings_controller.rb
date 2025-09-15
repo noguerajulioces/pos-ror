@@ -48,8 +48,8 @@ class SettingsController < ApplicationController
         ================================
       TEXT
 
-      # Usar el PrintService para probar
-      success = PrintService.send(:print_to_thermal_printer, test_content, 'test')
+      # Usar el PrintServiceNew para probar
+      success = PrintServiceNew.send(:print_to_thermal_printer, test_content, 'test')
 
       if success
         redirect_to printer_settings_path, notice: '✅ Prueba de impresión enviada correctamente.'
