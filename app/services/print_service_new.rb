@@ -100,6 +100,32 @@ class PrintServiceNew
     end
   end
 
+  def self.print_test
+    # Crear contenido de prueba usando configuraciones actuales
+    line_width = Setting.get('printer_line_width_chars').to_i
+
+    test_content = <<~TEXT
+      #{"=" * line_width}
+      #{"PRUEBA DE IMPRESION".center(line_width)}
+      #{"=" * line_width}
+
+      Fecha: #{Time.current.strftime('%d/%m/%Y %H:%M')}
+
+      Configuración actual:
+      - Ancho: #{line_width} caracteres
+      - Impresora: #{Setting.get('printer_windows_name')}
+      - Líneas antes corte: #{Setting.get('printer_lines_before_cut')}
+
+      ¡Si ves este mensaje, la
+      configuración funciona correctamente!
+
+      #{"=" * line_width}
+    TEXT
+
+    # Imprimir usando el método principal
+    print_to_thermal_printer(test_content, 'test')
+  end
+
   def self.save_backup(text, order_id = nil)
     # Guardar como respaldo
     timestamp = Time.current.strftime('%Y%m%d_%H%M%S')
