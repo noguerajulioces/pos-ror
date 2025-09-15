@@ -246,10 +246,10 @@ gem 'solid_cable'
         foreach ($gem in $CriticalGems) {
             $gemCheck = & bundle exec gem list $gem
             if ($gemCheck -match $gem) {
-                Write-Info "✓ Gem '$gem' instalado"
+                Write-Info "[OK] Gem '$gem' instalado"
             }
             else {
-                Write-Warning "✗ Gem '$gem' no encontrado"
+                Write-Warning "[ERROR] Gem '$gem' no encontrado"
             }
         }
     }
@@ -279,10 +279,10 @@ $RequiredPaths = @(
 $AllGood = $true
 foreach ($item in $RequiredPaths) {
     if (Test-Path $item.Path) {
-        Write-Info "✓ $($item.Name): $($item.Path)"
+        Write-Info "[OK] $($item.Name): $($item.Path)"
     }
     else {
-        Write-Error "✗ $($item.Name) no encontrado: $($item.Path)"
+        Write-Error "[ERROR] $($item.Name) no encontrado: $($item.Path)"
         $AllGood = $false
     }
 }
@@ -291,10 +291,10 @@ if (!$SkipGems) {
     $VendorBundlePath = Join-Path $RailsDir "vendor\bundle"
     if (Test-Path $VendorBundlePath) {
         $GemCount = (Get-ChildItem $VendorBundlePath -Recurse -Filter "*.gem" -ErrorAction SilentlyContinue).Count
-        Write-Info "✓ Vendor bundle: $GemCount gems empaquetados"
+        Write-Info "[OK] Vendor bundle: $GemCount gems empaquetados"
     }
     else {
-        Write-Warning "✗ Vendor bundle no encontrado"
+        Write-Warning "[ERROR] Vendor bundle no encontrado"
         $AllGood = $false
     }
 }
@@ -311,10 +311,10 @@ foreach ($dir in $Directories) {
 }
 
 if ($AllGood) {
-    Write-Info "=== ✓ Preparación de recursos completada exitosamente ==="
+    Write-Info "=== [SUCCESS] Preparacion de recursos completada exitosamente ==="
     Write-Info "Los recursos están listos para el empaquetado con Tauri"
 }
 else {
-    Write-Error "=== ✗ Errores durante la preparación ==="
+    Write-Error "=== [ERROR] Errores durante la preparacion ==="
     exit 1
 }

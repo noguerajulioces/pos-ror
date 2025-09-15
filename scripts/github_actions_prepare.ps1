@@ -9,17 +9,17 @@ $ErrorActionPreference = "Stop"
 Write-Host "=== Preparando recursos para Windows (GitHub Actions) ===" -ForegroundColor Cyan
 
 # Ejecutar script principal de preparación
-Write-Host "Ejecutando script principal de preparación..." -ForegroundColor Green
+Write-Host "Ejecutando script principal de preparacion..." -ForegroundColor Green
 & "$PSScriptRoot\prepare_windows_resources.ps1" -Verbose
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error en la preparación de recursos" -ForegroundColor Red
+    Write-Host "Error en la preparacion de recursos" -ForegroundColor Red
     exit 1
 }
 
 Write-Host "Verificando recursos preparados..." -ForegroundColor Yellow
 
-# Verificar archivos críticos
+# Verificar archivos criticos
 $RequiredPaths = @(
     "rails\ruby\bin\ruby.exe",
     "rails\bin\start-rails.bat", 
@@ -29,19 +29,19 @@ $RequiredPaths = @(
 $AllGood = $true
 foreach ($path in $RequiredPaths) {
     if (Test-Path $path) {
-        Write-Host "✓ $path" -ForegroundColor Green
+        Write-Host "[OK] $path" -ForegroundColor Green
     } else {
-        Write-Host "✗ $path - NO ENCONTRADO" -ForegroundColor Red
+        Write-Host "[ERROR] $path - NO ENCONTRADO" -ForegroundColor Red
         $AllGood = $false
     }
 }
 
 if (!$AllGood) {
-    Write-Host "Faltan recursos críticos" -ForegroundColor Red
+    Write-Host "Faltan recursos criticos" -ForegroundColor Red
     exit 1
 }
 
-# Mostrar tamaños (versión simplificada)
+# Mostrar tamanos (version simplificada)
 try {
     $RubySize = [math]::Round(((Get-ChildItem rails\ruby -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1MB), 1)
     $VendorSize = [math]::Round(((Get-ChildItem rails\vendor -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1MB), 1)
@@ -50,7 +50,7 @@ try {
     Write-Host "Vendor bundle: $VendorSize MB" -ForegroundColor Cyan
 }
 catch {
-    Write-Host "No se pudo calcular tamaños (no crítico)" -ForegroundColor Yellow
+    Write-Host "No se pudo calcular tamanos (no critico)" -ForegroundColor Yellow
 }
 
-Write-Host "✅ Preparación completada exitosamente" -ForegroundColor Green
+Write-Host "[SUCCESS] Preparacion completada exitosamente" -ForegroundColor Green

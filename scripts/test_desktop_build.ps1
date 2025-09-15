@@ -77,13 +77,13 @@ foreach ($tool in $RequiredTools) {
     try {
         if ($tool.Args.Count -gt 0) {
             $output = & $tool.Command $tool.Args 2>$null
-            Write-Info "✓ $($tool.Name): $($output -split "`n" | Select-Object -First 1)"
+            Write-Info "[OK] $($tool.Name): $($output -split "`n" | Select-Object -First 1)"
         } else {
             & $tool.Command >$null 2>&1
-            Write-Info "✓ $($tool.Name): Disponible"
+            Write-Info "[OK] $($tool.Name): Disponible"
         }
     } catch {
-        Write-Warning "✗ $($tool.Name): No encontrado"
+        Write-Warning "[ERROR] $($tool.Name): No encontrado"
         $MissingTools += $tool.Name
     }
 }
@@ -136,9 +136,9 @@ $RequiredResources = @(
 
 foreach ($resource in $RequiredResources) {
     if (Test-Path $resource.Path) {
-        Write-Info "✓ $($resource.Name)"
+        Write-Info "[OK] $($resource.Name)"
     } else {
-        Write-Error "✗ $($resource.Name) no encontrado: $($resource.Path)"
+        Write-Error "[ERROR] $($resource.Name) no encontrado: $($resource.Path)"
         exit 1
     }
 }
@@ -158,9 +158,9 @@ if (!$SkipTest) {
         $output = & bundle exec rails runner "puts 'Rails OK: ' + Rails.version" 2>&1
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Info "✓ $output"
+            Write-Info "[OK] $output"
         } else {
-            Write-Warning "✗ Rails test falló: $output"
+            Write-Warning "[ERROR] Rails test falló: $output"
         }
         
         # Test de base de datos
@@ -168,9 +168,9 @@ if (!$SkipTest) {
         $dbOutput = & bundle exec rails runner "puts 'DB OK: ' + ActiveRecord::Base.connection.adapter_name" 2>&1
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Info "✓ $dbOutput"
+            Write-Info "[OK] $dbOutput"
         } else {
-            Write-Warning "✗ Database test falló: $dbOutput"
+            Write-Warning "[ERROR] Database test falló: $dbOutput"
         }
         
     } catch {
@@ -203,7 +203,7 @@ if (!$SkipBuild) {
     $BuildTime = $BuildEnd - $BuildStart
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Info "✓ Build completado en $([math]::Round($BuildTime.TotalMinutes, 1)) minutos"
+        Write-Info "[OK] Build completado en $([math]::Round($BuildTime.TotalMinutes, 1)) minutos"
         
         # Verificar MSI generado
         $MsiFiles = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" -ErrorAction SilentlyContinue
@@ -224,12 +224,12 @@ if (!$SkipBuild) {
             Write-Info "4. Buscar 'POS-RoR Desktop' en el menú inicio"
             
         } else {
-            Write-Error "✗ No se encontraron archivos MSI después del build"
+            Write-Error "[ERROR] No se encontraron archivos MSI después del build"
             exit 1
         }
         
     } else {
-        Write-Error "✗ Build falló"
+        Write-Error "[ERROR] Build falló"
         exit 1
     }
     
@@ -239,8 +239,8 @@ if (!$SkipBuild) {
 
 # Resumen final
 Write-Step "Resumen del Test"
-Write-Info "✅ Todas las verificaciones pasaron exitosamente"
-Write-Info "✅ La aplicación está lista para distribución"
+Write-Info "[SUCCESS] Todas las verificaciones pasaron exitosamente"
+Write-Info "[SUCCESS] La aplicación está lista para distribución"
 
 if (!$SkipBuild) {
     $MsiPath = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" | Select-Object -First 1
