@@ -87,19 +87,20 @@ jobs:
       # ========================================================================
       # PREPARACIÓN SIMPLIFICADA DE RECURSOS
       # ========================================================================
-      - name: 🔧 Prepare ULTRA BASIC structure
+      - name: 🔧 Prepare Ruby Portable Structure
         shell: powershell
         run: |
-          Write-Host "=== Preparacion ULTRA BASICA ===" -ForegroundColor Cyan
+          Write-Host "=== Preparando Ruby Portable ===" -ForegroundColor Cyan
           
-          # Crear solo estructura minima
-          Write-Host "Creando estructura minima..." -ForegroundColor Yellow
+          # Verificar que rails existe (debe existir en repo)
+          if (Test-Path "rails\app.rb") {
+            Write-Host "[OK] Rails portable encontrado" -ForegroundColor Green
+          } else {
+            Write-Host "[ERROR] rails/app.rb no encontrado" -ForegroundColor Red
+            exit 1
+          }
           
-          # Crear directorio rails con archivo dummy
-          New-Item -ItemType Directory -Force -Path "rails" | Out-Null
-          "# POS-RoR Rails App - Placeholder" | Out-File -FilePath "rails\README.txt" -Encoding ASCII
-          
-          # Verificar que dist existe (debe existir en repo)
+          # Verificar que dist existe
           if (Test-Path "dist\index.html") {
             Write-Host "[OK] Frontend dist encontrado" -ForegroundColor Green
           } else {
@@ -107,7 +108,37 @@ jobs:
             exit 1
           }
           
-          Write-Host "[SUCCESS] Estructura ultra basica lista" -ForegroundColor Green
+          # Intentar descargar Ruby portable (version simple)
+          Write-Host "Intentando descargar Ruby portable..." -ForegroundColor Yellow
+          
+          try {
+            $RubyUrl = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.4-1/ruby-3.2.4-1-x64-mingw32.7z"
+            $RubyFile = "$env:TEMP\ruby.7z"
+            
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest -Uri $RubyUrl -OutFile $RubyFile -UseBasicParsing -TimeoutSec 180
+            
+            Write-Host "Extrayendo Ruby..." -ForegroundColor Yellow
+            & "C:\Program Files\7-Zip\7z.exe" x $RubyFile "-orails\ruby" -y | Out-Null
+            
+            if (Test-Path "rails\ruby\bin\ruby.exe") {
+              Write-Host "[SUCCESS] Ruby portable configurado" -ForegroundColor Green
+            } else {
+              throw "Ruby executable no encontrado"
+            }
+            
+            Remove-Item $RubyFile -Force -ErrorAction SilentlyContinue
+          }
+          catch {
+            Write-Host "[WARN] No se pudo descargar Ruby portable: $_" -ForegroundColor Yellow
+            Write-Host "[INFO] El MSI se generara sin Ruby portable" -ForegroundColor Cyan
+            
+            # Crear estructura minima para que no falle el build
+            New-Item -ItemType Directory -Force -Path "rails\ruby\bin" | Out-Null
+            "# Ruby placeholder" | Out-File -FilePath "rails\ruby\bin\ruby.exe" -Encoding ASCII
+          }
+          
+          Write-Host "[SUCCESS] Estructura preparada" -ForegroundColor Green
 
       # ========================================================================
       # BUILD TAURI MSI

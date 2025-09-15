@@ -12,6 +12,7 @@
     "prepare:windows:verbose": "powershell -ExecutionPolicy Bypass -File scripts/prepare_windows_resources.ps1 -Verbose",
     "prepare:minimal": "powershell -ExecutionPolicy Bypass -File scripts/prepare_minimal.ps1",
     "prepare:ultra": "powershell -ExecutionPolicy Bypass -File scripts/prepare_ultra_basic.ps1",
+    "test:ruby": "powershell -ExecutionPolicy Bypass -File scripts/test_ruby_portable.ps1",
     "test:rails": "cd rails && bundle exec rails test",
     "clean": "rimraf src-tauri/target rails/vendor/bundle rails/ruby rails/sqlite",
     "clean:cache": "rimraf node_modules/.cache ~/.cargo/registry/cache",

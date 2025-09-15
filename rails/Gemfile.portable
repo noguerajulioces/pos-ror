@@ -1,0 +1,15 @@
+# Gemfile para POS-RoR Desktop Portable
+# Version minima solo con dependencias basicas
+
+source 'https://rubygems.org'
+
+# Ruby version compatible con portable
+ruby '>= 3.0.0'
+
+# Servidor web basico (WEBrick esta incluido en Ruby standard library)
+# No necesitamos gems adicionales para la version basica
+
+# Para futuras versiones completas:
+# gem 'rails', '~> 8.0.1'
+# gem 'sqlite3', '~> 1.4'
+# gem 'puma', '>= 5.0'
