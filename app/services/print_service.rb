@@ -72,13 +72,13 @@ class PrintServiceNew
       lines_before_cut = Setting.get('printer_lines_before_cut').to_i
       cut_command = Setting.get('printer_cut_command').gsub('\\x', '\x')
       printer_name = Setting.get('printer_windows_name')
-      
+
       # Agregar comandos de corte ESC/POS configurables
       line_feeds = "\n" * lines_before_cut
       text_with_cut = text + line_feeds + cut_command
-      
+
       Rails.logger.info "🔧 Configuración: #{lines_before_cut} líneas antes del corte, impresora: #{printer_name}"
-      
+
       # Métodos configurables basados en la configuración
       methods = [
         "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name '#{printer_name}'\"",

@@ -246,53 +246,53 @@ ActsAsTenant.with_tenant(account) do
   puts "📋 Ingredientes: #{Ingredient.count}"
   puts "🧀 Modificadores: #{Modifier.count}"
   puts "💰 Impuestos: #{TaxRate.count}"
-  
+
   # ===========================
   # CONFIGURACIÓN DE IMPRESORA
   # ===========================
-  
+
   puts "🖨️ Configurando impresora térmica..."
-  
+
   # Configuraciones de impresora térmica
   printer_settings = {
     # Dimensiones físicas
     'printer_paper_width_mm' => '58',           # Ancho del papel en mm
     'printer_print_width_mm' => '48',           # Ancho de impresión en mm
     'printer_line_width_chars' => '48',         # Caracteres por línea
-    
+
     # Configuraciones de papel
     'printer_paper_thickness_min' => '0.05',   # Grosor mínimo papel (mm)
     'printer_paper_thickness_max' => '0.08',   # Grosor máximo papel (mm)
     'printer_roll_diameter_max' => '60',       # Diámetro máximo rollo (mm)
-    
+
     # Comandos ESC/POS
     'printer_cut_command' => '\x1D\x56\x00',   # Comando corte completo
     'printer_partial_cut_command' => '\x1D\x56\x01', # Comando corte parcial
     'printer_reset_command' => '\x1B\x40',     # Comando reset
     'printer_line_feed' => '\x0A',             # Salto de línea
-    
+
     # Configuraciones de formato
     'printer_lines_before_cut' => '3',         # Líneas antes del corte
     'printer_char_encoding' => 'UTF-8',        # Codificación de caracteres
-    
+
     # Configuración de impresora Windows
     'printer_windows_name' => 'Generic / Text Only', # Nombre en Windows
-    'printer_fallback_method' => 'powershell',       # Método preferido
+    'printer_fallback_method' => 'powershell'       # Método preferido
   }
-  
+
   printer_settings.each do |key, value|
     setting = Setting.find_or_create_by(var: key) do |s|
       s.value = value
       s.account = Account.first
     end
-    
+
     # Actualizar valor si ya existe
     if setting.persisted? && setting.value != value
       setting.update!(value: value)
     end
-    
+
     puts "  ✓ #{key}: #{value}"
   end
-  
+
   puts "🖨️ Configuraciones de impresora: #{printer_settings.count}"
 end
