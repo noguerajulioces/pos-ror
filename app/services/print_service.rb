@@ -53,9 +53,22 @@ class PrintService
       if thermal_devices.any?
         thermal_devices.each do |device|
           begin
-            File.open(device, 'w') { |f| f.write printer.to_escpos }
-            Rails.logger.info "✅ Impresión enviada a #{device}"
-            return true
+            # Si es el dispositivo USB directo de FTX, usar método especial
+            if device == '/dev/bus/usb/001/002'
+              success = print_to_ftx_device(printer.to_escpos)
+              if success
+                Rails.logger.info "✅ Impresión enviada a FTX TDRO58U via método especial"
+                return true
+              else
+                Rails.logger.warn "❌ Error enviando a FTX TDRO58U via método especial"
+                next
+              end
+            else
+              # Método normal para otros dispositivos
+              File.open(device, 'w') { |f| f.write printer.to_escpos }
+              Rails.logger.info "✅ Impresión enviada a #{device}"
+              return true
+            end
           rescue => e
             Rails.logger.warn "❌ Error en dispositivo #{device}: #{e.message}"
             next
@@ -88,6 +101,41 @@ class PrintService
 
     # Arreglar encoding para impresoras térmicas
     fix_encoding_for_thermal(clean_text)
+  end
+
+  def self.print_to_ftx_device(escpos_data)
+    # Método especializado para FTX TDRO58U
+    begin
+      # Crear archivo temporal
+      temp_file = Tempfile.new('ftx_escpos')
+      temp_file.binmode
+      temp_file.write(escpos_data)
+      temp_file.close
+      
+      # Intentar diferentes métodos de envío
+      methods = [
+        "cat #{temp_file.path} > /dev/bus/usb/001/002 2>/dev/null",
+        "dd if=#{temp_file.path} of=/dev/bus/usb/001/002 2>/dev/null",
+        "sudo cat #{temp_file.path} > /dev/bus/usb/001/002 2>/dev/null"
+      ]
+      
+      methods.each_with_index do |method, index|
+        Rails.logger.info "🔄 FTX método #{index + 1}: #{method.split(' >').first}"
+        result = system(method)
+        if result
+          Rails.logger.info "✅ FTX método #{index + 1} exitoso"
+          temp_file.unlink
+          return true
+        end
+      end
+      
+      temp_file.unlink
+      return false
+      
+    rescue => e
+      Rails.logger.error "❌ Error en método FTX: #{e.message}"
+      return false
+    end
   end
 
   def self.fix_encoding_for_thermal(text)
