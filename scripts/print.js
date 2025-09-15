@@ -2,24 +2,53 @@
 
 const fs = require('fs');
 
-// Parche para el error usb.on is not a function
+// Parche robusto para el error usb.on is not a function
 let escpos, escposUSB;
 try {
-  // Parchear el módulo USB antes de cargarlo
-  const usb = require('usb');
-  if (!usb.on && usb.usb && usb.usb.on) {
-    // Redirigir usb.on a usb.usb.on si es necesario
-    usb.on = usb.usb.on.bind(usb.usb);
-  }
+  // Parche más agresivo para el módulo USB
+  const Module = require('module');
+  const originalRequire = Module.prototype.require;
+  
+  Module.prototype.require = function(id) {
+    const module = originalRequire.apply(this, arguments);
+    
+    // Parchear específicamente el módulo usb
+    if (id === 'usb' && module && !module.on) {
+      console.log("🔧 Aplicando parche para usb.on...");
+      
+      // Crear funciones stub para evitar errores
+      module.on = function(event, callback) {
+        console.log(`ℹ️ usb.on('${event}') llamado - usando stub`);
+        // No hacer nada, solo evitar el error
+      };
+      
+      module.removeListener = function(event, callback) {
+        console.log(`ℹ️ usb.removeListener('${event}') llamado - usando stub`);
+        // No hacer nada, solo evitar el error
+      };
+    }
+    
+    return module;
+  };
   
   escpos = require('escpos');
   escpos.USB = require('escpos-usb');
+  
+  // Restaurar require original
+  Module.prototype.require = originalRequire;
+  
   escposUSB = true;
-  console.log("✅ Módulos escpos cargados correctamente");
+  console.log("✅ Módulos escpos cargados correctamente con parche");
 } catch (error) {
   console.log(`ℹ️ Error cargando escpos: ${error.message}`);
   console.log("🔄 Usando método alternativo...");
   escposUSB = false;
+  
+  // Restaurar require original en caso de error
+  const Module = require('module');
+  if (Module.prototype.require !== originalRequire) {
+    Module.prototype.require = originalRequire;
+  }
 }
 
 // La ruta del archivo HTML se pasa como argumento
