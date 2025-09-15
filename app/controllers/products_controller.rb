@@ -83,7 +83,7 @@ class ProductsController < ApplicationController
             id: product.id,
             name: product.name,
             code: product.sku,
-            stock: product.stock
+            stock: product.virtual_stock
           }
         }
       end

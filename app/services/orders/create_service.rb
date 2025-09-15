@@ -24,8 +24,7 @@ module Orders
 
         # Reduce stock if the order is completed
         if order.status == Order::STATUSES[:completed]
-          create_inventory_movements(order)
-          stock_service.reduce_stock(order)
+          StockManager.update_stock_from_order(order)
         end
 
         clear_session_data
@@ -37,17 +36,6 @@ module Orders
 
     private
 
-    def create_inventory_movements(order)
-      order.order_items.each do |item|
-        InventoryMovement.create!(
-          product: item.product,
-          movement_type: 'sale',
-          quantity: -item.quantity,
-          reason: "Venta ##{order.id}",
-          skip_stock_update: true
-        )
-      end
-    end
 
     def create_order
       order = Order.new(order_attributes)

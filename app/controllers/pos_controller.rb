@@ -31,7 +31,8 @@ class PosController < ApplicationController
     products = subcategory.products.order(:name)
 
     products_with_images = products.available.map do |product|
-      product_json = product.as_json(only: [ :id, :name, :price, :stock ])
+      product_json = product.as_json(only: [ :id, :name, :price ])
+      product_json['stock'] = product.virtual_stock
 
       first_image = product.product_images.first
       if first_image&.image&.attached?
@@ -113,7 +114,7 @@ class PosController < ApplicationController
           id: product.id,
           name: product.name,
           price: product.price,
-          stock: product.stock || 0,
+          stock: product.virtual_stock,
           description: product.description,
           image_url: product.images.first.present? ? url_for(product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
         }

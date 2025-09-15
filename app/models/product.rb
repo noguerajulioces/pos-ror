@@ -230,6 +230,28 @@ class Product < ApplicationRecord
     end
   end
 
+  def deduct_stock(quantity)
+    case kind
+    when 'simple'
+      # Para productos simples, deducir del stock físico
+      return false if (stock || 0) < quantity
+      self.stock = (stock || 0) - quantity
+      save
+    when 'recipe'
+      # Para recetas, deducir ingredientes
+      deduct_ingredients!(units: quantity)
+    when 'combo'
+      # Para combos, el StockManager ya maneja la deducción de componentes
+      # No necesitamos hacer deducción adicional aquí
+      true
+    else
+      # Para productos sin tipo definido, tratarlos como simples
+      return false if (stock || 0) < quantity
+      self.stock = (stock || 0) - quantity
+      save
+    end
+  end
+
   def generate_barcode
     self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
   end
