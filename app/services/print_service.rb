@@ -68,11 +68,14 @@ class PrintServiceNew
     begin
       Rails.logger.info "🖨️ Iniciando impresión térmica..."
 
-      # Los métodos que funcionaron en tu prueba
+      # Agregar comandos de corte ESC/POS al final del texto
+      text_with_cut = text + "\n\n\n" + "\x1D\x56\x00"  # Comando de corte completo
+      
+      # Los métodos que funcionaron en tu prueba (ahora con corte)
       methods = [
-        "powershell.exe -Command \"'#{text.gsub("'", "''")}' | Out-Printer -Name 'Generic / Text Only'\"",
-        "cmd.exe /c \"echo #{text.gsub('"', '\"')} > PRN\"",
-        "powershell.exe -Command \"'#{text.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {\\$_.Name -like '*Generic*'} | Select-Object -First 1).Name\""
+        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name 'Generic / Text Only'\"",
+        "cmd.exe /c \"echo #{text_with_cut.gsub('"', '\"')} > PRN\"",
+        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {\\$_.Name -like '*Generic*'} | Select-Object -First 1).Name\""
       ]
 
       methods.each_with_index do |method, index|
