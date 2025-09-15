@@ -182,7 +182,7 @@ class PosController < ApplicationController
 
     if result[:success]
 
-      PrintService.print_order(result[:order_id])
+      PrintServiceNew.print_order(result[:order_id])
 
       session[:cart] = []
       session[:discount] = 0
