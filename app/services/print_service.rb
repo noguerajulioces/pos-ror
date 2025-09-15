@@ -57,10 +57,10 @@ class PrintService
             if device == '/dev/bus/usb/001/002'
               success = print_to_ftx_device(printer.to_escpos)
               if success
-                Rails.logger.info "✅ Impresión enviada a FTX TDRO58U via método especial"
+                Rails.logger.info '✅ Impresión enviada a FTX TDRO58U via método especial'
                 return true
               else
-                Rails.logger.warn "❌ Error enviando a FTX TDRO58U via método especial"
+                Rails.logger.warn '❌ Error enviando a FTX TDRO58U via método especial'
                 next
               end
             else
@@ -104,37 +104,49 @@ class PrintService
   end
 
   def self.print_to_ftx_device(escpos_data)
-    # Método especializado para FTX TDRO58U
+    # Método especializado para FTX TDRO58U via Windows
     begin
-      # Crear archivo temporal
-      temp_file = Tempfile.new('ftx_escpos')
-      temp_file.binmode
-      temp_file.write(escpos_data)
-      temp_file.close
+      # Crear archivo temporal en ubicación accesible desde Windows
+      temp_file = "/mnt/c/temp/ftx_print_#{Time.now.to_i}.txt"
       
-      # Intentar diferentes métodos de envío
+      # Convertir datos ESC/POS a texto plano para Windows
+      clean_text = escpos_data.gsub(/\e[@\[\]0-9;]*[a-zA-Z]/, '') # Remover códigos ESC/POS
+                              .gsub(/[\x00-\x1F\x7F-\xFF]/, '') # Remover caracteres de control
+                              .strip
+      
+      File.write(temp_file, clean_text)
+      Rails.logger.info "📄 Archivo temporal: #{temp_file}"
+      
+      # Intentar diferentes métodos de impresión via Windows
+      windows_temp = temp_file.gsub('/mnt/c/', 'C:\\').gsub('/', '\\')
+      
       methods = [
-        "cat #{temp_file.path} > /dev/bus/usb/001/002 2>/dev/null",
-        "dd if=#{temp_file.path} of=/dev/bus/usb/001/002 2>/dev/null",
-        "sudo cat #{temp_file.path} > /dev/bus/usb/001/002 2>/dev/null"
+        # Método 1: PowerShell Get-Content
+        "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name 'FTX TDRO58U'\"",
+        # Método 2: CMD type
+        "cmd.exe /c \"type #{windows_temp} > PRN\"",
+        # Método 3: PowerShell directo
+        "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name 'FTX TDRO58U'\"",
+        # Método 4: Notepad print
+        "powershell.exe -Command \"Start-Process notepad -ArgumentList '#{windows_temp}' -Verb Print -WindowStyle Hidden\""
       ]
       
       methods.each_with_index do |method, index|
-        Rails.logger.info "🔄 FTX método #{index + 1}: #{method.split(' >').first}"
+        Rails.logger.info "🔄 FTX Windows método #{index + 1}"
         result = system(method)
         if result
-          Rails.logger.info "✅ FTX método #{index + 1} exitoso"
-          temp_file.unlink
+          Rails.logger.info "✅ FTX Windows método #{index + 1} exitoso"
+          File.delete(temp_file) if File.exist?(temp_file)
           return true
         end
       end
       
-      temp_file.unlink
-      return false
+      File.delete(temp_file) if File.exist?(temp_file)
+      false
       
     rescue => e
-      Rails.logger.error "❌ Error en método FTX: #{e.message}"
-      return false
+      Rails.logger.error "❌ Error en método FTX Windows: #{e.message}"
+      false
     end
   end
 
