@@ -7,15 +7,11 @@
 name: 🚀 Build Windows MSI
 
 on:
-  push:
-    branches: ["main", "feature/desktop"]
-    tags: ["v*"]
-  pull_request:
-    branches: ["main"]
+  # Temporalmente deshabilitado - usar windows-msi-simple.yml
   workflow_dispatch:
     inputs:
-      skip_tests:
-        description: 'Omitir tests'
+      force_run:
+        description: 'Forzar ejecucion del workflow complejo'
         required: false
         default: false
         type: boolean

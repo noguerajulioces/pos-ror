@@ -10,6 +10,7 @@
     "tauri:build:debug": "tauri build --debug",
     "prepare:windows": "powershell -ExecutionPolicy Bypass -File scripts/prepare_windows_resources.ps1",
     "prepare:windows:verbose": "powershell -ExecutionPolicy Bypass -File scripts/prepare_windows_resources.ps1 -Verbose",
+    "prepare:minimal": "powershell -ExecutionPolicy Bypass -File scripts/prepare_minimal.ps1",
     "test:rails": "cd rails && bundle exec rails test",
     "clean": "rimraf src-tauri/target rails/vendor/bundle rails/ruby rails/sqlite",
     "clean:cache": "rimraf node_modules/.cache ~/.cargo/registry/cache",
