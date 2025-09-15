@@ -1,4 +1,52 @@
 <div class="px-4 sm:px-6 lg:px-8">
+
+  <!-- Alerta si no hay disponibilidad -->
+  <% if @available_quantity == 0 %>
+    <div class="mb-6 rounded-md bg-yellow-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Combo sin disponibilidad</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>Este combo no está disponible actualmente debido a falta de stock en uno o más de sus componentes. Revisa el stock de los productos componentes para restaurar la disponibilidad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información adicional si hay componentes críticos -->
+  <% critical_components = @combo_items.select { |item| (item.component_product.virtual_stock || 0) < item.quantity } %>
+  <% if critical_components.any? %>
+    <div class="mt-6 mb-6 rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Componentes con stock insuficiente</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% critical_components.each do |item| %>
+                <li>
+                  <strong><%= item.component_product.name %></strong>: 
+                  Necesitas <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>, 
+                  pero solo tienes <%= item.component_product.virtual_stock || 0 %> <%= item.component_product.unit&.abbreviation %> disponibles.
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Header -->
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
@@ -293,14 +341,14 @@
                 <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <% stock = item.component_product.virtual_stock %>
+                <% stock = item.component_product.virtual_stock || 0 %>
                 <% stock_class = stock > item.quantity ? "text-green-600" : stock > 0 ? "text-yellow-600" : "text-red-600" %>
                 <span class="<%= stock_class %> font-medium">
                   <%= stock %> <%= item.component_product.unit&.abbreviation %>
                 </span>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <% possible = (item.component_product.virtual_stock / item.quantity).floor %>
+                <% possible = ((item.component_product.virtual_stock || 0) / item.quantity).floor %>
                 <% possible_class = possible > 0 ? "text-green-600" : "text-red-600" %>
                 <span class="<%= possible_class %> font-medium">
                   <%= possible %>
@@ -325,51 +373,4 @@
       </table>
     </div>
   </div>
-
-  <!-- Alerta si no hay disponibilidad -->
-  <% if @available_quantity == 0 %>
-    <div class="mt-6 rounded-md bg-yellow-50 p-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-yellow-800">Combo sin disponibilidad</h3>
-          <div class="mt-2 text-sm text-yellow-700">
-            <p>Este combo no está disponible actualmente debido a falta de stock en uno o más de sus componentes. Revisa el stock de los productos componentes para restaurar la disponibilidad.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
-
-  <!-- Información adicional si hay componentes críticos -->
-  <% critical_components = @combo_items.select { |item| item.component_product.virtual_stock < item.quantity } %>
-  <% if critical_components.any? %>
-    <div class="mt-6 rounded-md bg-red-50 p-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800">Componentes con stock insuficiente</h3>
-          <div class="mt-2 text-sm text-red-700">
-            <ul class="list-disc pl-5 space-y-1">
-              <% critical_components.each do |item| %>
-                <li>
-                  <strong><%= item.component_product.name %></strong>: 
-                  Necesitas <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>, 
-                  pero solo tienes <%= item.component_product.virtual_stock %> <%= item.component_product.unit&.abbreviation %> disponibles.
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
 </div>

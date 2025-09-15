@@ -197,7 +197,8 @@ class Product < ApplicationRecord
     when 'combo'
       # Stock virtual basado en componentes disponibles
       combo_items.map do |item|
-        item.component_product.virtual_stock / item.quantity
+        component_stock = item.component_product.virtual_stock || 0
+        component_stock / item.quantity
       end.min || 0
     else
       0

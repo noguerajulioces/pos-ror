@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
   def hub; end
 
   def index
-    @q = Product.ransack(params[:q])
+    @q = Product.where(kind: 'simple').ransack(params[:q])
     @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
   end
 
