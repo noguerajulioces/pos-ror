@@ -110,8 +110,9 @@ class PrintService
       temp_file = "/mnt/c/temp/ftx_print_#{Time.now.to_i}.txt"
       
       # Convertir datos ESC/POS a texto plano para Windows
-      clean_text = escpos_data.gsub(/\e[@\[\]0-9;]*[a-zA-Z]/, '') # Remover códigos ESC/POS
-                              .gsub(/[\x00-\x1F\x7F-\xFF]/, '') # Remover caracteres de control
+      clean_text = escpos_data.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+                              .gsub(/\e[@\[\]0-9;]*[a-zA-Z]/, '') # Remover códigos ESC/POS
+                              .gsub(/[[:cntrl:]]/, '') # Remover caracteres de control
                               .strip
       
       File.write(temp_file, clean_text)
