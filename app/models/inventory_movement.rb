@@ -58,6 +58,10 @@ class InventoryMovement < ApplicationRecord
   def update_product_stock
     return if skip_stock_update
 
+    # No actualizar stock físico para productos recipe o combo
+    # Estos tipos no manejan stock físico
+    return if product.kind.in?([ 'recipe', 'combo' ])
+
     current_stock = product.stock || 0
     new_stock = current_stock + quantity
 

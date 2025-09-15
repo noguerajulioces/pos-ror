@@ -53,9 +53,12 @@ class StockManager
         # Para productos simples, crear movimiento de inventario (actualiza el stock automáticamente)
         create_inventory_movement(item, -item.quantity, 'sale')
       when 'recipe'
-        # Para recetas, crear movimiento histórico y deducir ingredientes
-        create_inventory_movement(item, -item.quantity, 'sale')
+        # Para recetas, NO crear movimiento propio, solo deducir ingredientes
+        # Las recetas no manejan stock físico (siempre = 0), solo ingredientes
         deduct_recipe_ingredients(product, item.quantity)
+        # Actualizar status de la receta basado en disponibilidad de ingredientes
+        product.update_stock_status
+        product.save if product.changed?
       when 'combo'
         # Para combos, NO crear movimiento propio, solo deducir componentes
         # El combo no tiene stock físico, solo sus componentes
