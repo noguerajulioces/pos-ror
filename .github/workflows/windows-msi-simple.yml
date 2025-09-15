@@ -87,70 +87,27 @@ jobs:
       # ========================================================================
       # PREPARACIÓN SIMPLIFICADA DE RECURSOS
       # ========================================================================
-      - name: 🔧 Prepare Windows resources (Simplified)
+      - name: 🔧 Prepare ULTRA BASIC structure
         shell: powershell
         run: |
-          Write-Host "=== Preparacion simplificada de recursos ===" -ForegroundColor Cyan
+          Write-Host "=== Preparacion ULTRA BASICA ===" -ForegroundColor Cyan
           
-          # Crear directorios necesarios
-          $Dirs = @("rails\ruby", "rails\sqlite", "rails\vendor")
-          foreach ($dir in $Dirs) {
-            if (!(Test-Path $dir)) {
-              New-Item -ItemType Directory -Force -Path $dir | Out-Null
-              Write-Host "Creado: $dir" -ForegroundColor Green
-            }
-          }
+          # Crear solo estructura minima
+          Write-Host "Creando estructura minima..." -ForegroundColor Yellow
           
-          # Descargar Ruby portable con metodo simple
-          Write-Host "Descargando Ruby portable..." -ForegroundColor Yellow
-          $RubyUrl = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.4-1/ruby-3.2.4-1-x64-mingw32.7z"
-          $RubyFile = "$env:TEMP\ruby.7z"
+          # Crear directorio rails con archivo dummy
+          New-Item -ItemType Directory -Force -Path "rails" | Out-Null
+          "# POS-RoR Rails App - Placeholder" | Out-File -FilePath "rails\README.txt" -Encoding ASCII
           
-          try {
-            # Usar metodo mas simple y confiable
-            $ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri $RubyUrl -OutFile $RubyFile -UseBasicParsing -TimeoutSec 300
-            
-            Write-Host "Extrayendo Ruby..." -ForegroundColor Yellow
-            & "C:\Program Files\7-Zip\7z.exe" x $RubyFile "-orails\ruby" -y
-            
-            if (Test-Path "rails\ruby\bin\ruby.exe") {
-              Write-Host "[OK] Ruby portable configurado" -ForegroundColor Green
-            } else {
-              throw "Ruby executable no encontrado"
-            }
-          }
-          catch {
-            Write-Host "[ERROR] No se pudo configurar Ruby: $_" -ForegroundColor Red
-            
-            # Crear estructura minima para que Tauri no falle
-            New-Item -ItemType Directory -Force -Path "rails\ruby\bin" | Out-Null
-            New-Item -ItemType File -Force -Path "rails\ruby\bin\ruby.exe" | Out-Null
-            New-Item -ItemType Directory -Force -Path "rails\vendor\bundle" | Out-Null
-            
-            Write-Host "[WARN] Creada estructura minima - MSI no sera funcional" -ForegroundColor Yellow
-          }
-          finally {
-            if (Test-Path $RubyFile) {
-              Remove-Item $RubyFile -Force -ErrorAction SilentlyContinue
-            }
+          # Verificar que dist existe (debe existir en repo)
+          if (Test-Path "dist\index.html") {
+            Write-Host "[OK] Frontend dist encontrado" -ForegroundColor Green
+          } else {
+            Write-Host "[ERROR] dist/index.html no encontrado" -ForegroundColor Red
+            exit 1
           }
           
-          # SQLite (opcional)
-          try {
-            Write-Host "Descargando SQLite..." -ForegroundColor Yellow
-            $SqliteUrl = "https://www.sqlite.org/2024/sqlite-dll-win-x64-3460000.zip"
-            $SqliteFile = "$env:TEMP\sqlite.zip"
-            
-            $ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri $SqliteUrl -OutFile $SqliteFile -UseBasicParsing -TimeoutSec 120
-            Expand-Archive $SqliteFile -DestinationPath "rails\sqlite" -Force
-            
-            Write-Host "[OK] SQLite configurado" -ForegroundColor Green
-          }
-          catch {
-            Write-Host "[WARN] SQLite no descargado: $_" -ForegroundColor Yellow
-          }
+          Write-Host "[SUCCESS] Estructura ultra basica lista" -ForegroundColor Green
 
       # ========================================================================
       # BUILD TAURI MSI

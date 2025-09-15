@@ -1,42 +1,24 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "productName": "POS-RoR Desktop",
   "version": "1.0.0",
   "identifier": "com.pos-ror.desktop",
   "build": {
-    "beforeBuildCommand": "",
-    "beforeDevCommand": "",
-    "frontendDist": "../rails/public",
-    "devUrl": "http://localhost:4317"
+    "frontendDist": "../dist"
   },
   "bundle": {
     "active": true,
     "targets": ["msi"],
-    "category": "Business",
-    "copyright": "Copyright © 2025 POS-RoR Desktop",
-    "shortDescription": "Sistema POS para escritorio",
-    "longDescription": "Sistema de Punto de Venta desarrollado en Ruby on Rails para escritorio",
     "resources": [
-      "rails/**/*"
-    ],
-    "windows": {
-      "wix": {
-        "language": ["en-US"]
-      }
-    }
+      "rails/*"
+    ]
   },
   "app": {
     "windows": [
       {
         "title": "POS-RoR Desktop",
         "width": 1200,
-        "height": 800,
-        "resizable": true,
-        "url": "http://localhost:4317"
+        "height": 800
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   }
 }

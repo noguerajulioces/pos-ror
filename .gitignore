@@ -21,6 +21,9 @@
 /rails/db/*.sqlite3
 /rails/db/*.sqlite3-*
 
+# Frontend dist - DO commit for basic distribution
+# /dist/
+
 # Tauri build artifacts
 /src-tauri/target/
 /src-tauri/Cargo.lock
