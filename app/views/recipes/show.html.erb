@@ -1,0 +1,199 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900"><%= @product.name %></h1>
+      <p class="mt-2 text-sm text-gray-700">Detalles de la receta</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="flex space-x-3">
+        <%= link_to edit_recipe_path(@product), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Editar
+        <% end %>
+        <%= link_to recipes_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Imagen de la receta -->
+  <% if @product.images.any? { |pi| pi.image.attached? } %>
+    <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-4 sm:px-6">
+        <span class="text-sm font-medium text-gray-500 block mb-3">Imagen</span>
+        <div class="flex justify-center">
+          <%= image_tag @product.images.first.image.variant(resize_to_fill: [200, 200]),
+                alt: @product.name,
+                class: "w-48 h-48 object-cover rounded-lg shadow-md" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información de la receta -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Información Básica -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-6 sm:px-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+        <div class="divide-y divide-gray-200">
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">SKU</span>
+            <span class="text-sm text-gray-900"><%= @product.sku %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Categoría</span>
+            <span class="text-sm text-gray-900"><%= @product.category&.name %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Unidad</span>
+            <span class="text-sm text-gray-900"><%= @product.unit&.name %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Estado</span>
+            <span class="<%= @product.status == 'active' ? 'text-green-600' : 'text-red-600' %> text-sm font-medium">
+              <%= @product.status == 'active' ? 'Activo' : 'Inactivo' %>
+            </span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Stock Virtual</span>
+            <span class="text-sm font-semibold text-green-600">
+              <%= @product.virtual_stock %> <%= @product.unit&.abbreviation %>
+            </span>
+          </div>
+          <% if @product.description.present? %>
+            <div class="py-3">
+              <span class="text-sm font-medium text-gray-500 block mb-2">Descripción</span>
+              <p class="text-sm text-gray-900"><%= @product.description %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Precio -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-6 sm:px-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Precio</h3>
+        <div class="divide-y divide-gray-200">
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Precio de Venta</span>
+            <span class="text-sm font-semibold text-gray-900">
+              <%= number_to_currency(@product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+            </span>
+          </div>
+          <% if @product.prep_time_seconds.present? %>
+            <div class="py-3 flex justify-between">
+              <span class="text-sm font-medium text-gray-500">Tiempo de Preparación</span>
+              <span class="text-sm text-gray-900">
+                <%= pluralize(@product.prep_time_seconds / 60, 'minuto') %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ingredientes de la receta -->
+  <% if @product.recipe_components.any? %>
+    <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-6 sm:px-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Ingredientes de la Receta</h3>
+        
+        <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Ingrediente</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Desperdicio</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Disponible</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Recetas Posibles</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <% @product.recipe_components.includes(:ingredient).each do |component| %>
+                <tr>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                    <%= component.ingredient.name %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <%= component.quantity %> <%= component.ingredient.unit&.abbreviation %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <%= component.waste_percentage %>%
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% stock = component.ingredient.stock || 0 %>
+                    <% stock_class = stock > component.total_quantity_with_waste ? "text-green-600" : stock > 0 ? "text-yellow-600" : "text-red-600" %>
+                    <span class="<%= stock_class %> font-medium">
+                      <%= stock %> <%= component.ingredient.unit&.abbreviation %>
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% possible = (stock / component.total_quantity_with_waste).floor %>
+                    <% possible_class = possible > 0 ? "text-green-600" : "text-red-600" %>
+                    <span class="<%= possible_class %> font-medium">
+                      <%= possible %>
+                    </span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Alerta de ingredientes críticos -->
+        <% critical_components = @product.recipe_components.select { |component| (component.ingredient.stock || 0) < component.total_quantity_with_waste } %>
+        <% if critical_components.any? %>
+          <div class="mt-6 rounded-md bg-yellow-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Ingredientes con stock insuficiente</h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                  <p>Los siguientes ingredientes no tienen stock suficiente para preparar esta receta:</p>
+                  <ul class="list-disc pl-5 space-y-1 mt-1">
+                    <% critical_components.each do |component| %>
+                      <li><strong><%= component.ingredient.name %></strong> - Necesario: <%= component.total_quantity_with_waste %>, Disponible: <%= component.ingredient.stock || 0 %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="mt-8 text-center">
+      <div class="rounded-md bg-blue-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              Esta receta aún no tiene ingredientes definidos. 
+              <%= link_to "Edita la receta", edit_recipe_path(@product), class: "font-medium underline" %> para agregar ingredientes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

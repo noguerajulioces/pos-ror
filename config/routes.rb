@@ -29,6 +29,16 @@ Rails.application.routes.draw do
   # Ruta específica para el modal picker de ingredientes
   get 'ingredients/modal_picker/:product_id', to: 'ingredients#modal_picker', as: :ingredients_modal_picker
 
+  # Productos simples - DEBE IR ANTES que la ruta general de products
+  resources :simple_products, path: 'products/simple', as: :simple_products do
+    resources :images, only: [ :destroy ], controller: 'product_images'
+  end
+
+  # Recetas - DEBE IR ANTES que la ruta general de products
+  resources :recipes, path: 'products/recipes' do
+    resources :images, only: [ :destroy ], controller: 'product_images'
+  end
+
   resources :products do
     resources :product_images, only: [ :destroy ]
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'

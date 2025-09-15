@@ -1,0 +1,181 @@
+<%= form_with(model: product, 
+    url: product.persisted? ? simple_product_path(product) : simple_products_path, 
+    method: product.persisted? ? :patch : :post,
+    local: true, 
+    class: "mt-8") do |form| %>
+  <% if product.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Hay errores que corregir:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% product.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información Básica -->
+  <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+    <div class="px-4 py-6 sm:p-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Básica</h3>
+      
+      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <!-- Nombre -->
+        <div class="sm:col-span-3">
+          <%= form.label :name, "Nombre del Producto", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.text_field :name, 
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "Ej: Coca Cola" %>
+          </div>
+        </div>
+        
+        <!-- SKU -->
+        <div class="sm:col-span-3">
+          <%= form.label :sku, "SKU", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.text_field :sku, 
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "Ej: PROD-001" %>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div class="sm:col-span-2">
+          <%= form.label :price, "Precio de Venta", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.number_field :price, 
+                step: "0.01",
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "0.00" %>
+          </div>
+        </div>
+
+        <!-- Stock -->
+        <div class="sm:col-span-2">
+          <%= form.label :stock, "Stock Actual", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.number_field :stock, 
+                step: "0.001",
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "0" %>
+          </div>
+        </div>
+
+        <!-- Stock Mínimo -->
+        <div class="sm:col-span-2">
+          <%= form.label :min_stock, "Stock Mínimo", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.number_field :min_stock, 
+                step: "0.001",
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "0" %>
+          </div>
+        </div>
+
+        <!-- Subcategoría -->
+        <div class="sm:col-span-3">
+          <%= form.label :category_id, "Subcategoría", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.collection_select :category_id,
+                Category.where.not(parent_id: nil).includes(:parent),
+                :id,
+                ->(subcategory) { "#{subcategory.parent.name} > #{subcategory.name}" },
+                { prompt: "Selecciona una subcategoría" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+
+        <!-- Unidad -->
+        <div class="sm:col-span-3">
+          <%= form.label :unit_id, "Unidad de Medida", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.collection_select :unit_id,
+                Unit.all,
+                :id,
+                :name,
+                { prompt: "Selecciona una unidad" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="sm:col-span-6">
+          <%= form.label :description, "Descripción", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.text_area :description, 
+                rows: 3,
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                placeholder: "Describe tu producto..." %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Imagen del Producto -->
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+    <div class="px-4 py-6 sm:p-8">
+      <h3 class="text-lg font-semibold text-gray-900 mb-6">Imagen del Producto</h3>
+      
+      <div data-controller="image-preview">
+        <label for="product_image" class="block text-sm font-medium text-gray-900 mb-4">
+          Imagen
+        </label>
+        <div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+          <div class="text-center">
+            <% unless product.images.any? { |pi| pi.image.attached? } %>
+              <svg data-image-preview-target="svg" class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+              </svg>
+            <% end %>
+
+            <div class="mt-4 flex text-sm text-gray-600">
+              <label for="product_image"
+                    class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                <span>Subir Imagen</span>
+                <%= form.file_field :image,
+                    accept: "image/png,image/jpeg",
+                    direct_upload: true,
+                    id: "product_image",
+                    data: {
+                      action: "change->image-preview#previewImage",
+                      image_preview_target: "input"
+                    },
+                    class: "sr-only" %>
+              </label>
+              <p class="pl-1">o arrastra aquí</p>
+            </div>
+            <p class="text-xs text-gray-500">PNG, JPG hasta 10MB</p>
+
+            <div data-image-preview-target="preview" class="mt-4 w-full max-w-lg">
+              <% if product.images.any? { |pi| pi.image.attached? } %>
+                <%= image_tag product.images.first.image.variant(resize_to_fill: [300, 300]),
+                      alt: "Vista previa",
+                      class: "w-[300px] h-[300px] object-cover rounded-md mx-auto" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="mt-8 flex items-center justify-end gap-x-6">
+    <%= link_to "Cancelar", products_path, class: "text-sm/6 font-semibold text-gray-900" %>
+    <%= form.submit product.persisted? ? "Actualizar Producto" : "Crear Producto", 
+        class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+  </div>
+<% end %>

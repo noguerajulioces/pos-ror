@@ -1,0 +1,110 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900"><%= @product.name %></h1>
+      <p class="mt-2 text-sm text-gray-700">Detalles del producto simple</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="flex space-x-3">
+        <%= link_to edit_simple_product_path(@product), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Editar
+        <% end %>
+        <%= link_to simple_products_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 inline-flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Imagen del producto -->
+  <% if @product.images.any? { |pi| pi.image.attached? } %>
+    <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-4 sm:px-6">
+        <span class="text-sm font-medium text-gray-500 block mb-3">Imagen</span>
+        <div class="flex justify-center">
+          <%= image_tag @product.images.first.image.variant(resize_to_fill: [200, 200]),
+                alt: @product.name,
+                class: "w-48 h-48 object-cover rounded-lg shadow-md" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Información del producto -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Información Básica -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-6 sm:px-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+        <div class="divide-y divide-gray-200">
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">SKU</span>
+            <span class="text-sm text-gray-900"><%= @product.sku %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Categoría</span>
+            <span class="text-sm text-gray-900"><%= @product.category&.name %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Unidad</span>
+            <span class="text-sm text-gray-900"><%= @product.unit&.name %></span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Estado</span>
+            <span class="<%= @product.status == 'active' ? 'text-green-600' : 'text-red-600' %> text-sm font-medium">
+              <%= @product.status == 'active' ? 'Activo' : 'Inactivo' %>
+            </span>
+          </div>
+          <% if @product.description.present? %>
+            <div class="py-3">
+              <span class="text-sm font-medium text-gray-500 block mb-2">Descripción</span>
+              <p class="text-sm text-gray-900"><%= @product.description %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock y Precios -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+      <div class="px-4 py-6 sm:px-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Stock y Precios</h3>
+        <div class="divide-y divide-gray-200">
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Precio de Venta</span>
+            <span class="text-sm font-semibold text-gray-900">
+              <%= number_to_currency(@product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+            </span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Stock Actual</span>
+            <span class="text-sm text-gray-900">
+              <%= @product.stock %> <%= @product.unit&.abbreviation %>
+            </span>
+          </div>
+          <div class="py-3 flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Stock Mínimo</span>
+            <span class="text-sm text-gray-900">
+              <%= @product.min_stock %> <%= @product.unit&.abbreviation %>
+            </span>
+          </div>
+          <% if @product.average_cost.present? %>
+            <div class="py-3 flex justify-between">
+              <span class="text-sm font-medium text-gray-500">Costo Promedio</span>
+              <span class="text-sm text-gray-900">
+                <%= number_to_currency(@product.average_cost.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

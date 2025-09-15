@@ -1,0 +1,60 @@
+<div class="recipe-component-item bg-gray-50 p-4 rounded-lg mb-4">
+  <div class="flex items-start space-x-4">
+    <!-- Ingrediente -->
+    <div class="flex-1">
+      <label class="block text-sm font-medium text-gray-900 mb-2">Ingrediente</label>
+      <select name="recipe_components[<%= index %>][ingredient_id]" 
+              class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+        <option value="">Selecciona un ingrediente</option>
+        <% ingredients.each do |ingredient| %>
+          <option value="<%= ingredient.id %>" 
+                  <%= 'selected' if component&.ingredient_id == ingredient.id %>
+                  data-unit="<%= ingredient.unit&.abbreviation %>">
+            <%= ingredient.name %> 
+            <% if ingredient.stock.present? %>
+              (Stock: <%= ingredient.stock %> <%= ingredient.unit&.abbreviation %>)
+            <% end %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- Cantidad -->
+    <div class="w-32">
+      <label class="block text-sm font-medium text-gray-900 mb-2">Cantidad</label>
+      <input type="number" 
+             name="recipe_components[<%= index %>][quantity]" 
+             value="<%= component&.quantity %>"
+             step="0.001"
+             placeholder="0"
+             class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+    </div>
+
+    <!-- Desperdicio -->
+    <div class="w-32">
+      <label class="block text-sm font-medium text-gray-900 mb-2">Desperdicio %</label>
+      <input type="number" 
+             name="recipe_components[<%= index %>][waste_percentage]" 
+             value="<%= component&.waste_percentage || 0 %>"
+             min="0"
+             max="100"
+             step="0.1"
+             placeholder="0"
+             class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+    </div>
+
+    <!-- Botón eliminar -->
+    <div class="flex items-end">
+      <button type="button" 
+              class="remove-ingredient-btn mt-6 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <% if component&.persisted? %>
+    <input type="hidden" name="recipe_components[<%= index %>][id]" value="<%= component.id %>">
+  <% end %>
+</div>

@@ -1,8 +1,8 @@
 <div class="px-4 sm:px-6 lg:px-8">
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Productos Simples</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de productos simples disponibles en el inventario.</p>
+      <h1 class="text-base font-semibold text-gray-900">Recetas</h1>
+      <p class="mt-2 text-sm text-gray-700">Lista de recetas disponibles en el menú.</p>
     </div>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
       <div class="flex space-x-3">
@@ -12,15 +12,9 @@
           </svg>
           Volver al Hub
         <% end %>
-        <%= link_to new_simple_product_path, class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Nuevo Producto Simple
-        <% end %>
         <%= link_to new_recipe_path, class: "rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 inline-flex items-center" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Nueva Receta
         <% end %>
@@ -28,8 +22,7 @@
     </div>
   </div>
 
-
-<%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
@@ -51,21 +44,20 @@
           </div>
 
           <div>
-            <%= f.label :stock_lteq, "Stock mínimo", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.number_field :stock_lteq,
-                placeholder: "Stock menor o igual a",
+            <%= f.label :price_lteq, "Precio máximo", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.number_field :price_lteq,
+                placeholder: "Precio menor o igual a",
                 class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
           </div>
         </div>
       </div>
       <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", products_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= f.submit "Buscar", class: "rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600" %>
+        <%= link_to "Limpiar", recipes_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
 
-  
   <div class="mt-8 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -79,7 +71,7 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nombre</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Virtual</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Acciones</span>
@@ -106,7 +98,7 @@
                     <%= product.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= product.category.name %>
+                    <%= product.category&.name %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <strong>
@@ -114,7 +106,9 @@
                     </strong>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= product.stock %> <%= product&.unit&.abbreviation %>
+                    <span class="<%= product.virtual_stock > 0 ? 'text-green-600' : 'text-red-600' %> font-medium">
+                      <%= product.virtual_stock %> <%= product.unit&.abbreviation %>
+                    </span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <span class="<%= product.status == 'active' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
@@ -122,17 +116,9 @@
                     </span>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <% if product.kind == 'simple' %>
-                      <%= link_to "Ver", simple_product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <% elsif product.kind == 'recipe' %>
-                      <%= link_to "Ver", recipe_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <% else %>
-                      <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <% end %>
-                    <%= link_to "Inactivar", product_path(product), 
+                    <%= link_to "Ver", recipe_path(product), class: "text-green-600 hover:text-green-900" %>
+                    <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-green-600 hover:text-green-900" %>
+                    <%= link_to "Inactivar", recipe_path(product), 
                         data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
                         class: "ml-2 text-red-600 hover:text-red-900" %>
                   </td>
