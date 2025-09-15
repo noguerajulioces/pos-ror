@@ -1,239 +1,231 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "hiddenField", "options", "optionsList", "noResults", "toggleButton"]
-  static values = { selectedValue: String }
+  static targets = ["query"]
 
   connect() {
-    this.products = []
-    this.filteredProducts = []
-    this.selectedIndex = -1
-    this.isOpen = false
+    // Store for products data
+    this.productsData = [];
+    console.log("Product search controller connected")
+  }
+
+  search() {
+    const query = this.queryTarget.value.trim()
     
-    // Load products on connect
-    this.loadProducts()
-    
-    // Set initial value if provided
-    if (this.selectedValueValue) {
-      this.setSelectedProduct(this.selectedValueValue)
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', this.handleClickOutside.bind(this))
-    
-    // Reposition dropdown on scroll/resize
-    window.addEventListener('scroll', this.handleScroll.bind(this))
-    window.addEventListener('resize', this.handleResize.bind(this))
-  }
-
-  disconnect() {
-    document.removeEventListener('click', this.handleClickOutside.bind(this))
-    window.removeEventListener('scroll', this.handleScroll.bind(this))
-    window.removeEventListener('resize', this.handleResize.bind(this))
-  }
-
-  async loadProducts() {
-    try {
-      const response = await fetch('/products/search.json?q=', {
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      
-      if (response.ok) {
-        this.products = await response.json()
-        this.filteredProducts = this.products
-      }
-    } catch (error) {
-      console.error('Error loading products:', error)
-    }
-  }
-
-  search(event) {
-    const query = event.target.value.toLowerCase().trim()
-    
-    if (query === '') {
-      this.filteredProducts = this.products
-    } else {
-      this.filteredProducts = this.products.filter(product => 
-        product.name.toLowerCase().includes(query) ||
-        (product.code && product.code.toLowerCase().includes(query))
-      )
-    }
-    
-    this.selectedIndex = -1
-    this.renderOptions()
-    this.showOptions()
-  }
-
-  showOptions() {
-    if (!this.isOpen) {
-      this.isOpen = true
-      this.optionsTarget.classList.remove('hidden')
-      this.optionsTarget.style.zIndex = '9999'
-      this.positionDropdown()
-      this.renderOptions()
-    }
-  }
-
-  positionDropdown() {
-    // Always get fresh coordinates
-    const inputRect = this.inputTarget.getBoundingClientRect()
-    const dropdown = this.optionsTarget
-    
-    // Position dropdown exactly below the input with no gap
-    // Use fixed positioning relative to viewport
-    dropdown.style.position = 'fixed'
-    dropdown.style.top = `${inputRect.bottom}px`
-    dropdown.style.left = `${inputRect.left}px`
-    dropdown.style.width = `${Math.max(inputRect.width, 300)}px` // Minimum 300px width
-    dropdown.style.minWidth = `${inputRect.width}px`
-  }
-
-  hideOptions() {
-    this.isOpen = false
-    this.optionsTarget.classList.add('hidden')
-  }
-
-  toggleOptions() {
-    if (this.isOpen) {
-      this.hideOptions()
-    } else {
-      this.showOptions()
-    }
-  }
-
-  // Override the showOptions method to always recalculate position
-  focus() {
-    this.showOptions()
-  }
-
-  click() {
-    this.showOptions()
-  }
-
-  renderOptions() {
-    if (this.filteredProducts.length === 0) {
-      this.optionsListTarget.innerHTML = ''
-      this.noResultsTarget.classList.remove('hidden')
+    if (query.length < 2) {
+      this.showCategories()
       return
     }
     
-    this.noResultsTarget.classList.add('hidden')
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content
     
-    const optionsHtml = this.filteredProducts.map((product, index) => `
-      <div class="block px-3 py-2 text-gray-900 cursor-pointer select-none hover:bg-indigo-600 hover:text-white ${index === this.selectedIndex ? 'bg-indigo-600 text-white' : ''}"
-           data-action="click->product-search#selectProduct"
-           data-product-id="${product.id}"
-           data-product-name="${product.name}"
-           data-index="${index}">
-        <div class="flex justify-between items-center">
-          <div class="flex-1 min-w-0">
-            <div class="font-medium truncate">${product.name}</div>
-            ${product.code ? `<div class="text-xs opacity-75">Código: ${product.code}</div>` : ''}
-          </div>
-          <div class="ml-3 text-xs opacity-75 text-right flex-shrink-0">
-            <div>Stock:</div>
-            <div class="font-medium">${product.stock || 0}</div>
+    // Show loading state in search results
+    const resultsContainer = document.getElementById("search-results-list")
+    resultsContainer.innerHTML = '<div class="w-full p-4 text-center text-gray-500">Buscando productos...</div>';
+    
+    // Hide categories, show search results
+    this.hideCategories()
+    this.showSearchResults()
+    
+    fetch(`/pos/search_products?query=${encodeURIComponent(query)}`, {
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "application/json"
+      }
+    })
+    .then(response => {
+      console.log("Response status:", response.status);
+      return response.json();
+    })
+    .then(data => {
+      console.log("Products data received:", data);
+      // Store the products data for later use
+      this.productsData = data.products;
+      
+      // Check if there's exactly one product and it matches the query exactly
+      // This is useful for barcode scanning
+      // Check if there's exactly one product and it matches the query exactly
+      if (data.products.length === 1) {
+        const product = data.products[0];
+        
+        if (product.name === query || 
+            (product.sku && product.sku === query) || 
+            (product.sku && product.sku.includes(query)) ||
+            query.includes(product.id.toString())) {
+          this.addToCart(null, product.id.toString());
+          // Clear the search input
+          this.queryTarget.value = "";
+          // Show a notification
+          this.showNotification(`${product.name} añadido al carrito`);
+          // Return to categories view
+          this.showCategories();
+          return;
+        }
+      }
+      
+      // If no exact match or multiple products, show search results
+      this.renderSearchResults(data.products);
+    })
+    .catch(error => {
+      console.error("Error searching products:", error)
+      resultsContainer.innerHTML = '<div class="w-full p-4 text-center text-red-500">Error al buscar productos</div>';
+    })
+  }
+  
+  // Add this new method to show notifications
+  showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => notification.remove(), 500);
+    }, 3000);
+  }
+  
+  renderSearchResults(products) {
+    const resultsContainer = document.getElementById("search-results-list")
+    
+    if (products.length === 0) {
+      resultsContainer.innerHTML = '<div class="w-full p-4 text-center text-gray-500">No se encontraron productos con ese criterio de búsqueda</div>';
+      return;
+    }
+    
+    // Render products with the same design as subcategory_controller
+    let html = '';
+    products.forEach((product, index) => {
+      console.log(`Processing product ${index}:`, product.name);
+      // Format price like Rails number_to_currency with Guaraní currency
+      const formattedPrice = new Intl.NumberFormat('es-PY', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(parseInt(product.price));
+      
+      // Determine stock status and styling
+      const stockStatus = parseInt(product.stock) <= 0;
+      console.log(`Product ${product.name} stock:`, product.stock, "In stock:", !stockStatus);
+      const stockClass = stockStatus ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100';
+      const stockText = stockStatus ? 'Sin stock' : `Stock: ${product.stock}`;
+      
+      html += `
+        <div class="w-1/3 p-2 product-item" data-product-id="${product.id}">
+          <div class="border rounded-lg p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col ${stockStatus ? 'border-red-300' : ''}">
+            <div class="h-24 bg-gray-100 rounded-md mb-2 flex items-center justify-center overflow-hidden">
+              ${product.image_url ? 
+                `<img src="${product.image_url}" alt="${product.image_alt || product.name}" class="w-full h-full object-cover object-center">` : 
+                `<svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>`
+              }
+            </div>
+            <div class="flex-grow">
+              <h3 class="font-medium text-sm">${product.name}</h3>
+              <div class="flex justify-between items-center mt-1">
+                <p class="text-green-600 font-bold">₲s. ${formattedPrice}</p>
+                <span class="${stockClass} inline-flex rounded-full px-2 text-xs font-semibold leading-5">${stockText}</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('')
+      `;
+    });
     
-    this.optionsListTarget.innerHTML = optionsHtml
+    // After setting the innerHTML, add event listeners to the product items
+    console.log("Updating search results container with HTML");
+    resultsContainer.innerHTML = html;
+    
+    // Add click event listeners to all product items
+    const productItems = resultsContainer.querySelectorAll('.product-item');
+    console.log(`Adding click listeners to ${productItems.length} products`);
+    productItems.forEach(item => {
+      item.addEventListener('click', (event) => {
+        const productId = item.dataset.productId;
+        console.log(`Product clicked: ${productId}`);
+        this.addToCart(event, productId);
+      });
+    });
   }
-
-  selectProduct(event) {
-    const productId = event.currentTarget.dataset.productId
-    const productName = event.currentTarget.dataset.productName
+  
+  addToCart(event, productId) {
+    console.log("addToCart called for product ID:", productId);
     
-    this.inputTarget.value = productName
-    this.hiddenFieldTarget.value = productId
-    this.hideOptions()
+    // Find the product in our stored data
+    const product = this.productsData.find(p => p.id.toString() === productId);
     
-    // Trigger change event for purchase-item-type controller
-    const changeEvent = new Event('change', { bubbles: true })
-    this.hiddenFieldTarget.dispatchEvent(changeEvent)
+    if (!product) {
+      console.error('Product not found:', productId);
+      return;
+    }
     
-    // Notify parent controller about product selection
-    this.element.dispatchEvent(new CustomEvent('product:selected', {
-      detail: { id: productId, name: productName },
-      bubbles: true
-    }))
-  }
-
-  handleKeydown(event) {
-    if (!this.isOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'Enter') {
-        this.showOptions()
-        event.preventDefault()
+    console.log("Product found:", product);
+    
+    // Check if product is in stock
+    if (parseInt(product.stock) <= 0) {
+      console.log("Product out of stock");
+      alert('Este producto está fuera de stock');
+      return;
+    }
+    
+    // Add product to cart via Turbo
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    console.log("CSRF token:", csrfToken ? "Found" : "Not found");
+    
+    console.log("Sending request to add product to cart");
+    fetch('/pos/add_product_to_cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'text/vnd.turbo-stream.html'
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        quantity: 1
+      })
+    })
+    .then(response => {
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-      return
-    }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault()
-        this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredProducts.length - 1)
-        this.renderOptions()
-        break
-        
-      case 'ArrowUp':
-        event.preventDefault()
-        this.selectedIndex = Math.max(this.selectedIndex - 1, -1)
-        this.renderOptions()
-        break
-        
-      case 'Enter':
-        event.preventDefault()
-        if (this.selectedIndex >= 0 && this.filteredProducts[this.selectedIndex]) {
-          const product = this.filteredProducts[this.selectedIndex]
-          this.inputTarget.value = product.name
-          this.hiddenFieldTarget.value = product.id
-          this.hideOptions()
-          
-          // Trigger change event
-          const changeEvent = new Event('change', { bubbles: true })
-          this.hiddenFieldTarget.dispatchEvent(changeEvent)
-          
-          // Notify parent controller
-          this.element.dispatchEvent(new CustomEvent('product:selected', {
-            detail: { id: product.id, name: product.name },
-            bubbles: true
-          }))
-        }
-        break
-        
-      case 'Escape':
-        this.hideOptions()
-        break
-    }
+      return response.text();
+    })
+    .then(html => {
+      // Let Turbo handle the response
+      console.log('Product added to cart successfully');
+      console.log('Response HTML length:', html.length);
+      
+      Turbo.renderStreamMessage(html)
+    })
+    .catch(error => {
+      console.error('Error adding product to cart:', error);
+    });
   }
-
-  handleClickOutside(event) {
-    if (!this.element.contains(event.target) && !this.optionsTarget.contains(event.target)) {
-      this.hideOptions()
-    }
+  
+  clearSearch() {
+    this.queryTarget.value = ""
+    this.showCategories()
   }
-
-  handleScroll() {
-    if (this.isOpen) {
-      this.positionDropdown()
-    }
+  
+  showCategories() {
+    document.getElementById("categories-container").classList.remove("hidden")
+    document.getElementById("subcategories-container").classList.add("hidden")
+    document.getElementById("products-container").classList.add("hidden")
+    document.getElementById("search-results-container").classList.add("hidden")
   }
-
-  handleResize() {
-    if (this.isOpen) {
-      this.positionDropdown()
-    }
+  
+  hideCategories() {
+    document.getElementById("categories-container").classList.add("hidden")
+    document.getElementById("subcategories-container").classList.add("hidden")
+    document.getElementById("products-container").classList.add("hidden")
   }
-
-  setSelectedProduct(productId) {
-    const product = this.products.find(p => p.id == productId)
-    if (product) {
-      this.inputTarget.value = product.name
-      this.hiddenFieldTarget.value = product.id
-    }
+  
+  showSearchResults() {
+    document.getElementById("search-results-container").classList.remove("hidden")
   }
 }
