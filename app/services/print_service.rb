@@ -74,7 +74,7 @@ class PrintService
 
   def self.clean_html_text(html_text)
     # Remover HTML y limpiar el texto para impresión térmica
-    html_text
+    clean_text = html_text
       .gsub(/<!--.*?-->/m, '') # Remover comentarios HTML
       .gsub(/<br\s*\/?>/i, "\n") # <br> -> salto de línea
       .gsub(/<\/p>/i, "\n") # </p> -> salto de línea
@@ -85,14 +85,55 @@ class PrintService
       .gsub(/&gt;/, '>') # &gt; -> >
       .gsub(/\n\s*\n/, "\n") # Múltiples saltos -> uno solo
       .strip
+
+    # Arreglar encoding para impresoras térmicas
+    fix_encoding_for_thermal(clean_text)
+  end
+
+  def self.fix_encoding_for_thermal(text)
+    # Convertir caracteres especiales para impresoras térmicas
+    text
+      .encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+      .gsub(/[áàâäã]/, 'a')
+      .gsub(/[éèêë]/, 'e')
+      .gsub(/[íìîï]/, 'i')
+      .gsub(/[óòôöõ]/, 'o')
+      .gsub(/[úùûü]/, 'u')
+      .gsub(/[ÁÀÂÄÃ]/, 'A')
+      .gsub(/[ÉÈÊË]/, 'E')
+      .gsub(/[ÍÌÎÏ]/, 'I')
+      .gsub(/[ÓÒÔÖÕ]/, 'O')
+      .gsub(/[ÚÙÛÜ]/, 'U')
+      .gsub(/ñ/, 'n')
+      .gsub(/Ñ/, 'N')
+      .gsub(/ç/, 'c')
+      .gsub(/Ç/, 'C')
+      .gsub(/[""„]/, '"')
+      .gsub(/[''‚]/, "'")
+      .gsub(/[–—]/, '-')
+      .gsub(/…/, '...')
+      .gsub(/€/, 'EUR')
+      .gsub(/£/, 'GBP')
+      .gsub(/¥/, 'YEN')
+      .gsub(/[^\x00-\x7F]/, '?') # Reemplazar cualquier carácter no-ASCII restante
   end
 
   def self.find_thermal_devices
     # Buscar dispositivos de impresión térmica comunes
     potential_devices = [
-      '/dev/usb/lp0', '/dev/usb/lp1', '/dev/usb/lp2',
-      '/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/ttyUSB2',
-      '/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyACM2'
+      # Dispositivos USB estándar
+      '/dev/usb/lp0', '/dev/usb/lp1', '/dev/usb/lp2', '/dev/usb/lp3',
+      # Dispositivos serie USB
+      '/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/ttyUSB2', '/dev/ttyUSB3',
+      # Dispositivos ACM (Abstract Control Model)
+      '/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyACM2', '/dev/ttyACM3',
+      # Dispositivos de impresión alternativos
+      '/dev/lp0', '/dev/lp1', '/dev/lp2',
+      # Para impresoras FTX y similares
+      '/dev/usb/hiddev0', '/dev/usb/hiddev1',
+      '/dev/hidraw0', '/dev/hidraw1', '/dev/hidraw2',
+      # Dispositivo USB directo para FTX TDRO58U (Bus 001 Device 002)
+      '/dev/bus/usb/001/002'
     ]
 
     available_devices = potential_devices.select { |device| File.exist?(device) }
@@ -100,6 +141,12 @@ class PrintService
     if available_devices.empty?
       Rails.logger.warn '⚠️ No se encontraron dispositivos de impresión térmica'
       Rails.logger.info "💡 Dispositivos buscados: #{potential_devices.join(', ')}"
+
+      # Debug adicional para FTX TDR058U
+      Rails.logger.info '🔍 Debug adicional:'
+      Rails.logger.info "   - lsusb: #{`lsusb 2>/dev/null`.strip}"
+      Rails.logger.info "   - /dev/usb/: #{`ls -la /dev/usb/ 2>/dev/null`.strip}"
+      Rails.logger.info "   - /dev/hidraw*: #{`ls -la /dev/hidraw* 2>/dev/null`.strip}"
     else
       Rails.logger.info "📄 Dispositivos encontrados: #{available_devices.join(', ')}"
     end
