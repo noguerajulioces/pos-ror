@@ -62,25 +62,37 @@
         </div>
 
         <!-- Precio -->
-        <div class="sm:col-span-2">
+        <div class="sm:col-span-2" data-controller="number-format">
           <%= form.label :price, "Precio de Venta", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
-            <%= form.number_field :price, 
-                step: "0.01",
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
-                placeholder: "0.00" %>
+            <div class="flex">
+              <span class="inline-flex items-center px-3 py-2 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-md">
+                ₲s.
+              </span>
+              <%= form.text_field :price, 
+                  data: { number_format_target: "input" },
+                  value: (form.object.price.present? ? form.object.price.to_i : nil),
+                  class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 rounded-l-none",
+                  placeholder: "0" %>
+            </div>
           </div>
         </div>
 
         <!-- Stock -->
         <div class="sm:col-span-2">
-          <%= form.label :stock, "Stock Actual", class: "block text-sm/6 font-medium text-gray-900" %>
+          <%= form.label :stock, product.new_record? ? "Stock Inicial" : "Stock Actual", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
             <%= form.number_field :stock, 
                 step: "0.001",
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                disabled: product.persisted?,
+                class: "block w-full rounded-md #{product.persisted? ? 'bg-gray-50 text-gray-500' : 'bg-white'} px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
                 placeholder: "0" %>
           </div>
+          <% if product.persisted? %>
+            <p class="mt-2 text-sm text-gray-500">
+              El stock se gestiona a través de movimientos de inventario. No se puede modificar directamente.
+            </p>
+          <% end %>
         </div>
 
         <!-- Stock Mínimo -->
