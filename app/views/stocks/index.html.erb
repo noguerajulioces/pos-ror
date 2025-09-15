@@ -4,9 +4,6 @@
       <h1 class="text-base font-semibold text-gray-900">Stocks</h1>
       <p class="mt-2 text-sm text-gray-700">Lista de productos en stock.</p>
     </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Nuevo Producto", new_product_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-    </div>
   </div>
 
   <%= search_form_for @q, url: stocks_path, class: "mt-8 mb-4" do |f| %>
@@ -54,12 +51,12 @@
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Imagen</th>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">SKU</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nombre</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-6">Nombre</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">SKU</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Min</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Disponibilidad</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Mínimo</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Acciones</span>
                 </th>
@@ -78,11 +75,11 @@
                       <span>-</span>
                     <% end %>
                   </td>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= stock_text_color(product) %> sm:pl-6">
-                    <%= product.sku %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium <%= stock_value_color(product) %>">
                     <%= product.name %>
+                  </td>
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm <%= stock_text_color(product) %> sm:pl-6">
+                    <%= product.sku %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
                     <%= product.category.name %>
@@ -91,14 +88,49 @@
                     <%= number_to_currency(product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm font-semibold <%= stock_value_color(product) %>">
-                    <%= product.stock %> <%= product&.unit&.abbreviation %>
+                    <% case product.kind %>
+                    <% when 'simple' %>
+                      <%= product.stock %> <%= product&.unit&.abbreviation %>
+                      <span class="text-xs text-gray-500 block">Stock físico</span>
+                    <% when 'recipe' %>
+                      <%= product.virtual_stock %> <%= product&.unit&.abbreviation %>
+                      <span class="text-xs text-gray-500 block">Basado en ingredientes</span>
+                    <% when 'combo' %>
+                      <%= product.virtual_stock %>
+                      <span class="text-xs text-gray-500 block">Basado en productos</span>
+                    <% else %>
+                      <%= product.stock || 0 %> <%= product&.unit&.abbreviation %>
+                    <% end %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
-                    <%= product.min_stock %> <%= product&.unit&.abbreviation %>
+                    <% case product.kind %>
+                    <% when 'simple' %>
+                      <%= product.min_stock || '-' %> <%= product&.unit&.abbreviation if product.min_stock %>
+                    <% when 'recipe' %>
+                      <span class="text-gray-400 text-sm">N/A</span>
+                      <span class="text-xs text-gray-500 block">Make-to-order</span>
+                    <% when 'combo' %>
+                      <span class="text-gray-400 text-sm">N/A</span>
+                      <span class="text-xs text-gray-500 block">Stock virtual</span>
+                    <% else %>
+                      <%= product.min_stock || '-' %> <%= product&.unit&.abbreviation if product.min_stock %>
+                    <% end %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% case product.kind %>
+                    <% when 'simple' %>
+                      <%= link_to "Ver", simple_product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% when 'recipe' %>
+                      <%= link_to "Ver", recipe_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% when 'combo' %>
+                      <%= link_to "Ver", combo_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Editar", edit_combo_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% else %>
+                      <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

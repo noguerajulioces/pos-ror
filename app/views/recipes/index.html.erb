@@ -80,7 +80,7 @@
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <% @products.each.with_index(1) do |product, index| %>
-                <tr>
+                <tr id="recipe_<%= product.id %>">
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <%= index %>
                   </td>
@@ -111,16 +111,43 @@
                     </span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
-                    <span class="<%= product.status == 'active' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                      <%= product.status == 'active' ? 'Activo' : 'Inactivo' %>
-                    </span>
+                    <% case product.status %>
+                    <% when 'active' %>
+                      <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5 text-green-600 bg-green-100">
+                        Activo
+                      </span>
+                    <% when 'inactive' %>
+                      <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5 text-red-600 bg-red-100">
+                        Inactivo
+                      </span>
+                    <% when 'out_of_stock' %>
+                      <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5 text-yellow-600 bg-yellow-100">
+                        Sin Stock
+                      </span>
+                    <% end %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", recipe_path(product), class: "text-green-600 hover:text-green-900" %>
                     <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-green-600 hover:text-green-900" %>
-                    <%= link_to "Inactivar", recipe_path(product), 
-                        data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                        class: "ml-2 text-red-600 hover:text-red-900" %>
+                    
+                    <% case product.status %>
+                    <% when 'active' %>
+                      <%= link_to "Inactivar", update_status_recipe_path(product), 
+                          data: { turbo_method: :patch, turbo_confirm: "¿Inactivar esta receta?" }, 
+                          class: "ml-2 text-red-600 hover:text-red-900" %>
+                    <% when 'inactive' %>
+                      <%= link_to "Activar", update_status_recipe_path(product), 
+                          data: { turbo_method: :patch, turbo_confirm: "¿Activar esta receta?" }, 
+                          class: "ml-2 text-green-600 hover:text-green-900" %>
+                    <% when 'out_of_stock' %>
+                      <% if product.virtual_stock > 0 %>
+                        <%= link_to "Activar", update_status_recipe_path(product), 
+                            data: { turbo_method: :patch, turbo_confirm: "¿Activar esta receta?" }, 
+                            class: "ml-2 text-green-600 hover:text-green-900" %>
+                      <% else %>
+                        <span class="ml-2 text-gray-400 text-sm">Sin ingredientes</span>
+                      <% end %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

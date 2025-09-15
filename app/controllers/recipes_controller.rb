@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_action :set_product, only: %i[show edit update destroy]
+  before_action :set_product, only: %i[show edit update destroy update_status]
 
   def index
     @q = Product.where(kind: 'recipe').ransack(params[:q])
@@ -46,8 +46,34 @@ class RecipesController < ApplicationController
   end
 
   def destroy
-    @product.destroy
-    redirect_to recipes_path, notice: 'Receta eliminada exitosamente.'
+    @product.update(status: 'inactive')
+    redirect_to recipes_path, notice: 'Receta inactivada exitosamente.'
+  end
+
+  def update_status
+    case @product.status
+    when 'active'
+      # Activar → Inactivar (manual)
+      @product.update(status: 'inactive')
+      redirect_to recipes_path, notice: 'Receta inactivada exitosamente.'
+    when 'inactive'
+      # Inactivar → Activar (manual, pero verificar stock virtual)
+      if @product.virtual_stock > 0
+        @product.update(status: 'active')
+        redirect_to recipes_path, notice: 'Receta activada exitosamente.'
+      else
+        @product.update(status: 'out_of_stock')
+        redirect_to recipes_path, alert: 'Receta sin ingredientes disponibles. Estado cambiado a "Sin Stock".'
+      end
+    when 'out_of_stock'
+      # Sin Stock → Activar (solo si hay stock virtual)
+      if @product.virtual_stock > 0
+        @product.update(status: 'active')
+        redirect_to recipes_path, notice: 'Receta activada exitosamente.'
+      else
+        redirect_to recipes_path, alert: 'No se puede activar: la receta no tiene ingredientes suficientes.'
+      end
+    end
   end
 
   private

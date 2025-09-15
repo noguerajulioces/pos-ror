@@ -19,7 +19,7 @@ class SimpleProductsController < ApplicationController
 
     if @product.save
       attach_image if params[:product][:image].present?
-      redirect_to product_path(@product), notice: 'Producto creado exitosamente.'
+      redirect_to simple_product_path(@product), notice: 'Producto creado exitosamente.'
     else
       render :new, status: :unprocessable_entity
     end

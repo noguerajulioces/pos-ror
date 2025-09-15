@@ -40,6 +40,9 @@ Rails.application.routes.draw do
   # Recetas - DEBE IR ANTES que la ruta general de products
   resources :recipes, path: 'products/recipes' do
     resources :images, only: [ :destroy ], controller: 'product_images'
+    member do
+      patch :update_status
+    end
   end
 
   resources :products do
