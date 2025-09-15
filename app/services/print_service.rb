@@ -26,19 +26,96 @@ class PrintService
       layout: false
     )
 
-    temp_file = Rails.root.join('tmp', "order_#{order_id}_print.txt")
-    File.write(temp_file, receipt_text)
+    # Usar la gema Ruby escpos en lugar de Node.js
+    print_with_escpos(receipt_text, order_id)
 
-    script_path = Rails.root.join('scripts', 'print.js').to_s
-    node_path = `which node`.strip.presence || 'node'
-    command = [ node_path, script_path, temp_file.to_s ].shelljoin
-
-    pid = Process.spawn(command)
-    Process.detach(pid)
-
-    Rails.logger.info "Proceso de impresión iniciado en segundo plano (PID: #{pid})"
+    Rails.logger.info "Impresión procesada para orden #{order_id}"
   rescue => e
     Rails.logger.error "Error al imprimir la orden #{order_id}: #{e.message}"
     raise
+  end
+
+  private
+
+  def self.print_with_escpos(text, order_id = nil)
+    # Limpiar HTML del texto
+    clean_text = clean_html_text(text)
+
+    begin
+      # Intentar imprimir con escpos
+      printer = Escpos::Printer.new
+      printer << clean_text
+      printer.cut!
+
+      # Buscar dispositivos de impresión
+      thermal_devices = find_thermal_devices
+
+      if thermal_devices.any?
+        thermal_devices.each do |device|
+          begin
+            File.open(device, 'w') { |f| f.write printer.to_escpos }
+            Rails.logger.info "✅ Impresión enviada a #{device}"
+            return true
+          rescue => e
+            Rails.logger.warn "❌ Error en dispositivo #{device}: #{e.message}"
+            next
+          end
+        end
+      end
+
+      # Si no se pudo imprimir en ningún dispositivo, guardar como respaldo
+      fallback_print(clean_text, order_id)
+
+    rescue => e
+      Rails.logger.error "Error con gema escpos: #{e.message}"
+      fallback_print(clean_text, order_id)
+    end
+  end
+
+  def self.clean_html_text(html_text)
+    # Remover HTML y limpiar el texto para impresión térmica
+    html_text
+      .gsub(/<!--.*?-->/m, '') # Remover comentarios HTML
+      .gsub(/<br\s*\/?>/i, "\n") # <br> -> salto de línea
+      .gsub(/<\/p>/i, "\n") # </p> -> salto de línea
+      .gsub(/<[^>]*>/, '') # Remover todas las etiquetas HTML
+      .gsub(/&nbsp;/, ' ') # &nbsp; -> espacio
+      .gsub(/&amp;/, '&') # &amp; -> &
+      .gsub(/&lt;/, '<') # &lt; -> <
+      .gsub(/&gt;/, '>') # &gt; -> >
+      .gsub(/\n\s*\n/, "\n") # Múltiples saltos -> uno solo
+      .strip
+  end
+
+  def self.find_thermal_devices
+    # Buscar dispositivos de impresión térmica comunes
+    potential_devices = [
+      '/dev/usb/lp0', '/dev/usb/lp1', '/dev/usb/lp2',
+      '/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/ttyUSB2',
+      '/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyACM2'
+    ]
+
+    available_devices = potential_devices.select { |device| File.exist?(device) }
+
+    if available_devices.empty?
+      Rails.logger.warn '⚠️ No se encontraron dispositivos de impresión térmica'
+      Rails.logger.info "💡 Dispositivos buscados: #{potential_devices.join(', ')}"
+    else
+      Rails.logger.info "📄 Dispositivos encontrados: #{available_devices.join(', ')}"
+    end
+
+    available_devices
+  end
+
+  def self.fallback_print(text, order_id = nil)
+    # Guardar en archivo como respaldo
+    timestamp = Time.current.strftime('%Y%m%d_%H%M%S')
+    backup_file = Rails.root.join('tmp', "thermal_backup_#{order_id || timestamp}.txt")
+
+    File.write(backup_file, text)
+
+    Rails.logger.warn "📝 Impresión guardada en: #{backup_file}"
+    Rails.logger.info "💡 Para debug: cat #{backup_file}"
+    Rails.logger.info '💡 Verifica dispositivos: ls -la /dev/usb/lp* /dev/ttyUSB* 2>/dev/null'
   end
 end

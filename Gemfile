@@ -85,3 +85,6 @@ gem 'wkhtmltopdf-binary'
 gem 'rdoc', '6.12.0'
 gem 'acts_as_tenant'
 gem 'pundit'
+
+# Thermal printer support
+gem 'escpos'
