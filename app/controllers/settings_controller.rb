@@ -34,23 +34,23 @@ class SettingsController < ApplicationController
         ================================
                PRUEBA DE IMPRESION
         ================================
-        
+
         Fecha: #{Time.current.strftime('%d/%m/%Y %H:%M')}
-        
+
         Configuración actual:
         - Ancho: #{Setting.get('printer_line_width_chars')} caracteres
         - Papel: #{Setting.get('printer_paper_width_mm')}mm
         - Impresora: #{Setting.get('printer_windows_name')}
-        
-        ¡Si ves este mensaje, la 
+
+        ¡Si ves este mensaje, la#{' '}
         configuración funciona correctamente!
-        
+
         ================================
       TEXT
 
       # Usar el PrintService para probar
       success = PrintService.send(:print_to_thermal_printer, test_content, 'test')
-      
+
       if success
         redirect_to printer_settings_path, notice: '✅ Prueba de impresión enviada correctamente.'
       else
