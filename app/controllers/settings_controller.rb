@@ -69,11 +69,10 @@ class SettingsController < ApplicationController
 
   def printer_params
     params.permit(
-      :printer_paper_width_mm, :printer_print_width_mm, :printer_line_width_chars,
-      :printer_paper_thickness_min, :printer_paper_thickness_max, :printer_roll_diameter_max,
-      :printer_cut_command, :printer_partial_cut_command, :printer_reset_command,
-      :printer_lines_before_cut, :printer_char_encoding, :printer_windows_name,
-      :printer_fallback_method
+      :printer_line_width_chars,
+      :printer_windows_name,
+      :printer_lines_before_cut,
+      :printer_cut_command
     )
   end
 end
