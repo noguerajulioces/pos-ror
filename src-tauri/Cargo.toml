@@ -15,21 +15,8 @@ tauri-build = { version = "2.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "2.0", features = [
-  "macos-private-api",
-  "shell-all",
-  "dialog-all", 
-  "fs-all",
-  "path-all",
-  "os-all",
-  "process-all",
-  "tray-icon"
+  "shell-open"
 ] }
-tauri-plugin-shell = "2.0"
-tauri-plugin-dialog = "2.0"
-tauri-plugin-fs = "2.0"
-tauri-plugin-path = "2.0"
-tauri-plugin-os = "2.0"
-tauri-plugin-process = "2.0"
 tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.11", features = ["json"] }
 
