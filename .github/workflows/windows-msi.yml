@@ -110,7 +110,7 @@ jobs:
           
           # Verificar instalaciones
           Write-Host "WiX version:" -ForegroundColor Yellow
-          & "${env:WIX}bin\candle.exe" -? 2>$null | Select-String "version"
+          & "$env:WIX\bin\candle.exe" -? 2>$null | Select-String "version"
           
           Write-Host "7-Zip version:" -ForegroundColor Yellow
           & "C:\Program Files\7-Zip\7z.exe" | Select-String "7-Zip"
@@ -127,36 +127,7 @@ jobs:
       # ========================================================================
       - name: 🔧 Prepare Windows resources
         shell: powershell
-        run: |
-          Write-Host "=== Preparando recursos para Windows ===" -ForegroundColor Cyan
-          
-          # Ejecutar script de preparación
-          .\scripts\prepare_windows_resources.ps1 -Verbose
-          
-          # Verificar que todo esté listo
-          Write-Host "Verificando recursos preparados..." -ForegroundColor Yellow
-          
-          $RequiredPaths = @(
-            "rails\ruby\bin\ruby.exe",
-            "rails\bin\start-rails.bat",
-            "rails\vendor\bundle"
-          )
-          
-          foreach ($path in $RequiredPaths) {
-            if (Test-Path $path) {
-              Write-Host "✓ $path" -ForegroundColor Green
-            } else {
-              Write-Host "✗ $path - NO ENCONTRADO" -ForegroundColor Red
-              exit 1
-            }
-          }
-          
-          # Mostrar tamaños
-          $RubySize = [math]::Round(((Get-ChildItem rails\ruby -Recurse | Measure-Object Length -Sum).Sum / 1MB), 1)
-          $VendorSize = [math]::Round(((Get-ChildItem rails\vendor -Recurse | Measure-Object Length -Sum).Sum / 1MB), 1)
-          
-          Write-Host "Ruby portable: ${RubySize} MB" -ForegroundColor Cyan
-          Write-Host "Vendor bundle: ${VendorSize} MB" -ForegroundColor Cyan
+        run: .\scripts\github_actions_prepare.ps1
 
       # ========================================================================
       # TESTS (OPCIONAL)
@@ -193,73 +164,14 @@ jobs:
       # ========================================================================
       - name: 🔨 Build Tauri MSI
         shell: powershell
-        run: |
-          Write-Host "=== Construyendo MSI con Tauri ===" -ForegroundColor Cyan
-          
-          # Asegurar que WiX esté en PATH
-          $env:PATH = "${env:WIX}bin;$env:PATH"
-          
-          # Build con Tauri
-          Write-Host "Iniciando build de Tauri..." -ForegroundColor Green
-          tauri build --verbose
-          
-          # Verificar que el MSI se creó
-          $MsiPath = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" -ErrorAction SilentlyContinue
-          
-          if ($MsiPath) {
-            $MsiSize = [math]::Round($MsiPath.Length / 1MB, 1)
-            Write-Host "✓ MSI creado exitosamente: $($MsiPath.Name) (${MsiSize} MB)" -ForegroundColor Green
-            
-            # Mostrar información del MSI
-            Write-Host "Información del MSI:" -ForegroundColor Yellow
-            Write-Host "  Nombre: $($MsiPath.Name)"
-            Write-Host "  Tamaño: ${MsiSize} MB"
-            Write-Host "  Ruta: $($MsiPath.FullName)"
-          } else {
-            Write-Host "✗ No se encontró el archivo MSI" -ForegroundColor Red
-            
-            # Mostrar contenido del directorio de salida para debug
-            Write-Host "Contenido de src-tauri\target\release\bundle:" -ForegroundColor Yellow
-            Get-ChildItem -Path "src-tauri\target\release\bundle" -Recurse -ErrorAction SilentlyContinue | Format-Table Name, Length, LastWriteTime
-            
-            exit 1
-          }
+        run: .\scripts\github_actions_build.ps1
 
       # ========================================================================
       # TESTING DEL MSI (BÁSICO)
       # ========================================================================
       - name: 🧪 Basic MSI validation
         shell: powershell
-        run: |
-          Write-Host "=== Validación básica del MSI ===" -ForegroundColor Cyan
-          
-          $MsiPath = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" | Select-Object -First 1
-          
-          if ($MsiPath) {
-            # Verificar que es un MSI válido
-            try {
-              $Installer = New-Object -ComObject WindowsInstaller.Installer
-              $Database = $Installer.OpenDatabase($MsiPath.FullName, 0)
-              Write-Host "✓ MSI es válido y se puede abrir" -ForegroundColor Green
-              $Database = $null
-              $Installer = $null
-            } catch {
-              Write-Host "✗ Error validando MSI: $_" -ForegroundColor Red
-              exit 1
-            }
-            
-            # Verificar tamaño mínimo (debe ser > 50MB con Ruby incluido)
-            $MinSizeMB = 50
-            $ActualSizeMB = [math]::Round($MsiPath.Length / 1MB, 1)
-            
-            if ($ActualSizeMB -gt $MinSizeMB) {
-              Write-Host "✓ Tamaño del MSI es apropiado: ${ActualSizeMB} MB" -ForegroundColor Green
-            } else {
-              Write-Host "✗ MSI demasiado pequeño: ${ActualSizeMB} MB (mínimo: ${MinSizeMB} MB)" -ForegroundColor Red
-              Write-Host "Esto podría indicar que Ruby portable no se incluyó correctamente" -ForegroundColor Yellow
-              exit 1
-            }
-          }
+        run: .\scripts\github_actions_validate.ps1
 
       # ========================================================================
       # UPLOAD ARTIFACTS
