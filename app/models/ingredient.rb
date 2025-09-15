@@ -37,6 +37,7 @@ class Ingredient < ApplicationRecord
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
   validates :min_stock, numericality: { greater_than_or_equal_to: 0 }
   validates :average_cost, numericality: { greater_than_or_equal_to: 0 }
+  validate :initial_stock_must_have_cost
 
   # Asociaciones
   belongs_to :unit
@@ -96,5 +97,16 @@ class Ingredient < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     %w[unit recipe_components products]
+  end
+
+  private
+
+  def initial_stock_must_have_cost
+    return unless new_record? # Solo para ingredientes nuevos
+    return if stock.blank? || stock <= 0 # Si no hay stock inicial, no necesita costo
+
+    if average_cost.blank? || average_cost <= 0
+      errors.add(:average_cost, 'debe ser mayor a cero cuando hay stock inicial')
+    end
   end
 end

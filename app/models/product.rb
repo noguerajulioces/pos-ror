@@ -96,6 +96,7 @@ class Product < ApplicationRecord
   validates :prep_time_seconds, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :sort_order, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validate :recipe_must_have_components, if: :recipe?, unless: :skip_recipe_validation
+  validate :initial_stock_must_have_cost, if: :simple?
 
   before_create :generate_barcode, if: -> { barcode.blank? }
   before_save :set_recipe_stock_to_zero, if: :recipe?
@@ -326,6 +327,15 @@ class Product < ApplicationRecord
 
   def set_recipe_stock_to_zero
     self.stock = 0 if recipe?
+  end
+
+  def initial_stock_must_have_cost
+    return unless simple? && new_record? # Solo para productos simples nuevos
+    return if stock.blank? || stock <= 0 # Si no hay stock inicial, no necesita costo
+
+    if average_cost.blank? || average_cost <= 0
+      errors.add(:average_cost, 'debe ser mayor a cero cuando hay stock inicial')
+    end
   end
 
   def recipe_must_have_components

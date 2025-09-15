@@ -79,12 +79,16 @@
         </div>
 
         <!-- Stock -->
-        <div class="sm:col-span-2">
+        <div class="sm:col-span-2" data-controller="initial-cost">
           <%= form.label :stock, product.new_record? ? "Stock Inicial" : "Stock Actual", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
             <%= form.number_field :stock, 
                 step: "0.001",
                 disabled: product.persisted?,
+                data: { 
+                  action: "input->initial-cost#toggleCostField",
+                  initial_cost_target: "stockField"
+                },
                 class: "block w-full rounded-md #{product.persisted? ? 'bg-gray-50 text-gray-500' : 'bg-white'} px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
                 placeholder: "0" %>
           </div>
@@ -92,6 +96,26 @@
             <p class="mt-2 text-sm text-gray-500">
               El stock se gestiona a través de movimientos de inventario. No se puede modificar directamente.
             </p>
+          <% end %>
+
+          <!-- Costo Inicial (solo para productos nuevos con stock) -->
+          <% if product.new_record? %>
+            <div class="mt-4" data-initial-cost-target="costField" style="display: none;" data-controller="number-format">
+              <%= form.label :average_cost, "Costo Inicial por Unidad", class: "block text-sm/6 font-medium text-gray-900" %>
+              <div class="mt-2">
+                <div class="flex">
+                  <span class="inline-flex items-center px-3 py-2 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-md">
+                    ₲s.
+                  </span>
+                  <%= form.text_field :average_cost, 
+                      data: { number_format_target: "input" },
+                      value: (form.object.average_cost.present? ? form.object.average_cost.to_i : nil),
+                      class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 rounded-l-none",
+                      placeholder: "0" %>
+                </div>
+              </div>
+              <p class="mt-1 text-sm text-gray-500">Costo por unidad del stock inicial</p>
+            </div>
           <% end %>
         </div>
 
