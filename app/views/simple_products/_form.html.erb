@@ -30,12 +30,13 @@
     <div class="px-4 py-6 sm:p-8">
       <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Básica</h3>
       
-      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6" data-controller="sku-generator" data-sku-generator-prefix-value="PROD">
         <!-- Nombre -->
         <div class="sm:col-span-3">
           <%= form.label :name, "Nombre del Producto", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
             <%= form.text_field :name, 
+                data: { sku_generator_target: "nameField" },
                 class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
                 placeholder: "Ej: Coca Cola" %>
           </div>
@@ -44,10 +45,19 @@
         <!-- SKU -->
         <div class="sm:col-span-3">
           <%= form.label :sku, "SKU", class: "block text-sm/6 font-medium text-gray-900" %>
-          <div class="mt-2">
+          <div class="mt-2 flex">
             <%= form.text_field :sku, 
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
+                data: { sku_generator_target: "skuField" },
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 rounded-r-none",
                 placeholder: "Ej: PROD-001" %>
+            <button type="button" 
+                    data-action="click->sku-generator#generateSku"
+                    class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-r-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="ml-1">Autogenerar</span>
+            </button>
           </div>
         </div>
 
@@ -174,8 +184,9 @@
 
   <!-- Botones de acción -->
   <div class="mt-8 flex items-center justify-end gap-x-6">
-    <%= link_to "Cancelar", products_path, class: "text-sm/6 font-semibold text-gray-900" %>
+    <%= link_to "Cancelar", simple_products_path, class: "text-sm/6 font-semibold text-gray-900" %>
     <%= form.submit product.persisted? ? "Actualizar Producto" : "Crear Producto", 
         class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
   </div>
 <% end %>
+
