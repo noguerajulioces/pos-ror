@@ -53,8 +53,8 @@ class PrintService
       if thermal_devices.any?
         thermal_devices.each do |device|
           begin
-            # Si es el dispositivo USB directo de FTX, usar método especial
-            if device == '/dev/bus/usb/001/002'
+            # Si es un dispositivo USB directo de FTX, usar método especial
+            if device.start_with?('/dev/bus/usb/')
               success = print_to_ftx_device(printer.to_escpos)
               if success
                 Rails.logger.info '✅ Impresión enviada a FTX TDRO58U via método especial'
@@ -108,19 +108,19 @@ class PrintService
     begin
       # Crear archivo temporal en ubicación accesible desde Windows
       temp_file = "/mnt/c/temp/ftx_print_#{Time.now.to_i}.txt"
-      
+
       # Convertir datos ESC/POS a texto plano para Windows
       clean_text = escpos_data.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
                               .gsub(/\e[@\[\]0-9;]*[a-zA-Z]/, '') # Remover códigos ESC/POS
                               .gsub(/[[:cntrl:]]/, '') # Remover caracteres de control
                               .strip
-      
+
       File.write(temp_file, clean_text)
       Rails.logger.info "📄 Archivo temporal: #{temp_file}"
-      
+
       # Intentar diferentes métodos de impresión via Windows
       windows_temp = temp_file.gsub('/mnt/c/', 'C:\\').gsub('/', '\\')
-      
+
       methods = [
         # Método 1: PowerShell Get-Content
         "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name 'FTX TDRO58U'\"",
@@ -131,7 +131,7 @@ class PrintService
         # Método 4: Notepad print
         "powershell.exe -Command \"Start-Process notepad -ArgumentList '#{windows_temp}' -Verb Print -WindowStyle Hidden\""
       ]
-      
+
       methods.each_with_index do |method, index|
         Rails.logger.info "🔄 FTX Windows método #{index + 1}"
         result = system(method)
@@ -141,10 +141,10 @@ class PrintService
           return true
         end
       end
-      
+
       File.delete(temp_file) if File.exist?(temp_file)
       false
-      
+
     rescue => e
       Rails.logger.error "❌ Error en método FTX Windows: #{e.message}"
       false
@@ -179,6 +179,32 @@ class PrintService
       .gsub(/[^\x00-\x7F]/, '?') # Reemplazar cualquier carácter no-ASCII restante
   end
 
+  def self.detect_ftx_usb_device
+    # Detectar automáticamente la impresora FTX TDRO58U por VID:PID
+    begin
+      lsusb_output = `lsusb 2>/dev/null`.strip
+      ftx_line = lsusb_output.lines.find { |line| line.include?('2aaf:6001') || line.include?('FTX') }
+      
+      if ftx_line
+        # Extraer Bus y Device del formato: "Bus 001 Device 002: ID 2aaf:6001 FTX TDRO58U"
+        if ftx_line.match(/Bus (\d+) Device (\d+)/)
+          bus = $1.rjust(3, '0')
+          device = $2.rjust(3, '0')
+          usb_path = "/dev/bus/usb/#{bus}/#{device}"
+          Rails.logger.info "🔍 FTX detectada automáticamente: #{usb_path}"
+          return [usb_path]
+        end
+      end
+      
+      Rails.logger.warn "⚠️ FTX TDRO58U no detectada automáticamente"
+      return []
+      
+    rescue => e
+      Rails.logger.error "❌ Error detectando FTX: #{e.message}"
+      return []
+    end
+  end
+
   def self.find_thermal_devices
     # Buscar dispositivos de impresión térmica comunes
     potential_devices = [
@@ -193,8 +219,8 @@ class PrintService
       # Para impresoras FTX y similares
       '/dev/usb/hiddev0', '/dev/usb/hiddev1',
       '/dev/hidraw0', '/dev/hidraw1', '/dev/hidraw2',
-      # Dispositivo USB directo para FTX TDRO58U (Bus 001 Device 002)
-      '/dev/bus/usb/001/002'
+      # Detectar dinámicamente la impresora FTX TDRO58U
+      *detect_ftx_usb_device
     ]
 
     available_devices = potential_devices.select { |device| File.exist?(device) }
