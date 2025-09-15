@@ -1,7 +1,62 @@
 {
-  "dependencies": {
-    "escpos": "^3.0.0-alpha.6",
-    "escpos-usb": "^3.0.0-alpha.4",
-    "usb": "^2.15.0"
+  "name": "pos-ror-desktop",
+  "version": "1.0.0",
+  "description": "Sistema POS completo para escritorio con Ruby on Rails y Tauri",
+  "main": "src-tauri/src/main.rs",
+  "scripts": {
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:debug": "tauri build --debug",
+    "prepare:windows": "powershell -ExecutionPolicy Bypass -File scripts/prepare_windows_resources.ps1",
+    "prepare:windows:verbose": "powershell -ExecutionPolicy Bypass -File scripts/prepare_windows_resources.ps1 -Verbose",
+    "test:rails": "cd rails && bundle exec rails test",
+    "clean": "rimraf src-tauri/target rails/vendor/bundle rails/ruby rails/sqlite",
+    "clean:cache": "rimraf node_modules/.cache ~/.cargo/registry/cache",
+    "dev:rails": "cd rails && bundle exec rails server -p 4317",
+    "build:full": "npm run prepare:windows && npm run tauri:build"
+  },
+  "keywords": [
+    "pos",
+    "point-of-sale",
+    "rails",
+    "tauri",
+    "desktop",
+    "windows",
+    "sqlite",
+    "inventory",
+    "sales"
+  ],
+  "author": "POS-RoR Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/pos-ror.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/pos-ror/issues"
+  },
+  "homepage": "https://github.com/your-username/pos-ror#readme",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "rimraf": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "targets": "all"
+    }
   }
 }

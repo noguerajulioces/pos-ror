@@ -1,0 +1,176 @@
+# ============================================================================
+# POS-RoR Desktop - Gemfile específico para empaquetado Windows
+# ============================================================================
+# Este Gemfile incluye solo las dependencias necesarias para la app desktop
+# Usa SQLite en lugar de PostgreSQL y omite dependencias de desarrollo
+
+source 'https://rubygems.org'
+
+# Ruby version (compatible con Ruby portable)
+ruby '~> 3.2.0'
+
+# ============================================================================
+# RAILS CORE
+# ============================================================================
+gem 'rails', '~> 8.0.1'
+
+# Base de datos - SQLite para desktop (en lugar de PostgreSQL)
+gem 'sqlite3', '~> 1.4'
+
+# Servidor web
+gem 'puma', '>= 5.0'
+
+# ============================================================================
+# ASSET PIPELINE Y FRONTEND
+# ============================================================================
+# Asset pipeline moderno
+gem 'propshaft'
+
+# JavaScript con ESM import maps
+gem 'importmap-rails'
+
+# Hotwire stack
+gem 'turbo-rails'
+gem 'stimulus-rails'
+
+# CSS framework
+gem 'tailwindcss-rails'
+
+# JSON APIs
+gem 'jbuilder'
+
+# ============================================================================
+# PERFORMANCE Y CACHING
+# ============================================================================
+# Boot time optimization
+gem 'bootsnap', require: false
+
+# Solid adapters para SQLite (en lugar de Redis/PostgreSQL)
+gem 'solid_cache'   # Para caching
+gem 'solid_queue'   # Para jobs en background
+gem 'solid_cable'   # Para Action Cable
+
+# ============================================================================
+# WINDOWS COMPATIBILITY
+# ============================================================================
+# Timezone data for Windows
+gem 'tzinfo-data', platforms: %i[ windows jruby ]
+
+# Windows-specific gems si son necesarios
+# gem 'wdm', '>= 0.1.0' if Gem.win_platform?
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - AUTENTICACIÓN Y AUTORIZACIÓN
+# ============================================================================
+gem 'devise'
+gem 'pundit'
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - MODELOS Y DATOS
+# ============================================================================
+# Paginación
+gem 'will_paginate', '~> 4.0.1'
+
+# URLs amigables
+gem 'friendly_id', '~> 5.5.1'
+
+# Búsqueda y filtros
+gem 'ransack'
+
+# Soft deletes
+gem 'paranoia'
+
+# Multi-tenancy
+gem 'acts_as_tenant'
+
+# Conversión de números a palabras
+gem 'to_words'
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - CÓDIGOS DE BARRAS Y QR
+# ============================================================================
+gem 'barby'
+gem 'rqrcode'
+gem 'chunky_png'
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - PROCESAMIENTO DE IMÁGENES
+# ============================================================================
+gem 'image_processing', '~> 1.14'
+gem 'mini_magick', '~> 5.2'
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - GENERACIÓN DE PDFs
+# ============================================================================
+gem 'wicked_pdf'
+
+# wkhtmltopdf binary para Windows - usar versión que incluya el binario
+gem 'wkhtmltopdf-binary'
+
+# ============================================================================
+# APLICACIÓN ESPECÍFICA - DOCUMENTACIÓN (OPCIONAL PARA DESKTOP)
+# ============================================================================
+# Comentado para reducir tamaño del paquete
+# gem 'annotaterb'
+# gem 'rails-erd'
+
+# ============================================================================
+# DESARROLLO Y TESTING (EXCLUIDOS EN DESKTOP)
+# ============================================================================
+# Estos grupos se excluyen durante bundle install --without development:test
+
+group :development, :test do
+  # Debugging
+  gem 'debug', platforms: %i[ mri windows ], require: 'debug/prelude'
+  
+  # Security analysis
+  gem 'brakeman', require: false
+  
+  # Code style
+  gem 'rubocop-rails-omakase', require: false
+  
+  # Test data
+  gem 'faker'
+end
+
+group :development do
+  # Web console
+  gem 'web-console'
+  gem 'byebug'
+end
+
+group :test do
+  # System testing
+  gem 'capybara'
+  gem 'selenium-webdriver'
+end
+
+# ============================================================================
+# CONFIGURACIONES ESPECÍFICAS PARA DESKTOP
+# ============================================================================
+
+# Configurar Bundler para deployment
+if ENV['RAILS_ENV'] == 'desktop' || ENV['DESKTOP_BUILD'] == 'true'
+  # Configuraciones específicas para el build de desktop
+  # Estas se aplicarán automáticamente durante bundle install
+end
+
+# ============================================================================
+# NOTAS PARA EL EMPAQUETADO
+# ============================================================================
+# 
+# Para instalar solo las dependencias de producción:
+# bundle config set --local without development:test
+# bundle config set --local path vendor/bundle
+# bundle install
+#
+# Para verificar que no hay dependencias nativas problemáticas:
+# bundle exec gem dependency --reverse-dependencies
+#
+# Gems que pueden requerir DLLs adicionales en Windows:
+# - sqlite3: incluye sqlite3.dll
+# - image_processing/mini_magick: requiere ImageMagick
+# - wkhtmltopdf-binary: incluye wkhtmltopdf.exe
+#
+# El script prepare_windows_resources.ps1 se encarga de estas dependencias
+# ============================================================================

@@ -1,0 +1,39 @@
+# Database configuration for POS-RoR Desktop Application
+# Uses SQLite for portable, self-contained desktop deployment
+
+default: &default
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  retries: 3
+
+development:
+  <<: *default
+  database: db/development.sqlite3
+
+test:
+  <<: *default
+  database: db/test.sqlite3
+
+# Desktop environment - uses SQLite in user's AppData directory
+desktop:
+  <<: *default
+  database: <%= ENV.fetch("DATABASE_URL") { File.join(ENV['APPDATA'] || '.', 'POS-RoR-Desktop', 'db', 'production.sqlite3') } %>
+  
+# Production fallback (if not using DATABASE_URL)
+production:
+  primary: &primary_production
+    <<: *default
+    database: <%= ENV.fetch("DATABASE_URL") { 'db/production.sqlite3' } %>
+  cache:
+    <<: *primary_production
+    database: <%= ENV.fetch("CACHE_DATABASE_URL") { File.join(ENV['APPDATA'] || '.', 'POS-RoR-Desktop', 'db', 'cache.sqlite3') } %>
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production  
+    database: <%= ENV.fetch("QUEUE_DATABASE_URL") { File.join(ENV['APPDATA'] || '.', 'POS-RoR-Desktop', 'db', 'queue.sqlite3') } %>
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: <%= ENV.fetch("CABLE_DATABASE_URL") { File.join(ENV['APPDATA'] || '.', 'POS-RoR-Desktop', 'db', 'cable.sqlite3') } %>
+    migrations_paths: db/cable_migrate

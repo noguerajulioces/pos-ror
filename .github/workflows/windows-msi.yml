@@ -1,0 +1,358 @@
+# ============================================================================
+# POS-RoR Desktop - Windows MSI Build Workflow
+# ============================================================================
+# Este workflow construye automáticamente el instalador MSI para Windows
+# usando Tauri + Ruby portable + SQLite
+
+name: 🚀 Build Windows MSI
+
+on:
+  push:
+    branches: ["main", "feature/desktop"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Omitir tests'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-windows-msi:
+    name: 🏗️ Build MSI for Windows
+    runs-on: windows-latest
+    
+    steps:
+      # ========================================================================
+      # SETUP BÁSICO
+      # ========================================================================
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Detect changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            desktop:
+              - 'src-tauri/**'
+              - 'rails/**'
+              - 'scripts/**'
+              - '.github/workflows/windows-msi.yml'
+
+      # ========================================================================
+      # CACHE SETUP
+      # ========================================================================
+      - name: 💾 Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: 💾 Cache Ruby downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/ruby-cache
+            rails/ruby
+          key: ${{ runner.os }}-ruby-3.2.4-1
+          restore-keys: |
+            ${{ runner.os }}-ruby-
+
+      - name: 💾 Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # ========================================================================
+      # HERRAMIENTAS Y DEPENDENCIAS
+      # ========================================================================
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 🦀 Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: 📦 Install system dependencies
+        shell: powershell
+        run: |
+          Write-Host "Instalando dependencias del sistema..." -ForegroundColor Green
+          
+          # WiX Toolset para crear MSI
+          choco install wixtoolset --no-progress -y
+          
+          # 7-Zip para extraer Ruby portable
+          choco install 7zip --no-progress -y
+          
+          # Verificar instalaciones
+          Write-Host "WiX version:" -ForegroundColor Yellow
+          & "${env:WIX}bin\candle.exe" -? 2>$null | Select-String "version"
+          
+          Write-Host "7-Zip version:" -ForegroundColor Yellow
+          & "C:\Program Files\7-Zip\7z.exe" | Select-String "7-Zip"
+
+      - name: 🚀 Install Tauri CLI
+        shell: powershell
+        run: |
+          Write-Host "Instalando Tauri CLI..." -ForegroundColor Green
+          npm install -g @tauri-apps/cli@latest
+          tauri --version
+
+      # ========================================================================
+      # PREPARACIÓN DE RECURSOS WINDOWS
+      # ========================================================================
+      - name: 🔧 Prepare Windows resources
+        shell: powershell
+        run: |
+          Write-Host "=== Preparando recursos para Windows ===" -ForegroundColor Cyan
+          
+          # Ejecutar script de preparación
+          .\scripts\prepare_windows_resources.ps1 -Verbose
+          
+          # Verificar que todo esté listo
+          Write-Host "Verificando recursos preparados..." -ForegroundColor Yellow
+          
+          $RequiredPaths = @(
+            "rails\ruby\bin\ruby.exe",
+            "rails\bin\start-rails.bat",
+            "rails\vendor\bundle"
+          )
+          
+          foreach ($path in $RequiredPaths) {
+            if (Test-Path $path) {
+              Write-Host "✓ $path" -ForegroundColor Green
+            } else {
+              Write-Host "✗ $path - NO ENCONTRADO" -ForegroundColor Red
+              exit 1
+            }
+          }
+          
+          # Mostrar tamaños
+          $RubySize = [math]::Round(((Get-ChildItem rails\ruby -Recurse | Measure-Object Length -Sum).Sum / 1MB), 1)
+          $VendorSize = [math]::Round(((Get-ChildItem rails\vendor -Recurse | Measure-Object Length -Sum).Sum / 1MB), 1)
+          
+          Write-Host "Ruby portable: ${RubySize} MB" -ForegroundColor Cyan
+          Write-Host "Vendor bundle: ${VendorSize} MB" -ForegroundColor Cyan
+
+      # ========================================================================
+      # TESTS (OPCIONAL)
+      # ========================================================================
+      - name: 🧪 Run Rails tests
+        if: ${{ !inputs.skip_tests }}
+        shell: powershell
+        run: |
+          Write-Host "Ejecutando tests de Rails..." -ForegroundColor Green
+          
+          Push-Location rails
+          
+          # Configurar Ruby portable
+          $env:PATH = "$PWD\ruby\bin;$env:PATH"
+          
+          # Configurar entorno de test
+          $env:RAILS_ENV = "test"
+          $env:DATABASE_URL = "sqlite3:///$PWD/db/test.sqlite3"
+          
+          # Configurar bundler
+          bundle config set --local path vendor/bundle
+          bundle config set --local without development
+          
+          # Preparar base de datos de test
+          bundle exec rails db:test:prepare
+          
+          # Ejecutar tests básicos
+          bundle exec rails test:models
+          
+          Pop-Location
+
+      # ========================================================================
+      # BUILD TAURI MSI
+      # ========================================================================
+      - name: 🔨 Build Tauri MSI
+        shell: powershell
+        run: |
+          Write-Host "=== Construyendo MSI con Tauri ===" -ForegroundColor Cyan
+          
+          # Asegurar que WiX esté en PATH
+          $env:PATH = "${env:WIX}bin;$env:PATH"
+          
+          # Build con Tauri
+          Write-Host "Iniciando build de Tauri..." -ForegroundColor Green
+          tauri build --verbose
+          
+          # Verificar que el MSI se creó
+          $MsiPath = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" -ErrorAction SilentlyContinue
+          
+          if ($MsiPath) {
+            $MsiSize = [math]::Round($MsiPath.Length / 1MB, 1)
+            Write-Host "✓ MSI creado exitosamente: $($MsiPath.Name) (${MsiSize} MB)" -ForegroundColor Green
+            
+            # Mostrar información del MSI
+            Write-Host "Información del MSI:" -ForegroundColor Yellow
+            Write-Host "  Nombre: $($MsiPath.Name)"
+            Write-Host "  Tamaño: ${MsiSize} MB"
+            Write-Host "  Ruta: $($MsiPath.FullName)"
+          } else {
+            Write-Host "✗ No se encontró el archivo MSI" -ForegroundColor Red
+            
+            # Mostrar contenido del directorio de salida para debug
+            Write-Host "Contenido de src-tauri\target\release\bundle:" -ForegroundColor Yellow
+            Get-ChildItem -Path "src-tauri\target\release\bundle" -Recurse -ErrorAction SilentlyContinue | Format-Table Name, Length, LastWriteTime
+            
+            exit 1
+          }
+
+      # ========================================================================
+      # TESTING DEL MSI (BÁSICO)
+      # ========================================================================
+      - name: 🧪 Basic MSI validation
+        shell: powershell
+        run: |
+          Write-Host "=== Validación básica del MSI ===" -ForegroundColor Cyan
+          
+          $MsiPath = Get-ChildItem -Path "src-tauri\target\release\bundle\msi\*.msi" | Select-Object -First 1
+          
+          if ($MsiPath) {
+            # Verificar que es un MSI válido
+            try {
+              $Installer = New-Object -ComObject WindowsInstaller.Installer
+              $Database = $Installer.OpenDatabase($MsiPath.FullName, 0)
+              Write-Host "✓ MSI es válido y se puede abrir" -ForegroundColor Green
+              $Database = $null
+              $Installer = $null
+            } catch {
+              Write-Host "✗ Error validando MSI: $_" -ForegroundColor Red
+              exit 1
+            }
+            
+            # Verificar tamaño mínimo (debe ser > 50MB con Ruby incluido)
+            $MinSizeMB = 50
+            $ActualSizeMB = [math]::Round($MsiPath.Length / 1MB, 1)
+            
+            if ($ActualSizeMB -gt $MinSizeMB) {
+              Write-Host "✓ Tamaño del MSI es apropiado: ${ActualSizeMB} MB" -ForegroundColor Green
+            } else {
+              Write-Host "✗ MSI demasiado pequeño: ${ActualSizeMB} MB (mínimo: ${MinSizeMB} MB)" -ForegroundColor Red
+              Write-Host "Esto podría indicar que Ruby portable no se incluyó correctamente" -ForegroundColor Yellow
+              exit 1
+            }
+          }
+
+      # ========================================================================
+      # UPLOAD ARTIFACTS
+      # ========================================================================
+      - name: 📤 Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pos-ror-desktop-windows-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
+          retention-days: 30
+
+      - name: 📤 Upload debug logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ github.run_number }}
+          path: |
+            src-tauri/target/release/build.log
+            rails/log/*.log
+            ${{ runner.temp }}/tauri-*.log
+          retention-days: 7
+
+      # ========================================================================
+      # RELEASE (SOLO PARA TAGS)
+      # ========================================================================
+      - name: 🚀 Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: src-tauri/target/release/bundle/msi/*.msi
+          name: POS-RoR Desktop ${{ github.ref_name }}
+          body: |
+            # POS-RoR Desktop ${{ github.ref_name }}
+            
+            ## 📦 Instalación
+            
+            1. Descarga el archivo `pos-ror-desktop_*_x64_en-US.msi`
+            2. Ejecuta el instalador como administrador
+            3. Sigue las instrucciones del instalador
+            4. La aplicación se instalará en `Program Files\POS-RoR Desktop`
+            5. Se creará un acceso directo en el escritorio y menú inicio
+            
+            ## ✨ Características
+            
+            - ✅ Sistema POS completo con Ruby on Rails
+            - ✅ Base de datos SQLite integrada
+            - ✅ Ruby portable incluido (no requiere instalación)
+            - ✅ Interfaz web moderna en ventana nativa
+            - ✅ Gestión de inventario, ventas, clientes y reportes
+            - ✅ Funciona sin conexión a internet
+            
+            ## 🔧 Requisitos del Sistema
+            
+            - Windows 10 o superior (x64)
+            - 2 GB RAM mínimo (4 GB recomendado)
+            - 500 MB espacio en disco
+            - .NET Framework 4.7.2 o superior
+            
+            ## 🐛 Problemas Conocidos
+            
+            - En el primer inicio puede tomar hasta 30 segundos en abrir
+            - Algunos antivirus pueden mostrar advertencias (falso positivo)
+            
+            ---
+            
+            **Construido automáticamente con GitHub Actions**
+            **Commit:** ${{ github.sha }}
+            **Fecha:** ${{ github.event.head_commit.timestamp }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ==========================================================================
+  # JOB DE NOTIFICACIÓN
+  # ==========================================================================
+  notify:
+    name: 📢 Notify build result
+    runs-on: ubuntu-latest
+    needs: [build-windows-msi]
+    if: always()
+    
+    steps:
+      - name: 📢 Build Success Notification
+        if: needs.build-windows-msi.result == 'success'
+        run: |
+          echo "🎉 ¡Build exitoso!"
+          echo "El MSI de POS-RoR Desktop se construyó correctamente"
+          echo "Revisa los artifacts o la release si es un tag"
+          
+      - name: 📢 Build Failure Notification  
+        if: needs.build-windows-msi.result == 'failure'
+        run: |
+          echo "❌ Build falló"
+          echo "Revisa los logs para más detalles"
+          exit 1

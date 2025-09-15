@@ -1,0 +1,142 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "",
+    "frontendDist": "../rails/public",
+    "devUrl": "http://localhost:4317"
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi"],
+    "category": "Business",
+    "copyright": "Copyright © 2025 POS-RoR Desktop",
+    "shortDescription": "Sistema POS completo para escritorio",
+    "longDescription": "Sistema de Punto de Venta (POS) completo desarrollado en Ruby on Rails, empaquetado como aplicación de escritorio para Windows. Incluye gestión de inventario, ventas, clientes, reportes y más.",
+    "externalBin": [
+      "rails/bin/start-rails.bat"
+    ],
+    "resources": [
+      "rails/**/*",
+      "!rails/log/**/*",
+      "!rails/tmp/**/*",
+      "!rails/test/**/*",
+      "!rails/.git/**/*",
+      "!rails/node_modules/**/*"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "wix": {
+        "language": "es-ES",
+        "template": "wix/main.wxs",
+        "fragmentPaths": ["wix/fragment.wxs"],
+        "componentRefs": ["ApplicationFiles"],
+        "featureRefs": ["MainFeature"],
+        "bannerPath": "wix/banner.png",
+        "dialogImagePath": "wix/dialog.png",
+        "foldersAssociations": {
+          "ProgramMenuFolder": [
+            {
+              "name": "POS-RoR Desktop",
+              "path": "."
+            }
+          ],
+          "DesktopFolder": [
+            {
+              "name": "POS-RoR Desktop",
+              "path": "."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "productName": "POS-RoR Desktop",
+  "version": "1.0.0",
+  "identifier": "com.pos-ror.desktop",
+  "plugins": {
+    "shell": {
+      "all": true,
+      "execute": true,
+      "sidecar": true,
+      "open": false
+    },
+    "dialog": {
+      "all": true
+    },
+    "fs": {
+      "all": true,
+      "readFile": true,
+      "writeFile": true,
+      "readDir": true,
+      "copyFile": true,
+      "createDir": true,
+      "removeDir": true,
+      "removeFile": true,
+      "renameFile": true,
+      "exists": true
+    },
+    "path": {
+      "all": true
+    },
+    "os": {
+      "all": true
+    },
+    "process": {
+      "all": true
+    }
+  },
+  "app": {
+    "macOSPrivateApi": false,
+    "windows": [
+      {
+        "title": "POS-RoR Desktop",
+        "label": "main",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "maximized": false,
+        "visible": false,
+        "decorations": true,
+        "alwaysOnTop": false,
+        "fullscreen": false,
+        "transparent": false,
+        "url": "http://localhost:4317",
+        "webSecurity": false,
+        "fileDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": null,
+      "devCsp": null,
+      "freezePrototype": false,
+      "dangerousDisableAssetCspModification": {
+        "*.js": true,
+        "*.css": true
+      }
+    },
+    "trayIcon": {
+      "iconPath": "icons/icon.ico",
+      "iconAsTemplate": false,
+      "menuOnLeftClick": false,
+      "tooltip": "POS-RoR Desktop"
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.ico",
+      "iconAsTemplate": false,
+      "menuOnLeftClick": false,
+      "tooltip": "POS-RoR Desktop"
+    }
+  }
+}
