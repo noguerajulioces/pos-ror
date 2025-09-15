@@ -19,7 +19,7 @@ class SettingsController < ApplicationController
   def update_printer
     printer_params.each do |var, value|
       setting = Setting.find_or_create_by(var: var) do |s|
-        s.account = current_account
+        s.account = current_tenant
       end
       setting.update!(value: value)
     end
