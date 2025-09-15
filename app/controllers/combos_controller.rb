@@ -33,6 +33,7 @@ class CombosController < ApplicationController
 
     if @combo.save
       create_combo_items
+      attach_image if params[:product][:image].present?
       redirect_to combo_path(@combo), notice: 'Combo creado exitosamente.'
     else
       @available_products = available_products_for_combo
@@ -47,6 +48,7 @@ class CombosController < ApplicationController
   def update
     if @combo.update(combo_params)
       update_combo_items
+      attach_image if params[:product][:image].present?
       redirect_to combo_path(@combo), notice: 'Combo actualizado exitosamente.'
     else
       @available_products = available_products_for_combo
@@ -159,5 +161,9 @@ class CombosController < ApplicationController
       sales_this_month: sale_items.where(created_at: Time.current.beginning_of_month..Time.current.end_of_month).sum(:quantity),
       revenue_this_month: sale_items.where(created_at: Time.current.beginning_of_month..Time.current.end_of_month).sum(:total)
     }
+  end
+
+  def attach_image
+    @combo.images.create(image: params[:product][:image])
   end
 end

@@ -79,6 +79,17 @@
         <h3 class="text-sm font-semibold text-gray-900">Información Básica</h3>
       </div>
       <div class="divide-y divide-gray-200">
+        <!-- Imagen del combo -->
+        <% if @combo.images.any? { |pi| pi.image.attached? } %>
+          <div class="px-4 py-4 sm:px-6">
+            <span class="text-sm font-medium text-gray-500 block mb-3">Imagen</span>
+            <div class="flex justify-center">
+              <%= image_tag @combo.images.first.image.variant(resize_to_fill: [200, 200]),
+                    alt: @combo.name,
+                    class: "w-48 h-48 object-cover rounded-lg shadow-md" %>
+            </div>
+          </div>
+        <% end %>
         <div class="flex justify-between items-center px-4 py-4 sm:px-6">
           <span class="text-sm font-medium text-gray-500">Nombre</span>
           <span class="text-sm font-medium text-gray-900"><%= @combo.name %></span>
