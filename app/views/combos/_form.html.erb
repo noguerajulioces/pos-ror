@@ -30,12 +30,13 @@
     <div class="px-4 py-6 sm:p-8">
       <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Básica</h3>
       
-      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6" data-controller="sku-generator" data-sku-generator-prefix-value="COMBO">
         <!-- Nombre -->
         <div class="sm:col-span-3">
           <%= form.label :name, "Nombre del Combo", class: "block text-sm/6 font-medium text-gray-900" %>
           <div class="mt-2">
             <%= form.text_field :name, 
+                data: { sku_generator_target: "nameField" },
                 class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
                 placeholder: "Ej: Combo Hamburguesa Completa" %>
           </div>
@@ -47,10 +48,11 @@
           <div class="mt-2">
             <div class="flex gap-2">
               <%= form.text_field :sku, 
+                  data: { sku_generator_target: "skuField" },
                   class: "flex-1 rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6",
                   placeholder: "Ej: COMBO-001" %>
               <button type="button" 
-                      id="generate-combo-sku-btn" 
+                      data-action="click->sku-generator#generateSku"
                       class="rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -220,33 +222,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const addComponentBtn = document.getElementById('add-component-btn');
-  const generateSkuBtn = document.getElementById('generate-combo-sku-btn');
   const container = document.getElementById('combo-components-container');
   const template = document.getElementById('combo-item-template');
   let componentIndex = <%= combo.persisted? ? combo.combo_items.count : 1 %>;
 
-  // Generar SKU automáticamente
-  if (generateSkuBtn) {
-    generateSkuBtn.addEventListener('click', function() {
-      const nameField = document.getElementById('product_name');
-      const skuField = document.getElementById('product_sku');
-      
-      if (!nameField.value.trim()) {
-        alert('Por favor, ingresa un nombre para el combo primero.');
-        nameField.focus();
-        return;
-      }
-      
-      const sku = generateComboSKU(nameField.value);
-      skuField.value = sku;
-      
-      // Feedback visual
-      skuField.classList.add('ring-2', 'ring-green-500');
-      setTimeout(() => {
-        skuField.classList.remove('ring-2', 'ring-green-500');
-      }, 1000);
-    });
-  }
 
   // Agregar nuevo componente
   if (addComponentBtn && template) {
@@ -289,31 +268,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  function generateComboSKU(name) {
-    const cleanName = name.toUpperCase()
-                         .replace(/[ÁÀÄÂ]/g, 'A')
-                         .replace(/[ÉÈËÊ]/g, 'E')
-                         .replace(/[ÍÌÏÎ]/g, 'I')
-                         .replace(/[ÓÒÖÔ]/g, 'O')
-                         .replace(/[ÚÙÜÛ]/g, 'U')
-                         .replace(/Ñ/g, 'N')
-                         .replace(/[^A-Z0-9\s]/g, '')
-                         .replace(/\s+/g, ' ')
-                         .trim();
-    
-    const words = cleanName.split(' ').slice(0, 2);
-    let acronym = '';
-    
-    words.forEach(word => {
-      if (word.length > 0) {
-        acronym += word.length > 4 ? word.substring(0, 3) : word;
-      }
-    });
-    
-    acronym = acronym.substring(0, 6);
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    
-    return `COMBO-${acronym}-${randomNum}`;
-  }
 });
 </script>
