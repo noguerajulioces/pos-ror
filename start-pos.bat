@@ -1,6 +1,19 @@
 @echo off
 echo Iniciando POS-RoR...
 
+REM Verificar Node.js
+echo Verificando Node.js...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Node.js no esta instalado
+    echo [INFO] Descargar desde: https://nodejs.org/
+    echo [INFO] Instalar version LTS y reiniciar este script
+    pause
+    exit /b 1
+) else (
+    echo [OK] Node.js disponible
+)
+
 REM Guardar cambios locales, actualizar y restaurar
 echo Guardando cambios locales...
 wsl.exe --exec bash -i -c "cd /mnt/c/pos-ror-feature-foot && git stash"
