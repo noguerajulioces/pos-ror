@@ -1,0 +1,115 @@
+<%# app/views/settings/printer.html.erb %>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+        🖨️ Configuración de Impresora Térmica
+      </h1>
+      <p class="text-gray-600 mt-1">Configura tu impresora térmica sin tocar código</p>
+    </div>
+
+    <%= form_with url: settings_printer_path, method: :patch, local: true, class: "p-6 space-y-6" do |form| %>
+      
+      <!-- Dimensiones Físicas -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">📏 Dimensiones Físicas</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <%= form.label :printer_paper_width_mm, "Ancho del papel (mm)", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :printer_paper_width_mm, 
+                value: Setting.get('printer_paper_width_mm'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="text-xs text-gray-500 mt-1">Ejemplo: 58mm para impresoras estándar</p>
+          </div>
+          
+          <div>
+            <%= form.label :printer_print_width_mm, "Ancho de impresión (mm)", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :printer_print_width_mm, 
+                value: Setting.get('printer_print_width_mm'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="text-xs text-gray-500 mt-1">Área útil de impresión</p>
+          </div>
+          
+          <div>
+            <%= form.label :printer_line_width_chars, "Caracteres por línea", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :printer_line_width_chars, 
+                value: Setting.get('printer_line_width_chars'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="text-xs text-gray-500 mt-1">Determina el ancho del recibo</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuración Windows -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">🪟 Configuración Windows</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <%= form.label :printer_windows_name, "Nombre de impresora en Windows", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :printer_windows_name, 
+                value: Setting.get('printer_windows_name'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="text-xs text-gray-500 mt-1">Nombre exacto como aparece en Windows</p>
+          </div>
+          
+          <div>
+            <%= form.label :printer_lines_before_cut, "Líneas antes del corte", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :printer_lines_before_cut, 
+                value: Setting.get('printer_lines_before_cut'), 
+                min: 0, max: 10,
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="text-xs text-gray-500 mt-1">Espacios antes de cortar el papel</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comandos ESC/POS -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">⚙️ Comandos ESC/POS</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <%= form.label :printer_cut_command, "Comando de corte completo", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :printer_cut_command, 
+                value: Setting.get('printer_cut_command'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm" %>
+            <p class="text-xs text-gray-500 mt-1">Comando hexadecimal para corte completo</p>
+          </div>
+          
+          <div>
+            <%= form.label :printer_partial_cut_command, "Comando de corte parcial", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :printer_partial_cut_command, 
+                value: Setting.get('printer_partial_cut_command'), 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm" %>
+            <p class="text-xs text-gray-500 mt-1">Comando hexadecimal para corte parcial</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+        <div class="text-sm text-gray-600">
+          💡 Los cambios se aplicarán inmediatamente a las próximas impresiones
+        </div>
+        <div class="space-x-3">
+          <%= link_to "🖨️ Probar Impresión", settings_test_printer_path, 
+              method: :post,
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          
+          <%= form.submit "💾 Guardar Configuración", 
+              class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Información de ayuda -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <h4 class="font-medium text-gray-900 mb-2">📚 Configuraciones Comunes:</h4>
+      <div class="text-sm text-gray-600 space-y-1">
+        <div><strong>58mm estándar:</strong> Papel 58mm, Impresión 48mm, 48 caracteres</div>
+        <div><strong>80mm:</strong> Papel 80mm, Impresión 72mm, 64 caracteres</div>
+        <div><strong>Corte completo:</strong> \x1D\x56\x00</div>
+        <div><strong>Corte parcial:</strong> \x1D\x56\x01</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <%# app/views/orders/print_templates/default.html.erb %>
-<% line_width = 48 %>
+<% line_width = Setting.get('printer_line_width_chars').to_i %>
 
 <%= Setting.get('company_name').to_s.center(line_width) %>
 <%= Setting.get('company_owner').to_s.center(line_width) %>

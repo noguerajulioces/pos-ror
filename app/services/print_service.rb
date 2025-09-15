@@ -66,23 +66,31 @@ class PrintServiceNew
   def self.print_to_thermal_printer(text, order_id = nil)
     # Método basado en lo que SABEMOS que funciona
     begin
-      Rails.logger.info "🖨️ Iniciando impresión térmica..."
+      Rails.logger.info '🖨️ Iniciando impresión térmica...'
 
-      # Agregar comandos de corte ESC/POS al final del texto
-      text_with_cut = text + "\n\n\n" + "\x1D\x56\x00"  # Comando de corte completo
+      # Obtener configuraciones dinámicas de impresora
+      lines_before_cut = Setting.get('printer_lines_before_cut').to_i
+      cut_command = Setting.get('printer_cut_command').gsub('\\x', '\x')
+      printer_name = Setting.get('printer_windows_name')
       
-      # Los métodos que funcionaron en tu prueba (ahora con corte)
+      # Agregar comandos de corte ESC/POS configurables
+      line_feeds = "\n" * lines_before_cut
+      text_with_cut = text + line_feeds + cut_command
+      
+      Rails.logger.info "🔧 Configuración: #{lines_before_cut} líneas antes del corte, impresora: #{printer_name}"
+      
+      # Métodos configurables basados en la configuración
       methods = [
-        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name 'Generic / Text Only'\"",
+        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name '#{printer_name}'\"",
         "cmd.exe /c \"echo #{text_with_cut.gsub('"', '\"')} > PRN\"",
         "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {\\$_.Name -like '*Generic*'} | Select-Object -First 1).Name\""
       ]
 
       methods.each_with_index do |method, index|
         Rails.logger.info "🔄 Probando método #{index + 1}..."
-        
+
         result = system(method)
-        
+
         if result
           Rails.logger.info "✅ Método #{index + 1} exitoso - Impresión enviada"
           return true
@@ -92,14 +100,14 @@ class PrintServiceNew
       end
 
       # Si todos los métodos fallaron
-      Rails.logger.warn "⚠️ Todos los métodos de impresión fallaron"
+      Rails.logger.warn '⚠️ Todos los métodos de impresión fallaron'
       save_backup(text, order_id)
-      return false
+      false
 
     rescue => e
       Rails.logger.error "❌ Error en impresión térmica: #{e.message}"
       save_backup(text, order_id)
-      return false
+      false
     end
   end
 
@@ -107,7 +115,7 @@ class PrintServiceNew
     # Guardar como respaldo
     timestamp = Time.current.strftime('%Y%m%d_%H%M%S')
     backup_file = Rails.root.join('tmp', "thermal_backup_#{order_id || timestamp}.txt")
-    
+
     File.write(backup_file, text)
     Rails.logger.info "📝 Respaldo guardado en: #{backup_file}"
   end

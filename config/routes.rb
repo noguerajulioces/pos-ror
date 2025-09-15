@@ -143,6 +143,9 @@ Rails.application.routes.draw do
   end
   resource :settings, only: [ :edit ] do
     patch :update_all, on: :collection
+    get :printer, on: :collection
+    patch :update_printer, on: :collection
+    post :test_printer, on: :collection
   end
   resources :reports, only: [ :index ] do
     collection do
