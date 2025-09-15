@@ -145,7 +145,7 @@ class CombosController < ApplicationController
     return 0 unless combo.combo_items.any?
 
     combo.combo_items.map do |item|
-      component_stock = item.component_product.virtual_stock || 0
+      component_stock = item.component_product&.virtual_stock || 0
       (component_stock / item.quantity).floor
     end.min || 0
   end

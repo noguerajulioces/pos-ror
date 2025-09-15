@@ -176,7 +176,7 @@
                     <div class="flex flex-wrap gap-1">
                       <% combo.combo_items.limit(3).each do |item| %>
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          <%= item.quantity %>× <%= item.component_product.name %>
+                          <%= item.quantity %>× <%= item.component_product&.name %>
                         </span>
                       <% end %>
                       <% if combo.combo_items.count > 3 %>
