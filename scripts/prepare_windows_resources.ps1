@@ -78,37 +78,34 @@ if (Test-Path $RubyExePath) {
 }
 
 if (!(Test-Path $RubyExePath)) {
-    Write-Info "Descargando Ruby $RubyVersion desde GitHub..."
+    Write-Info "Usando script especializado para descargar Ruby portable..."
     
     try {
-        # Usar TLS 1.2 para GitHub
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        # Usar script especializado de descarga
+        $DownloadScript = Join-Path $PSScriptRoot "download_ruby_portable.ps1"
         
-        Write-Info "URL: $RubyUrl"
-        Invoke-WebRequest -Uri $RubyUrl -OutFile $RubyArchivePath -UseBasicParsing
-        Write-Info "Descarga completada: $([math]::Round((Get-Item $RubyArchivePath).Length / 1MB, 2)) MB"
+        if (Test-Path $DownloadScript) {
+            $params = @{
+                RubyVersion = $RubyVersion
+                TargetDir = $RubyDir
+            }
+            if ($Verbose) { $params.Verbose = $true }
+            
+            & $DownloadScript @params
+            
+            if ($LASTEXITCODE -ne 0) {
+                throw "Script de descarga fallo con codigo $LASTEXITCODE"
+            }
+        } else {
+            throw "Script de descarga no encontrado: $DownloadScript"
+        }
         
-        # Extraer con 7zip (debe estar instalado en GitHub Actions)
-        Write-Info "Extrayendo Ruby portable..."
-        if (Get-Command "7z" -ErrorAction SilentlyContinue) {
-            & 7z x $RubyArchivePath "-o$RubyDir" -y | Out-Null
-        }
-        elseif (Get-Command "C:\Program Files\7-Zip\7z.exe" -ErrorAction SilentlyContinue) {
-            & "C:\Program Files\7-Zip\7z.exe" x $RubyArchivePath "-o$RubyDir" -y | Out-Null
-        }
-        else {
-            throw "7-Zip no encontrado. Instalar con: choco install 7zip"
-        }
-        
-        # Verificar extracción
+        # Verificar que Ruby se instalo correctamente
         if (!(Test-Path $RubyExePath)) {
-            throw "Error al extraer Ruby portable"
+            throw "Ruby executable no encontrado despues de la descarga"
         }
         
         Write-Info "Ruby portable configurado correctamente"
-        
-        # Limpiar archivo temporal
-        Remove-Item $RubyArchivePath -Force -ErrorAction SilentlyContinue
     }
     catch {
         Write-Error "Error configurando Ruby portable: $_"
@@ -125,19 +122,47 @@ $SqliteDllPath = Join-Path $SqliteDir "sqlite3.dll"
 if (!(Test-Path $SqliteDllPath)) {
     Write-Info "Descargando SQLite3 DLL..."
     
-    try {
-        $SqliteUrl = "https://www.sqlite.org/2024/sqlite-dll-win-x64-3460000.zip"
-        $SqliteZipPath = Join-Path $env:TEMP "sqlite.zip"
-        
-        Invoke-WebRequest -Uri $SqliteUrl -OutFile $SqliteZipPath -UseBasicParsing
-        Expand-Archive $SqliteZipPath -DestinationPath $SqliteDir -Force
-        
-        Write-Info "SQLite3 DLL configurado correctamente"
-        Remove-Item $SqliteZipPath -Force -ErrorAction SilentlyContinue
-    }
-    catch {
-        Write-Warning "No se pudo descargar SQLite3 DLL: $_"
-        Write-Info "La gem sqlite3 puede incluir su propia DLL"
+    $SqliteUrl = "https://www.sqlite.org/2024/sqlite-dll-win-x64-3460000.zip"
+    $SqliteZipPath = Join-Path $env:TEMP "sqlite.zip"
+    
+    # Intentar descarga con reintentos (menos intentos para SQLite)
+    $MaxRetries = 2
+    $Downloaded = $false
+    
+    for ($i = 1; $i -le $MaxRetries; $i++) {
+        try {
+            Write-Info "Descargando SQLite (intento $i)..."
+            
+            $webClient = New-Object System.Net.WebClient
+            $webClient.Headers.Add("User-Agent", "POS-RoR-Desktop-Build/1.0")
+            $webClient.DownloadFile($SqliteUrl, $SqliteZipPath)
+            
+            if (Test-Path $SqliteZipPath) {
+                Expand-Archive $SqliteZipPath -DestinationPath $SqliteDir -Force
+                Write-Info "SQLite3 DLL configurado correctamente"
+                Remove-Item $SqliteZipPath -Force -ErrorAction SilentlyContinue
+                $Downloaded = $true
+                break
+            }
+        }
+        catch {
+            Write-Warning "Error descargando SQLite (intento $i): $_"
+            if (Test-Path $SqliteZipPath) {
+                Remove-Item $SqliteZipPath -Force -ErrorAction SilentlyContinue
+            }
+            
+            if ($i -eq $MaxRetries) {
+                Write-Warning "No se pudo descargar SQLite3 DLL despues de $MaxRetries intentos"
+                Write-Info "La gem sqlite3 puede incluir su propia DLL"
+            } else {
+                Start-Sleep -Seconds 5
+            }
+        }
+        finally {
+            if ($webClient) {
+                $webClient.Dispose()
+            }
+        }
     }
 }
 else {
