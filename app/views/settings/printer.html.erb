@@ -18,7 +18,7 @@
             <%= form.label :printer_paper_width_mm, "Ancho del papel (mm)", class: "block text-sm font-medium text-gray-700" %>
             <%= form.number_field :printer_paper_width_mm, 
                 value: Setting.get('printer_paper_width_mm'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Ejemplo: 58mm para impresoras estándar</p>
           </div>
           
@@ -26,7 +26,7 @@
             <%= form.label :printer_print_width_mm, "Ancho de impresión (mm)", class: "block text-sm font-medium text-gray-700" %>
             <%= form.number_field :printer_print_width_mm, 
                 value: Setting.get('printer_print_width_mm'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Área útil de impresión</p>
           </div>
           
@@ -34,7 +34,7 @@
             <%= form.label :printer_line_width_chars, "Caracteres por línea", class: "block text-sm font-medium text-gray-700" %>
             <%= form.number_field :printer_line_width_chars, 
                 value: Setting.get('printer_line_width_chars'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Determina el ancho del recibo</p>
           </div>
         </div>
@@ -48,7 +48,7 @@
             <%= form.label :printer_windows_name, "Nombre de impresora en Windows", class: "block text-sm font-medium text-gray-700" %>
             <%= form.text_field :printer_windows_name, 
                 value: Setting.get('printer_windows_name'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Nombre exacto como aparece en Windows</p>
           </div>
           
@@ -57,7 +57,7 @@
             <%= form.number_field :printer_lines_before_cut, 
                 value: Setting.get('printer_lines_before_cut'), 
                 min: 0, max: 10,
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Espacios antes de cortar el papel</p>
           </div>
         </div>
@@ -71,7 +71,7 @@
             <%= form.label :printer_cut_command, "Comando de corte completo", class: "block text-sm font-medium text-gray-700" %>
             <%= form.text_field :printer_cut_command, 
                 value: Setting.get('printer_cut_command'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Comando hexadecimal para corte completo</p>
           </div>
           
@@ -79,7 +79,7 @@
             <%= form.label :printer_partial_cut_command, "Comando de corte parcial", class: "block text-sm font-medium text-gray-700" %>
             <%= form.text_field :printer_partial_cut_command, 
                 value: Setting.get('printer_partial_cut_command'), 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm" %>
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm px-2 py-3" %>
             <p class="text-xs text-gray-500 mt-1">Comando hexadecimal para corte parcial</p>
           </div>
         </div>
