@@ -53,9 +53,9 @@ class PrintService
       if thermal_devices.any?
         thermal_devices.each do |device|
           begin
-            # Si es un dispositivo USB directo de FTX, usar método especial
-            if device.start_with?('/dev/bus/usb/')
-              success = print_to_ftx_device(printer.to_escpos)
+            # Si es la impresora FTX, usar método especial
+            if device == 'WINDOWS_PRINTER_FTX' || device.start_with?('/dev/bus/usb/')
+              success = print_to_ftx_device(printer.to_escpos, device)
               if success
                 Rails.logger.info '✅ Impresión enviada a FTX TDRO58U via método especial'
                 return true
@@ -103,8 +103,8 @@ class PrintService
     fix_encoding_for_thermal(clean_text)
   end
 
-  def self.print_to_ftx_device(escpos_data)
-    # Método especializado para FTX TDRO58U via Windows
+  def self.print_to_ftx_device(escpos_data, device_type = 'WINDOWS_PRINTER_FTX')
+    # Método especializado para FTX TDRO58U
     begin
       # Crear archivo temporal en ubicación accesible desde Windows
       temp_file = "/mnt/c/temp/ftx_print_#{Time.now.to_i}.txt"
@@ -121,16 +121,26 @@ class PrintService
       # Intentar diferentes métodos de impresión via Windows
       windows_temp = temp_file.gsub('/mnt/c/', 'C:\\').gsub('/', '\\')
 
-      methods = [
-        # Método 1: PowerShell Get-Content
-        "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name 'FTX TDRO58U'\"",
-        # Método 2: CMD type
-        "cmd.exe /c \"type #{windows_temp} > PRN\"",
-        # Método 3: PowerShell directo
-        "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name 'FTX TDRO58U'\"",
-        # Método 4: Notepad print
-        "powershell.exe -Command \"Start-Process notepad -ArgumentList '#{windows_temp}' -Verb Print -WindowStyle Hidden\""
-      ]
+      if device_type == 'WINDOWS_PRINTER_FTX'
+        # Métodos para impresora configurada en Windows
+        methods = [
+          # Método 1: PowerShell Get-Content (buscar nombre exacto)
+          "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-Printer -Name (Get-Printer | Where-Object {$_.Name -like '*FTX*' -or $_.Name -like '*TDR*'} | Select-Object -First 1).Name\"",
+          # Método 2: CMD copy a PRN
+          "cmd.exe /c \"copy #{windows_temp} PRN\"",
+          # Método 3: PowerShell directo
+          "powershell.exe -Command \"'#{clean_text.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {$_.Name -like '*FTX*'} | Select-Object -First 1).Name\"",
+          # Método 4: Usar lpr si está disponible
+          "powershell.exe -Command \"Get-Content '#{windows_temp}' | Out-File -FilePath 'PRN' -Encoding ASCII\""
+        ]
+      else
+        # Métodos para dispositivo USB directo
+        methods = [
+          "cat #{temp_file} > #{device_type} 2>/dev/null",
+          "dd if=#{temp_file} of=#{device_type} 2>/dev/null",
+          "sudo cat #{temp_file} > #{device_type} 2>/dev/null"
+        ]
+      end
 
       methods.each_with_index do |method, index|
         Rails.logger.info "🔄 FTX Windows método #{index + 1}"
@@ -180,8 +190,17 @@ class PrintService
   end
 
   def self.detect_ftx_usb_device
-    # Detectar automáticamente la impresora FTX TDRO58U por VID:PID
+    # Detectar impresora FTX desde Windows (ya configurada)
     begin
+      # Método 1: Buscar en impresoras instaladas de Windows
+      printers_output = `powershell.exe -Command "Get-Printer | Select-Object Name" 2>/dev/null`.strip
+      
+      if printers_output.include?('FTX') || printers_output.include?('TDR')
+        Rails.logger.info "🖨️ FTX encontrada en impresoras de Windows"
+        return ['WINDOWS_PRINTER_FTX']  # Marcador especial para usar Windows
+      end
+      
+      # Método 2: Buscar por USB si no está en Windows
       lsusb_output = `lsusb 2>/dev/null`.strip
       ftx_line = lsusb_output.lines.find { |line| line.include?('2aaf:6001') || line.include?('FTX') }
       
@@ -191,17 +210,17 @@ class PrintService
           bus = $1.rjust(3, '0')
           device = $2.rjust(3, '0')
           usb_path = "/dev/bus/usb/#{bus}/#{device}"
-          Rails.logger.info "🔍 FTX detectada automáticamente: #{usb_path}"
+          Rails.logger.info "🔍 FTX detectada por USB: #{usb_path}"
           return [usb_path]
         end
       end
       
-      Rails.logger.warn "⚠️ FTX TDRO58U no detectada automáticamente"
-      return []
+      Rails.logger.warn '⚠️ FTX TDRO58U no detectada'
+      []
       
     rescue => e
       Rails.logger.error "❌ Error detectando FTX: #{e.message}"
-      return []
+      []
     end
   end
 
