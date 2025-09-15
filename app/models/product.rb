@@ -98,6 +98,7 @@ class Product < ApplicationRecord
   validate :recipe_must_have_components, if: :recipe?, unless: :skip_recipe_validation
 
   before_create :generate_barcode, if: -> { barcode.blank? }
+  before_save :set_recipe_stock_to_zero, if: :recipe?
   before_save :update_stock_status
 
   # Scopes existentes
@@ -187,18 +188,18 @@ class Product < ApplicationRecord
   def virtual_stock
     case kind
     when 'simple'
-      stock
+      stock || 0
     when 'recipe'
-      # Stock virtual basado en ingredientes disponibles
+      # Stock Aproximado basado en ingredientes disponibles
       recipe_components.map do |component|
-        ingredient_stock = component.ingredient.stock
+        ingredient_stock = component.ingredient.stock || 0
         (ingredient_stock / component.total_quantity_with_waste).floor
       end.min || 0
     when 'combo'
-      # Stock virtual basado en componentes disponibles
+      # Stock Aproximado basado en componentes disponibles
       combo_items.map do |item|
         component_stock = item.component_product.virtual_stock || 0
-        component_stock / item.quantity
+        (component_stock / item.quantity).floor
       end.min || 0
     else
       0
@@ -233,8 +234,17 @@ class Product < ApplicationRecord
   end
 
   def update_stock_status
-    return if kind == 'combo' || stock.nil?
-    self.status = stock <= 0 ? 'out_of_stock' : 'active'
+    return if stock.nil?
+
+    case kind
+    when 'combo'
+      nil # Combos no manejan stock físico
+    when 'recipe'
+      self.stock = 0  # Recetas siempre tienen stock = 0 (Make-to-order)
+      self.status = recipe_available? ? 'active' : 'out_of_stock'
+    else
+      self.status = stock <= 0 ? 'out_of_stock' : 'active'
+    end
   end
 
   def self.ransackable_attributes(auth_object = nil)
@@ -297,10 +307,25 @@ class Product < ApplicationRecord
     recipe_service.check_critical_ingredients
   end
 
+  # Verifica si una receta está disponible basada en stock de ingredientes
+  def recipe_available?
+    return false unless recipe?
+    return false unless recipe_components.any?
+
+    recipe_components.all? do |component|
+      ingredient_stock = component.ingredient.stock || 0
+      ingredient_stock >= component.total_quantity_with_waste
+    end
+  end
+
   private
 
   def generate_barcode
     self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
+  end
+
+  def set_recipe_stock_to_zero
+    self.stock = 0 if recipe?
   end
 
   def recipe_must_have_components

@@ -168,7 +168,7 @@ ActsAsTenant.with_tenant(account) do
     prod.name = 'Pizza Muzzarella'
     prod.description = 'Pizza tradicional con mozzarella y salsa de tomate'
     prod.price = 25000
-    prod.stock = 0.0 # Stock virtual basado en ingredientes
+    prod.stock = 0.0 # Stock Aproximado basado en ingredientes
     prod.category = Category.find_by(name: 'Pizzas')
     prod.unit = Unit.find_by(name: 'Unidad')
     prod.kind = 'simple' # Temporalmente simple
@@ -211,7 +211,7 @@ ActsAsTenant.with_tenant(account) do
     prod.name = 'Combo Clásico'
     prod.description = 'Pizza Muzzarella + Coca Cola 500ml'
     prod.price = 28000
-    prod.stock = 0.0 # Stock virtual basado en componentes
+    prod.stock = 0.0 # Stock Aproximado basado en componentes
     prod.category = Category.find_by(name: 'Combos')
     prod.unit = Unit.find_by(name: 'Unidad')
     prod.kind = 'combo'

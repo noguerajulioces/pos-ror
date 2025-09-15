@@ -69,7 +69,7 @@ class RecipesController < ApplicationController
   def create_recipe_components
     return unless params[:recipe_components].present?
 
-    recipe_components_params = params.permit(recipe_components: [ :ingredient_id, :quantity, :waste_percentage ])[:recipe_components]
+    recipe_components_params = params.permit(recipe_components: [ :ingredient_id, :quantity, :waste_pct ])[:recipe_components]
     return unless recipe_components_params.present?
 
     recipe_components_params.each do |index, component_params|
@@ -78,13 +78,14 @@ class RecipesController < ApplicationController
       @product.recipe_components.create!(
         ingredient_id: component_params[:ingredient_id],
         quantity: component_params[:quantity],
-        waste_percentage: component_params[:waste_percentage] || 0
+        waste_pct: component_params[:waste_pct] || 0,
+        unit_id: Ingredient.find(component_params[:ingredient_id]).unit_id
       )
     end
   end
 
   def update_recipe_components
-    recipe_components_params = params.permit(recipe_components: [ :id, :ingredient_id, :quantity, :waste_percentage ])[:recipe_components]
+    recipe_components_params = params.permit(recipe_components: [ :id, :ingredient_id, :quantity, :waste_pct ])[:recipe_components]
     return unless recipe_components_params.present?
 
     # Eliminar componentes existentes que no están en los nuevos parámetros
@@ -100,14 +101,16 @@ class RecipesController < ApplicationController
         component.update!(
           ingredient_id: component_params[:ingredient_id],
           quantity: component_params[:quantity],
-          waste_percentage: component_params[:waste_percentage] || 0
+          waste_pct: component_params[:waste_pct] || 0,
+          unit_id: Ingredient.find(component_params[:ingredient_id]).unit_id
         )
       else
         # Crear nuevo componente
         @product.recipe_components.create!(
           ingredient_id: component_params[:ingredient_id],
           quantity: component_params[:quantity],
-          waste_percentage: component_params[:waste_percentage] || 0
+          waste_pct: component_params[:waste_pct] || 0,
+          unit_id: Ingredient.find(component_params[:ingredient_id]).unit_id
         )
       end
     end

@@ -34,8 +34,8 @@
     <div class="w-32">
       <label class="block text-sm font-medium text-gray-900 mb-2">Desperdicio %</label>
       <input type="number" 
-             name="recipe_components[<%= index %>][waste_percentage]" 
-             value="<%= component&.waste_percentage || 0 %>"
+             name="recipe_components[<%= index %>][waste_pct]" 
+             value="<%= component&.waste_pct || 0 %>"
              min="0"
              max="100"
              step="0.1"

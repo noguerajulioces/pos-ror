@@ -63,7 +63,7 @@
             </span>
           </div>
           <div class="py-3 flex justify-between">
-            <span class="text-sm font-medium text-gray-500">Stock Virtual</span>
+            <span class="text-sm font-medium text-gray-500">Stock Aproximado</span>
             <span class="text-sm font-semibold text-green-600">
               <%= @product.virtual_stock %> <%= @product.unit&.abbreviation %>
             </span>
@@ -89,14 +89,6 @@
               <%= number_to_currency(@product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
             </span>
           </div>
-          <% if @product.prep_time_seconds.present? %>
-            <div class="py-3 flex justify-between">
-              <span class="text-sm font-medium text-gray-500">Tiempo de Preparación</span>
-              <span class="text-sm text-gray-900">
-                <%= pluralize(@product.prep_time_seconds / 60, 'minuto') %>
-              </span>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
@@ -114,7 +106,7 @@
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Ingrediente</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Desperdicio</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Desperdicio Aproximado</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Disponible</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Recetas Posibles</th>
               </tr>
@@ -129,7 +121,7 @@
                     <%= component.quantity %> <%= component.ingredient.unit&.abbreviation %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= component.waste_percentage %>%
+                    <%= component.waste_pct %>%
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <% stock = component.ingredient.stock || 0 %>
