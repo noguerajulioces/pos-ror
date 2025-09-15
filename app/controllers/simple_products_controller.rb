@@ -1,5 +1,5 @@
 class SimpleProductsController < ApplicationController
-  before_action :set_product, only: %i[show edit update destroy]
+  before_action :set_product, only: %i[show edit update destroy update_status]
 
   def index
     @q = Product.where(kind: 'simple').ransack(params[:q])
@@ -39,7 +39,33 @@ class SimpleProductsController < ApplicationController
 
   def destroy
     @product.destroy
-    redirect_to products_path, notice: 'Producto eliminado exitosamente.'
+    redirect_to simple_products_path, notice: 'Producto eliminado exitosamente.'
+  end
+
+  def update_status
+    case @product.status
+    when 'active'
+      # Activar → Inactivar (manual)
+      @product.update(status: 'inactive')
+      redirect_to simple_products_path, notice: 'Producto inactivado exitosamente.'
+    when 'inactive'
+      # Inactivar → Activar (manual, pero verificar stock)
+      if @product.stock > 0
+        @product.update(status: 'active')
+        redirect_to simple_products_path, notice: 'Producto activado exitosamente.'
+      else
+        @product.update(status: 'out_of_stock')
+        redirect_to simple_products_path, alert: 'Producto sin stock. Estado cambiado a "Sin Stock".'
+      end
+    when 'out_of_stock'
+      # Sin Stock → Activar (solo si hay stock)
+      if @product.stock > 0
+        @product.update(status: 'active')
+        redirect_to simple_products_path, notice: 'Producto activado exitosamente.'
+      else
+        redirect_to simple_products_path, alert: 'No se puede activar: el producto no tiene stock disponible.'
+      end
+    end
   end
 
   private

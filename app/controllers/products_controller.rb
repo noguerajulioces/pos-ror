@@ -3,17 +3,17 @@ class ProductsController < ApplicationController
 
   def hub; end
 
-  def index
-    @q = Product.where(kind: 'simple').ransack(params[:q])
-    @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
-  end
+  # def index
+  #  @q = Product.where(kind: 'simple').ransack(params[:q])
+  #  @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
+  # end
 
   def show
   end
 
-  def new
-    @product = Product.new
-  end
+  # def new
+  #  @product = Product.new
+  # end
 
   def create
     @product = Product.new(product_params)
@@ -40,8 +40,8 @@ class ProductsController < ApplicationController
     end
   end
 
-  def edit
-  end
+  # def edit
+  # end
 
   def update
     # Para productos de receta, permitir actualización sin ingredientes si se están editando datos básicos

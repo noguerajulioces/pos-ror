@@ -29,7 +29,7 @@
   </div>
 
 
-<%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+<%= search_form_for @q, url: simple_products_path, method: :get, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
@@ -60,7 +60,7 @@
       </div>
       <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
         <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", products_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= link_to "Limpiar", simple_products_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>

@@ -242,9 +242,19 @@ class Product < ApplicationRecord
       nil # Combos no manejan stock físico
     when 'recipe'
       self.stock = 0  # Recetas siempre tienen stock = 0 (Make-to-order)
-      self.status = recipe_available? ? 'active' : 'out_of_stock'
+      # Solo cambiar status si no está inactivo manualmente
+      if status != 'inactive'
+        self.status = recipe_available? ? 'active' : 'out_of_stock'
+      end
     else
-      self.status = stock <= 0 ? 'out_of_stock' : 'active'
+      # Solo cambiar status automáticamente si no está inactivo manualmente
+      if status != 'inactive'
+        if stock <= 0
+          self.status = 'out_of_stock'
+        elsif status == 'out_of_stock' && stock > 0
+          self.status = 'active'  # Reactivar cuando vuelve a tener stock
+        end
+      end
     end
   end
 
