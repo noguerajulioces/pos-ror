@@ -2,12 +2,15 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[show edit update destroy activate]
   before_action :check_super_user_permissions, only: [ :deactivate ]
   before_action :check_edit_permissions, only: [ :edit, :update ]
+  before_action :ensure_superadmin_for_roles!, only: [ :show ], if: -> { params[:roles].present? }
 
   def index
-    @users = User.where(account_id: current_user.account_id).paginate(page: params[:page], per_page: 10)
+    @users = User.includes(:roles).where(account_id: current_user.account_id).paginate(page: params[:page], per_page: 10)
   end
 
-  def show; end
+  def show
+    @roles = Role.order(:name)
+  end
 
   def new
     @user = User.new(account_id: current_user.account_id)
@@ -27,6 +30,15 @@ class UsersController < ApplicationController
   end
 
   def update
+    # Handle role updates
+    if params[:roles].present?
+      @user.roles = []
+      Array(params[:roles]).each { |name| @user.add_role(name) }
+      redirect_to @user, notice: 'Roles actualizados exitosamente.'
+      return
+    end
+
+    # Handle regular user updates
     if params[:user][:password].blank? && params[:user][:password_confirmation].blank?
       params[:user].delete(:password)
       params[:user].delete(:password_confirmation)
@@ -94,5 +106,9 @@ class UsersController < ApplicationController
     unless current_user.super_user? || @user == current_user
       redirect_to users_path, alert: 'Solo puedes editar tu propio usuario.'
     end
+  end
+
+  def ensure_superadmin_for_roles!
+    redirect_to root_path, alert: 'No autorizado' unless current_user&.has_role?(:superadmin)
   end
 end

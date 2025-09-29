@@ -67,6 +67,8 @@ group :test do
 end
 
 gem 'devise'
+gem 'rolify'
+gem 'cancancan'
 gem 'will_paginate', '~> 4.0.1'
 gem 'annotaterb'
 gem 'rails-erd'

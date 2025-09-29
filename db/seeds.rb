@@ -11,6 +11,9 @@
 # Create the main account
 account = Account.find_or_create_by!(name: 'Ferreteria el Rey')
 
+# Create roles
+%w[superadmin vendedor cajero].each { |n| Role.find_or_create_by!(name: n) }
+
 # Create the admin user for this account
 user = User.find_or_create_by!(email: 'admin@admin.com') do |u|
   u.name = 'Administrator'
@@ -19,6 +22,9 @@ user = User.find_or_create_by!(email: 'admin@admin.com') do |u|
   u.super_user = true
   u.active = true
 end
+
+# Assign superadmin role to admin user
+user.add_role :superadmin unless user.has_role?(:superadmin)
 
 # Set the current tenant to the account for all subsequent operations
 ActsAsTenant.with_tenant(account) do
