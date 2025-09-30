@@ -1,4 +1,6 @@
 # app/helpers/tailwind_paginate_renderer.rb
+require 'will_paginate/view_helpers/action_view'
+
 class TailwindPaginateRenderer < WillPaginate::ActionView::LinkRenderer
   def html_container(html)
     tag :div, html, class: 'mt-4 justify-center flex'
