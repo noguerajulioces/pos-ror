@@ -1,0 +1,23 @@
+<nav class="bg-gray-800 text-white w-64 min-h-screen">
+  <div class="p-4">
+    <h2 class="text-xl font-bold mb-6">POS System</h2>
+    
+    <div class="space-y-2">
+      <% sidebar_items.each do |item| %>
+        <%= link_to item[:path], class: "flex items-center p-3 rounded-lg #{item[:active] ? 'bg-indigo-600' : 'hover:bg-gray-700'}" do %>
+          <i class="fas fa-<%= item[:icon] %> mr-3"></i>
+          <%= item[:name] %>
+        <% end %>
+      <% end %>
+    </div>
+    
+    <div class="mt-8 pt-4 border-t border-gray-700">
+      <div class="text-sm text-gray-400 mb-2">
+        Usuario: <%= current_user.email %>
+      </div>
+      <div class="text-xs text-gray-500">
+        Roles: <%= current_user.roles.map(&:name).join(', ') %>
+      </div>
+    </div>
+  </div>
+</nav>

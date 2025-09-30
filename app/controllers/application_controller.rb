@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include RoleAuthorization
+
   before_action :check_previous_day_cash_registers
   before_action :authenticate_user!
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
