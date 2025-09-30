@@ -34,14 +34,16 @@
         </div>
       </div>
       <div class="flex space-x-3">
-        <% if @order.status != "cancelled" %>
-          <%= button_to order_path(@order), method: :delete, 
-              data: { turbo_confirm: '¿Estás seguro de cancelar esta orden?' }, 
-              class: "inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Cancelar Orden
+        <% if current_user.has_role?(:superadmin) %>
+          <% if @order.status != "cancelled" %>
+            <%= button_to order_path(@order), method: :delete, 
+                data: { turbo_confirm: '¿Estás seguro de cancelar esta orden?' }, 
+                class: "inline-flex items-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Cancelar Orden
+            <% end %>
           <% end %>
         <% end %>
         <%= link_to orders_path, 

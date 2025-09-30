@@ -119,17 +119,26 @@
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <% case product.kind %>
                     <% when 'simple' %>
+
                       <%= link_to "Ver", simple_product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% if current_user.has_role?(:superadmin) %>
+                        <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
                     <% when 'recipe' %>
                       <%= link_to "Ver", recipe_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% if current_user.has_role?(:superadmin) %>
+                        <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
                     <% when 'combo' %>
                       <%= link_to "Ver", combo_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_combo_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% if current_user.has_role?(:superadmin) %>
+                        <%= link_to "Editar", edit_combo_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
                     <% else %>
                       <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% if current_user.has_role?(:superadmin) %>
+                        <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
                     <% end %>
                   </td>
                 </tr>

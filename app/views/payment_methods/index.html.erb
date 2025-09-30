@@ -44,15 +44,17 @@
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <%= link_to "Ver", payment_method_path(payment_method), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <%= link_to "Editar", edit_payment_method_path(payment_method), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <% if payment_method.active %>
-                      <%= link_to "Cancelar", payment_method_path(payment_method), 
-                          data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas cancelar este método de pago?" }, 
-                          class: "text-red-600 hover:text-red-900" %>
-                    <% else %>
-                      <%= link_to "Activar", payment_method_path(payment_method, activate: true), 
-                          data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas activar este método de pago?" }, 
-                          class: "text-green-600 hover:text-green-900" %>
+                    <% if current_user.has_role?(:superadmin) %>
+                      <%= link_to "Editar", edit_payment_method_path(payment_method), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
+                      <% if payment_method.active %>
+                        <%= link_to "Cancelar", payment_method_path(payment_method), 
+                            data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas cancelar este método de pago?" }, 
+                            class: "text-red-600 hover:text-red-900" %>
+                      <% else %>
+                        <%= link_to "Activar", payment_method_path(payment_method, activate: true), 
+                            data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas activar este método de pago?" }, 
+                            class: "text-green-600 hover:text-green-900" %>
+                      <% end %>
                     <% end %>
                   </td>
                 </tr>
