@@ -68,11 +68,22 @@ class PrintServiceNew
     begin
       Rails.logger.info '🖨️ Iniciando impresión térmica...'
 
-      # Los métodos que funcionaron en tu prueba
+      # Obtener configuraciones dinámicas de impresora
+      lines_before_cut = Setting.get('printer_lines_before_cut').to_i
+      cut_command = Setting.get('printer_cut_command').gsub('\\x', '\x')
+      printer_name = Setting.get('printer_windows_name')
+
+      # Agregar comandos de corte ESC/POS configurables
+      line_feeds = "\n" * lines_before_cut
+      text_with_cut = text + line_feeds + cut_command
+
+      Rails.logger.info "🔧 Configuración: #{lines_before_cut} líneas antes del corte, impresora: #{printer_name}"
+
+      # Métodos configurables basados en la configuración
       methods = [
-        "powershell.exe -Command \"'#{text.gsub("'", "''")}' | Out-Printer -Name 'Generic / Text Only'\"",
-        "cmd.exe /c \"echo #{text.gsub('"', '\"')} > PRN\"",
-        "powershell.exe -Command \"'#{text.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {\\$_.Name -like '*Generic*'} | Select-Object -First 1).Name\""
+        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name '#{printer_name}'\"",
+        "cmd.exe /c \"echo #{text_with_cut.gsub('"', '\"')} > PRN\"",
+        "powershell.exe -Command \"'#{text_with_cut.gsub("'", "''")}' | Out-Printer -Name (Get-Printer | Where-Object {\\$_.Name -like '*Generic*'} | Select-Object -First 1).Name\""
       ]
 
       methods.each_with_index do |method, index|
@@ -98,32 +109,6 @@ class PrintServiceNew
       save_backup(text, order_id)
       false
     end
-  end
-
-  def self.print_test
-    # Crear contenido de prueba usando configuraciones actuales
-    line_width = Setting.get('printer_line_width_chars').to_i
-
-    test_content = <<~TEXT
-      #{"=" * line_width}
-      #{"PRUEBA DE IMPRESION".center(line_width)}
-      #{"=" * line_width}
-
-      Fecha: #{Time.current.strftime('%d/%m/%Y %H:%M')}
-
-      Configuración actual:
-      - Ancho: #{line_width} caracteres
-      - Impresora: #{Setting.get('printer_windows_name')}
-      - Líneas antes corte: #{Setting.get('printer_lines_before_cut')}
-
-      ¡Si ves este mensaje, la
-      configuración funciona correctamente!
-
-      #{"=" * line_width}
-    TEXT
-
-    # Imprimir usando el método principal
-    print_to_thermal_printer(test_content, 'test')
   end
 
   def self.save_backup(text, order_id = nil)
