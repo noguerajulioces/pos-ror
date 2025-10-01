@@ -98,6 +98,7 @@ class Product < ApplicationRecord
   validate :recipe_must_have_components, if: :recipe?, unless: :skip_recipe_validation
   validate :initial_stock_must_have_cost, if: :simple?
 
+  after_initialize :set_default_status, if: :new_record?
   before_create :generate_barcode, if: -> { barcode.blank? }
   before_save :set_recipe_stock_to_zero, if: :recipe?
   before_save :update_stock_status
@@ -352,6 +353,10 @@ class Product < ApplicationRecord
   end
 
   private
+
+  def set_default_status
+    self.status ||= 'active'
+  end
 
   def generate_barcode
     self.barcode = "PROD-#{SecureRandom.hex(6).upcase}"
