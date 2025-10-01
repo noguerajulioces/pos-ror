@@ -156,6 +156,24 @@
           </div>
         </div>
 
+        <!-- Estado -->
+        <div class="sm:col-span-3">
+          <%= form.label :status, "Estado", class: "block text-sm/6 font-medium text-gray-900" %>
+          <div class="mt-2">
+            <%= form.select :status,
+                [
+                  ['Activo', 'active'],
+                  ['Inactivo', 'inactive'],
+                  ['Sin Stock', 'out_of_stock']
+                ],
+                {},
+                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">
+            El estado 'Sin Stock' se establece automáticamente cuando el stock llega a 0
+          </p>
+        </div>
+
         <!-- Descripción -->
         <div class="sm:col-span-6">
           <%= form.label :description, "Descripción", class: "block text-sm/6 font-medium text-gray-900" %>

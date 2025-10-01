@@ -77,7 +77,7 @@ class SimpleProductsController < ApplicationController
   def product_params
     params.require(:product).permit(
       :name, :sku, :category_id, :unit_id, :price, :stock, :min_stock, :description,
-      :manual_purchase_price, :average_cost, :barcode,
+      :manual_purchase_price, :average_cost, :barcode, :status,
       :kitchen_station, :print_name, :menu_section, :prep_time_seconds, :sort_order,
       :is_featured, :is_vegan, :is_vegetarian, :is_gluten_free, :tax_rate_id,
       availability_channels: [],
