@@ -3,6 +3,7 @@
 # Table name: orders
 #
 #  id                  :bigint           not null, primary key
+#  delivery_amount     :decimal(12, 2)   default(0.0)
 #  discount_percentage :decimal(5, 2)
 #  discount_reason     :string
 #  order_date          :datetime
@@ -14,6 +15,7 @@
 #  updated_at          :datetime         not null
 #  account_id          :bigint           not null
 #  customer_id         :bigint
+#  delivery_user_id    :bigint
 #  payment_method_id   :bigint           not null
 #  user_id             :bigint           not null
 #
@@ -21,6 +23,7 @@
 #
 #  index_orders_on_account_id         (account_id)
 #  index_orders_on_customer_id        (customer_id)
+#  index_orders_on_delivery_user_id   (delivery_user_id)
 #  index_orders_on_payment_method_id  (payment_method_id)
 #  index_orders_on_user_id            (user_id)
 #
@@ -28,6 +31,7 @@
 #
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (customer_id => customers.id)
+#  fk_rails_...  (delivery_user_id => users.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
 #  fk_rails_...  (user_id => users.id)
 #

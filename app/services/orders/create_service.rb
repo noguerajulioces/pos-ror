@@ -44,16 +44,23 @@ module Orders
     end
 
     def order_attributes
+      # Calculate the correct total amount (including delivery if present)
+      base_total = cart_calculator.totals[:total]
+      delivery_amount = session[:delivery_amount].to_f || 0
+      final_total = base_total + delivery_amount
+
       {
         order_date: Time.current,
         status: params[:status] || Order::STATUSES[:on_hold],
-        total_amount: cart_calculator.totals[:total],
+        total_amount: final_total,
         user_id: current_user.id,
         payment_method_id: payment_method_id,
         customer_id: session[:customer_id].presence,
         order_type: order_type,
         discount_percentage: session[:discount_percentage],
-        discount_reason: session[:discount_reason]
+        discount_reason: session[:discount_reason],
+        delivery_user_id: session[:delivery_user_id].presence,
+        delivery_amount: delivery_amount
       }
     end
 
@@ -97,6 +104,9 @@ module Orders
       session[:discount] = 0
       session[:discount_percentage] = nil
       session[:discount_reason] = nil
+      session[:delivery_user_id] = nil
+      session[:delivery_user_name] = nil
+      session[:delivery_amount] = 0
     end
 
     def cart_calculator

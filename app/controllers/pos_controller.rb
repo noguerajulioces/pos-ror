@@ -190,6 +190,9 @@ class PosController < ApplicationController
       session[:discount_reason] = nil
       session[:customer_id] = nil
       session[:customer_name] = nil
+      session[:delivery_user_id] = nil
+      session[:delivery_user_name] = nil
+      session[:delivery_amount] = 0
 
       respond_to do |format|
         format.html { redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }

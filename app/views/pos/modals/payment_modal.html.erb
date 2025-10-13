@@ -54,10 +54,21 @@
             <span class="font-medium text-gray-500">₲s. <%= number_with_delimiter(calculate_cart_totals[:iva].to_i, delimiter: '.') %></span>
           </div>
           
+          <% if session[:delivery_amount].present? && session[:delivery_amount].to_f > 0 %>
+            <div class="flex justify-between items-center py-1 border-b border-gray-100">
+              <span class="text-gray-600">Delivery:</span>
+              <span class="font-medium text-orange-600">₲s. <%= number_with_delimiter(calculate_cart_totals[:delivery_amount].to_i, delimiter: '.') %></span>
+            </div>
+          <% end %>
+          
           <div class="flex justify-between items-center py-2 mt-1 bg-indigo-50 rounded-md p-2">
             <span class="font-bold text-indigo-800">Total a Pagar:</span>
-            <span id="total-amount" class="font-bold text-indigo-700">₲s. <%= number_with_delimiter(calculate_cart_totals[:total].to_i, delimiter: '.') %></span>
-            <input type="hidden" id="total-amount-value" value="<%= calculate_cart_totals[:total].to_i %>">
+            <% 
+              cart_totals = calculate_cart_totals
+              total_to_pay = (session[:delivery_amount].present? && session[:delivery_amount].to_f > 0) ? cart_totals[:total_with_delivery] : cart_totals[:total]
+            %>
+            <span id="total-amount" class="font-bold text-indigo-700">₲s. <%= number_with_delimiter(total_to_pay.to_i, delimiter: '.') %></span>
+            <input type="hidden" id="total-amount-value" value="<%= total_to_pay.to_i %>">
           </div>
         </div>
       </div>
@@ -83,7 +94,11 @@
                   <span class="text-gray-700"><%= currency.name %>:</span>
                 </span>
                 <span class="currency-value font-medium" data-currency-rate="<%= currency.exchange_rate %>" data-currency-symbol="<%= currency.symbol %>">
-                  <%= currency.symbol %> <%= number_with_precision((calculate_cart_totals[:total].to_i / currency.exchange_rate.to_f), precision: 2, delimiter: ',') %>
+                  <% 
+                    cart_totals = calculate_cart_totals
+                    total_for_conversion = (session[:delivery_amount].present? && session[:delivery_amount].to_f > 0) ? cart_totals[:total_with_delivery] : cart_totals[:total]
+                  %>
+                  <%= currency.symbol %> <%= number_with_precision((total_for_conversion.to_i / currency.exchange_rate.to_f), precision: 2, delimiter: ',') %>
                 </span>
               </div>
             <% end %>
