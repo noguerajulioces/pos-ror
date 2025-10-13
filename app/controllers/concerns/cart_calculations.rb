@@ -43,12 +43,20 @@ module CartCalculations
     # Calculate IVA (10%)
     iva = total * 0.10
 
+    # Get delivery amount from session
+    delivery_amount = session[:delivery_amount].to_f || 0
+
+    # Calculate total with delivery
+    total_with_delivery = total + delivery_amount
+
     {
       subtotal: subtotal,
       iva: iva,
       discount: total_discount,
       discount_percentage: global_discount_percentage,
-      total: total
+      delivery_amount: delivery_amount,
+      total: total,
+      total_with_delivery: total_with_delivery
     }
   end
 end

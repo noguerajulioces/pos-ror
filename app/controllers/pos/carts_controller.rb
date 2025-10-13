@@ -47,6 +47,7 @@ module Pos
             turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
             turbo_stream.update('discount-label', discount_label)
           ]
         }
@@ -92,6 +93,7 @@ module Pos
             turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
             turbo_stream.update('discount-label', discount_label)
           ]
         }
@@ -119,6 +121,11 @@ module Pos
       session[:customer_name] = nil
       session[:customer_id] = nil
 
+      # Reset Delivery
+      session[:delivery_user_id] = nil
+      session[:delivery_user_name] = nil
+      session[:delivery_amount] = 0
+
       # Calculate new totals
       totals = calculate_cart_totals
 
@@ -137,6 +144,7 @@ module Pos
             turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
             turbo_stream.update('discount-label', discount_label)
           ]
         }
@@ -183,6 +191,40 @@ module Pos
       session[:customer_name] = params[:customer_name]
 
       render json: { success: true }
+    end
+
+    # Add this method to handle delivery assignment
+    def assign_delivery
+      session[:delivery_user_id] = params[:delivery_user_id]
+      session[:delivery_amount] = params[:amount].to_f
+
+      # Get delivery user name for display
+      delivery_user = User.find(params[:delivery_user_id]) if params[:delivery_user_id].present?
+      session[:delivery_user_name] = delivery_user&.name
+
+      # Calculate new totals
+      totals = calculate_cart_totals
+
+      # Set order type after delivery assignment
+      session[:order_type] = 'delivery'
+
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.remove('modal'),
+            turbo_stream.replace('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals })
+          ]
+        }
+        format.json {
+          render json: {
+            success: true,
+            delivery_user: delivery_user&.name,
+            delivery_amount: totals[:delivery_amount],
+            totals: totals,
+            order_type: session[:order_type]
+          }
+        }
+      end
     end
 
     private

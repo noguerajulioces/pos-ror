@@ -114,6 +114,7 @@ Rails.application.routes.draw do
       get 'payment', to: 'payments#show'
       get 'item_discounts', to: 'item_discounts#show'
       get 'discounts', to: 'discounts#show'
+      get 'deliveries', to: 'deliveries#show'
     end
 
     post 'add_product_to_cart', to: 'carts#add_product_to_cart'
@@ -121,6 +122,7 @@ Rails.application.routes.draw do
     post 'clear_cart', to: 'carts#clear_cart'
     patch 'update_quantity', to: 'carts#update_quantity'
     post 'set_customer', to: 'carts#set_customer'
+    post 'assign_delivery', to: 'carts#assign_delivery'
   end
 
   post 'pos/apply_discount', to: 'pos#apply_discount'

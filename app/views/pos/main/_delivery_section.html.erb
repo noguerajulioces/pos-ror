@@ -1,0 +1,22 @@
+<% cart_totals = defined?(totals) ? totals : calculate_cart_totals %>
+<% if session[:delivery_amount].present? && session[:delivery_amount].to_f > 0 %>
+  <div class="mt-4 bg-white rounded-md shadow">
+    <div class="px-4 py-3 border-b border-gray-200">
+      <span class="text-gray-700 font-bold">Delivery</span>
+      <span class="float-right font-medium" id="cart-delivery">
+        ₲s. <%= number_with_delimiter((cart_totals[:delivery_amount]).to_i, delimiter: '.') %>
+      </span>
+      <% if session[:delivery_user_name].present? %>
+        <div class="text-xs text-gray-500 mt-1" id="delivery-user-name">
+          <%= session[:delivery_user_name] %>
+        </div>
+      <% end %>
+    </div>
+    <div class="px-4 py-3 bg-blue-50">
+      <span class="text-gray-700 font-bold">Total con Delivery</span>
+      <span class="float-right font-medium text-blue-700" id="cart-total-with-delivery">
+        ₲s. <%= number_with_delimiter((cart_totals[:total_with_delivery]).to_i, delimiter: '.') %>
+      </span>
+    </div>
+  </div>
+<% end %>
