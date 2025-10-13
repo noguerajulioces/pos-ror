@@ -1,0 +1,173 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <% if current_user.has_role?(:superadmin) %>
+        <h1 class="text-base font-semibold text-gray-900">Órdenes con Delivery</h1>
+        <p class="mt-2 text-sm text-gray-700">Listado de todas las órdenes que tienen delivery asignado</p>
+      <% else %>
+        <h1 class="text-base font-semibold text-gray-900">Mis Órdenes de Delivery</h1>
+        <p class="mt-2 text-sm text-gray-700">Listado de tus órdenes asignadas para delivery</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="mt-8">
+    <%= form_with url: delivery_index_path, method: :get, local: true, class: "bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg" do |f| %>
+      <div class="px-4 py-6 sm:p-8">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Filtrar Órdenes</h3>
+        
+        <!-- Filtros de fecha (para todos) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+          <div>
+            <%= f.label :start_date, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :start_date, value: @start_date, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+          <div>
+            <%= f.label :end_date, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.date_field :end_date, value: @end_date, 
+                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+          </div>
+        </div>
+
+        <!-- Filtro por usuario delivery (solo para superadmin) -->
+        <% if current_user.has_role?(:superadmin) %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <%= f.label :delivery_user_id, "Usuario Delivery", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.select :delivery_user_id, 
+                  options_for_select([['Todos los usuarios', '']] + @delivery_users.map { |user| [user.name, user.id] }, params[:delivery_user_id]), 
+                  {}, 
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+        <%= f.submit "Filtrar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        <%= link_to "Hoy", delivery_index_path(start_date: Date.current, end_date: Date.current), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= link_to "Esta Semana", delivery_index_path(start_date: Date.current.beginning_of_week, end_date: Date.current.end_of_week), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= link_to "Este Mes", delivery_index_path(start_date: Date.current.beginning_of_month, end_date: Date.current.end_of_month), class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= link_to "Limpiar", delivery_index_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Tabla de Órdenes -->
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Orden
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Fecha
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Cliente
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Total Orden
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Usuario Delivery
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Monto Delivery
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Estado
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <% @orders.each do |order| %>
+                <tr>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                    <%= link_to "##{order.id}", order_path(order), class: "text-indigo-600 hover:text-indigo-900" %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                    <%= l(order.order_date, format: :short) %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    <% if order.customer %>
+                      <%= order.customer.first_name %> <%= order.customer.last_name %>
+                      <div class="text-xs text-gray-500"><%= order.customer.document %></div>
+                    <% else %>
+                      <span class="text-gray-400">Sin cliente</span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    <% if order.delivery_user %>
+                      <%= order.delivery_user.name %>
+                    <% else %>
+                      <span class="text-gray-400">Sin asignar</span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-green-600">
+                    ₲s. <%= number_with_delimiter(order.delivery_amount.to_i, delimiter: '.') %>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                    <% case order.status %>
+                    <% when 'completed' %>
+                      <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                        Completado
+                      </span>
+                    <% when 'on_hold' %>
+                      <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                        En Espera
+                      </span>
+                    <% when 'cancelled' %>
+                      <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                        Cancelado
+                      </span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+              
+              <% if @orders.empty? %>
+                <tr>
+                  <td colspan="7" class="px-6 py-4 text-sm text-gray-500 text-center">
+                    <% if current_user.has_role?(:superadmin) %>
+                      No hay órdenes con delivery asignado
+                    <% else %>
+                      No tienes órdenes de delivery asignadas
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+            
+            <!-- Fila de totales -->
+            <% unless @orders.empty? %>
+              <tfoot class="bg-gray-50">
+                <tr>
+                  <td colspan="3" class="px-6 py-4 text-sm font-medium text-gray-900">
+                    <strong>TOTALES (<%= @orders.count %> órdenes)</strong>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-bold text-gray-900">
+                    ₲s. <%= number_with_delimiter(@orders.sum(:total_amount).to_i, delimiter: '.') %>
+                  </td>
+                  <td class="px-6 py-4"></td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-bold text-green-600">
+                    ₲s. <%= number_with_delimiter(@orders.sum(:delivery_amount).to_i, delimiter: '.') %>
+                  </td>
+                  <td class="px-6 py-4"></td>
+                </tr>
+              </tfoot>
+            <% end %>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

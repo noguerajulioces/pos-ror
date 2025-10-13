@@ -82,6 +82,7 @@ Rails.application.routes.draw do
     end
   end
   resources :roles
+  resources :delivery, only: [ :index ]
   resources :expenses, except: [ :show ]
   resources :currencies do
     member do
