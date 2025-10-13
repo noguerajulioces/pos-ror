@@ -12,43 +12,52 @@
   <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
-          <div>
-            <%= f.label :id_eq, "Número", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.search_field :id_eq, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-          </div>
+        <!-- Primera fila: Cliente, Tipo de Orden y Usuario Delivery -->
+        <div class="mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+            <div>
+              <%= f.label :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, "Buscar Orden o Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.search_field :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, 
+                  placeholder: "Número de orden, documento, nombre o apellido del cliente",
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
 
-          <div>
-            <%= f.label :customer_document_or_customer_first_name_or_customer_last_name_cont, "Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.search_field :customer_document_or_customer_first_name_or_customer_last_name_cont, 
-                placeholder: "Buscar por documento, nombre o apellido",
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-          </div>
+            <div>
+              <%= f.label :order_type_eq, "Tipo de Orden", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.select :order_type_eq, 
+                  options_for_select([
+                    ['Todos los tipos', ''],
+                    ['En Tienda', 'in_store'],
+                    ['Delivery', 'delivery']
+                  ], params.dig(:q, :order_type_eq)), 
+                  {}, 
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
 
-          <div>
-            <%= f.label :status_eq, "Estado", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.select :status_eq, 
-                options_for_select([
-                  ['Todos', ''],
-                  ['Completado', Order::STATUSES[:completed]],
-                  ['En Espera', Order::STATUSES[:on_hold]],
-                  ['Cancelado', Order::STATUSES[:cancelled]]
-                ]), 
-                {}, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <div>
+              <%= f.label :delivery_user_id_eq, "Usuario Delivery", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.select :delivery_user_id_eq, 
+                  options_for_select([['Todos los usuarios', '']] + @delivery_users.map { |user| [user.name, user.id] }, params.dig(:q, :delivery_user_id_eq)), 
+                  {}, 
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
           </div>
+        </div>
 
-          <div>
-            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.date_field :order_date_gteq, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-          </div>
+        <!-- Filtros por Fecha -->
+        <div class="mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.date_field :order_date_gteq, 
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
 
-          <div>
-            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.date_field :order_date_lteq, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <div>
+              <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+              <%= f.date_field :order_date_lteq, 
+                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            </div>
           </div>
         </div>
       </div>

@@ -103,10 +103,15 @@ class Order < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    [ 'created_at', 'customer_id', 'discount_percentage', 'discount_reason', 'id', 'order_date', 'order_type', 'payment_method_id', 'status', 'total_amount', 'updated_at', 'user_id' ]
+    [ 'created_at', 'customer_id', 'discount_percentage', 'discount_reason', 'id', 'id_as_string', 'order_date', 'order_type', 'payment_method_id', 'status', 'total_amount', 'updated_at', 'user_id', 'delivery_user_id', 'delivery_amount' ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ 'customer', 'order_items', 'order_payments', 'payment_method', 'user' ]
+    [ 'customer', 'order_items', 'order_payments', 'payment_method', 'user', 'delivery_user' ]
+  end
+
+  # Ransacker para convertir ID a string para búsqueda
+  ransacker :id_as_string do |parent|
+    Arel::Nodes::NamedFunction.new('CAST', [ parent.table[:id].as('VARCHAR') ])
   end
 end

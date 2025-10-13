@@ -139,16 +139,39 @@
                     -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) * @order.discount_percentage / 100).to_i, delimiter: '.') %>
                   </dd>
                 </div>
-              <% elsif @order.total_amount != @order.order_items.sum(:subtotal) %>
+              <% else %>
+                <% 
+                  # Calcular el descuento correctamente considerando el delivery
+                  subtotal = @order.order_items.sum(:subtotal)
+                  delivery_amount = @order.delivery_amount.to_f
+                  total_without_delivery = @order.total_amount - delivery_amount
+                  discount_amount = subtotal - total_without_delivery
+                %>
+                <% if discount_amount > 0 %>
+                  <div class="flex justify-between">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Descuento (Monto)
+                      <% if @order.discount_reason.present? %>
+                        <p class="text-xs text-gray-500 italic"><%= @order.discount_reason %></p>
+                      <% end %>
+                    </dt>
+                    <dd class="text-sm font-medium text-red-600">
+                      -₲s. <%= number_with_delimiter(discount_amount.to_i, delimiter: '.') %>
+                    </dd>
+                  </div>
+                <% end %>
+              <% end %>
+              
+              <% if @order.delivery_amount.present? && @order.delivery_amount > 0 %>
                 <div class="flex justify-between">
                   <dt class="text-sm font-medium text-gray-500">
-                    Descuento (Monto)
-                    <% if @order.discount_reason.present? %>
-                      <p class="text-xs text-gray-500 italic"><%= @order.discount_reason %></p>
+                    Delivery
+                    <% if @order.delivery_user.present? %>
+                      <p class="text-xs text-gray-500 italic">Por: <%= @order.delivery_user.name %></p>
                     <% end %>
                   </dt>
-                  <dd class="text-sm font-medium text-red-600">
-                    -₲s. <%= number_with_delimiter((@order.order_items.sum(:subtotal) - @order.total_amount).to_i, delimiter: '.') %>
+                  <dd class="text-sm font-medium text-blue-600">
+                    +₲s. <%= number_with_delimiter(@order.delivery_amount.to_i, delimiter: '.') %>
                   </dd>
                 </div>
               <% end %>

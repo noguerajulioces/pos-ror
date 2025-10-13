@@ -13,6 +13,11 @@ class OrdersController < ApplicationController
               .includes(:customer, :payment_method, :delivery_user)
               .order(order_date: :desc)
               .paginate(page: params[:page], per_page: 10)
+    @delivery_users = User.joins(:roles)
+                         .where(roles: { name: 'Delivery' })
+                         .where(account_id: current_user.account_id)
+                         .active
+                         .order(:name)
   end
 
   def show
