@@ -1,0 +1,58 @@
+<%= form_with(model: role, class: "bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-3") do |f| %>
+  <% if role.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Se encontraron <%= role.errors.count %> errores:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc space-y-1 pl-5">
+              <% role.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="px-4 py-6 sm:p-8">
+    <div class="space-y-6">
+      <div>
+        <%= f.label :name, "Nombre del Rol", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.text_field :name, 
+            placeholder: "Ej: vendedor, cajero, supervisor", 
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
+        <p class="mt-1 text-sm text-gray-500">Use nombres en minúsculas y sin espacios (ej: vendedor, cajero, supervisor)</p>
+      </div>
+
+      <div>
+        <%= f.label :resource_type, "Tipo de Recurso", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.select :resource_type, 
+            options_for_select([
+              ['Global (sin recurso específico)', ''],
+              ['Usuario', 'User'],
+              ['Producto', 'Product'],
+              ['Orden', 'Order'],
+              ['Categoría', 'Category']
+            ], role.resource_type), 
+            {}, 
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
+        <p class="mt-1 text-sm text-gray-500">Seleccione el tipo de recurso al que se aplicará este rol (opcional)</p>
+      </div>
+
+      <div>
+        <%= f.label :resource_id, "ID del Recurso", class: "block text-sm font-medium text-gray-900 mb-2" %>
+        <%= f.number_field :resource_id, 
+            placeholder: "Solo si seleccionó un tipo de recurso específico", 
+            class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm" %>
+        <p class="mt-1 text-sm text-gray-500">ID específico del recurso (opcional, solo para roles específicos de recursos)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+    <%= link_to "Cancelar", roles_path, class: "text-sm/6 font-semibold text-gray-900" %>
+    <%= f.submit role.persisted? ? "Actualizar" : "Crear", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+  </div>
+<% end %>

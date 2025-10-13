@@ -33,7 +33,14 @@ class UsersController < ApplicationController
     # Handle role updates
     if params[:roles].present?
       @user.roles = []
-      Array(params[:roles]).each { |name| @user.add_role(name) }
+      Array(params[:roles]).each do |name|
+        role = Role.find_by(name: name)
+        if role
+          @user.add_role(role)
+        else
+          @user.add_role(name)
+        end
+      end
       redirect_to @user, notice: 'Roles actualizados exitosamente.'
       return
     end

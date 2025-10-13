@@ -15,16 +15,17 @@
 #  index_roles_on_resource                                (resource_type,resource_id)
 #
 class Role < ApplicationRecord
-  has_and_belongs_to_many :users, :join_table => :users_roles
-  
-  belongs_to :resource,
-             :polymorphic => true,
-             :optional => true
-  
+  has_and_belongs_to_many :users, join_table: :users_roles
 
+  belongs_to :resource,
+             polymorphic: true,
+             optional: true
+
+  # Validaciones
+  validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :resource_type,
-            :inclusion => { :in => Rolify.resource_types },
-            :allow_nil => true
+            inclusion: { in: Rolify.resource_types },
+            allow_blank: true
 
   scopify
 end

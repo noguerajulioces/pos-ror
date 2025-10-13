@@ -1,0 +1,114 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold text-gray-900">
+        <span class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800">
+          <%= @role.name.humanize %>
+        </span>
+      </h1>
+      <p class="mt-2 text-sm text-gray-700">Detalles del rol y usuarios asignados.</p>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <%= link_to "Editar", edit_role_path(@role), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      <%= link_to "Volver", roles_path, class: "ml-2 block rounded-md bg-gray-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600" %>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Información del Rol -->
+    <div class="bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Información del Rol</h3>
+        <div class="mt-5">
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <span class="inline-flex items-center rounded-full bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-800">
+                  <%= @role.name.humanize %>
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Tipo de Recurso</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @role.resource_type || "Global" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">ID del Recurso</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @role.resource_id || "N/A" %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Fecha de Creación</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= l(@role.created_at, format: :long) %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Última Actualización</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= l(@role.updated_at, format: :long) %></dd>
+            </div>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Total de Usuarios</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
+                  <%= @users_with_role.count %> usuario<%= 's' if @users_with_role.count != 1 %>
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usuarios con este Rol -->
+    <div class="bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg font-medium leading-6 text-gray-900">Usuarios Asignados</h3>
+        <div class="mt-5">
+          <% if @users_with_role.any? %>
+            <ul class="divide-y divide-gray-200">
+              <% @users_with_role.each do |user| %>
+                <li class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <span class="text-sm font-medium text-indigo-800">
+                          <%= user.name&.first&.upcase || user.email.first.upcase %>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        <%= user.name || "Sin nombre" %>
+                      </p>
+                      <p class="text-sm text-gray-500 truncate">
+                        <%= user.email %>
+                      </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <% if user.active? %>
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                          Activo
+                        </span>
+                      <% else %>
+                        <span class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                          Inactivo
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <div class="text-center py-6">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">Sin usuarios asignados</h3>
+              <p class="mt-1 text-sm text-gray-500">Este rol no tiene usuarios asignados.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

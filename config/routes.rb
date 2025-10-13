@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       patch :deactivate
     end
   end
+  resources :roles
   resources :expenses, except: [ :show ]
   resources :currencies do
     member do

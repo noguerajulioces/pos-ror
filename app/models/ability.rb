@@ -29,6 +29,7 @@ class Ability
       can :manage, :combos
       can :manage, :recipes
       can :manage, :simple_products
+      can :manage, Role
     end
 
     # Vendedor: puede crear órdenes y ver productos
