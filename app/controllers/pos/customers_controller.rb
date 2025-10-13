@@ -46,6 +46,8 @@ class Pos::CustomersController < ApplicationController
       :country,
       :notes,
       :document
-    )
+    ).tap do |permitted|
+      permitted[:email] = nil if permitted[:email].blank?
+    end
   end
 end

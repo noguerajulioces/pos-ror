@@ -7,7 +7,7 @@
 #  city       :string
 #  country    :string
 #  document   :string
-#  email      :string           not null
+#  email      :string
 #  first_name :string           not null
 #  last_name  :string           not null
 #  notes      :text
@@ -37,6 +37,8 @@ class Customer < ApplicationRecord
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :email, uniqueness: true, allow_blank: true
 
+  before_validation :normalize_email
+
   def full_name
     "#{first_name} #{last_name}".strip
   end
@@ -58,5 +60,11 @@ class Customer < ApplicationRecord
     else
       document.present? ? document[0..1].upcase : 'CG'
     end
+  end
+
+  private
+
+  def normalize_email
+    self.email = nil if email.blank?
   end
 end
