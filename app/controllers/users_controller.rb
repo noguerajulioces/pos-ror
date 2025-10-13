@@ -32,15 +32,21 @@ class UsersController < ApplicationController
   def update
     # Handle role updates
     if params[:roles].present?
+      # Get only existing roles
+      existing_role_names = Role.where(name: params[:roles]).pluck(:name)
+
+      # Clear current roles and assign only existing ones
       @user.roles = []
-      Array(params[:roles]).each do |name|
-        role = Role.find_by(name: name)
-        if role
-          @user.add_role(role)
-        else
-          @user.add_role(name)
-        end
+      existing_role_names.each do |role_name|
+        @user.add_role(role_name)
       end
+
+      # Log any non-existent roles that were attempted
+      non_existent_roles = Array(params[:roles]) - existing_role_names
+      non_existent_roles.each do |role_name|
+        Rails.logger.warn "Attempted to assign non-existent role: #{role_name}"
+      end
+
       redirect_to @user, notice: 'Roles actualizados exitosamente.'
       return
     end
