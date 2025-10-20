@@ -181,9 +181,7 @@ class PosController < ApplicationController
     ).call
 
     if result[:success]
-
-      PrintServiceNew.print_order(result[:order_id])
-
+      # Limpiar sesión
       session[:cart] = []
       session[:discount] = 0
       session[:discount_percentage] = nil
@@ -195,7 +193,12 @@ class PosController < ApplicationController
       session[:delivery_amount] = 0
 
       respond_to do |format|
-        format.html { redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }
+        format.html {
+          flash[:notice] = "Pago procesado correctamente. Orden ##{result[:order_id]} completada."
+          flash[:print_order_id] = result[:order_id]
+          flash[:show_print_popup] = true
+          redirect_to pos_path
+        }
       end
     else
       respond_to do |format|

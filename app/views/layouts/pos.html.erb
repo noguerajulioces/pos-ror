@@ -28,6 +28,40 @@
       <%= render 'layouts/shared/notice' %>
     </div>
     <%= yield %>
+    
+    <% if flash[:show_print_popup] && flash[:print_order_id] %>
+      <script>
+        console.log('Print popup script loaded');
+        console.log('Order ID:', '<%= flash[:print_order_id] %>');
+        
+        // Abrir ventana de impresión después de procesar el pago
+        function openPrintWindow() {
+          try {
+            const printUrl = '<%= order_print_preview_path(flash[:print_order_id]) %>';
+            console.log('Opening print window with URL:', printUrl);
+            const printWindow = window.open(printUrl, '_blank', 'width=400,height=600,scrollbars=yes,resizable=yes');
+            
+            if (!printWindow) {
+              console.error('Failed to open print window - popup might be blocked');
+              alert('No se pudo abrir la ventana de impresión. Por favor, permite popups para este sitio.');
+            } else {
+              console.log('Print window opened successfully');
+            }
+          } catch (error) {
+            console.error('Error opening print window:', error);
+          }
+        }
+        
+        // Intentar abrir inmediatamente si el DOM ya está cargado
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(openPrintWindow, 500);
+          });
+        } else {
+          setTimeout(openPrintWindow, 500);
+        }
+      </script>
+    <% end %>
   </body>
   <turbo-frame id="modal">
   </turbo-frame>
