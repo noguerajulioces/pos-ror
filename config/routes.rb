@@ -139,6 +139,7 @@ Rails.application.routes.draw do
 
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos
   get 'print_message', to: 'print#print_message'
+  get 'orders/:id/print_preview', to: 'orders#print_preview', as: 'order_print_preview'
   resources :ingredients
   resources :purchases do
     member do

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Impresión - Orden #<%= @order.id %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <style>
+      @media print {
+        body { margin: 0; }
+        .no-print { display: none !important; }
+      }
+      
+      body {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.2;
+        margin: 20px;
+        background: white;
+      }
+      
+      .receipt {
+        max-width: 300px;
+        margin: 0 auto;
+        background: white;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      
+      .center { text-align: center; }
+      .right { text-align: right; }
+      .bold { font-weight: bold; }
+      
+      .separator {
+        border-top: 1px solid #000;
+        margin: 5px 0;
+      }
+      
+      .item-line {
+        display: flex;
+        justify-content: space-between;
+        margin: 2px 0;
+      }
+      
+      .print-button {
+        background: #4F46E5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px;
+        font-size: 14px;
+      }
+      
+      .print-button:hover {
+        background: #4338CA;
+      }
+      
+      @media print {
+        .receipt {
+          border: none;
+          margin: 0;
+          padding: 0;
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="no-print center">
+      <button onclick="window.print()" class="print-button">🖨️ Imprimir</button>
+      <button onclick="window.close()" class="print-button" style="background: #6B7280;">❌ Cerrar</button>
+    </div>
+    
+    <%= yield %>
+    
+    <script>
+      // Auto-abrir diálogo de impresión cuando se carga la página
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          window.print();
+        }, 500);
+      });
+      
+      // Cerrar ventana después de imprimir (opcional)
+      window.addEventListener('afterprint', function() {
+        // Descomentar la siguiente línea si quieres que se cierre automáticamente
+        // setTimeout(function() { window.close(); }, 1000);
+      });
+    </script>
+  </body>
+</html>

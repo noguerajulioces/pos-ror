@@ -153,7 +153,7 @@
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <div class="flex justify-end space-x-2">
                       <%= link_to "Ver", order_path(order), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Imprimir", print_message_path(order_id: order.id), data: { turbo_prefetch: false }, class: "text-indigo-600 hover:text-green-900", form: { class: "inline" }, form_class: "inline" %>
+                      <%= link_to "Imprimir", order_print_preview_path(order), target: "_blank", class: "text-indigo-600 hover:text-green-900" %>
                       <%#= link_to "Pago", new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900" %>
                       <% if current_user.has_role?(:superadmin) %>
                         <% if order.status == "cancelled" %>

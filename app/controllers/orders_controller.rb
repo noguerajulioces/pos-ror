@@ -7,6 +7,11 @@ class OrdersController < ApplicationController
     render template: 'orders/print_templates/default', layout: 'application' # o 'print' si tenés un layout para recibos
   end
 
+  def print_preview
+    @order = Order.find(params[:id])
+    render layout: 'print'
+  end
+
   def index
     @q = Order.ransack(params[:q])
     @orders = @q.result(distinct: true)
