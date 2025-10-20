@@ -71,4 +71,6 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_view.annotate_rendered_view_with_filenames = false
+
+   config.hosts << 'df0fe42c65a2.ngrok-free.app'
 end

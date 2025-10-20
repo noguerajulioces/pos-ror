@@ -1,22 +1,104 @@
 {
-  "name": "PosRor",
+  "name": "Kombi Burger - POS",
+  "short_name": "Kombi Burger",
+  "description": "Sistema de Punto de Venta completo para gestión de ventas, inventario y clientes",
+  "start_url": "/pos",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "lang": "es",
+  "categories": ["business", "productivity", "finance"],
   "icons": [
     {
-      "src": "/icon.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
-      "src": "/icon.png",
-      "type": "image/png",
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
       "sizes": "512x512",
       "purpose": "maskable"
+    },
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "144x144",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "96x96",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "72x72",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "48x48",
+      "purpose": "any"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "scope": "/",
-  "description": "PosRor.",
-  "theme_color": "red",
-  "background_color": "red"
+  "screenshots": [
+    {
+      "src": "/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "form_factor": "wide",
+      "label": "POS - Punto de Venta"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "POS",
+      "short_name": "POS",
+      "description": "Abrir punto de venta",
+      "url": "/pos",
+      "icons": [
+        {
+          "src": "/logo.jpg",
+          "sizes": "512x512"
+        }
+      ]
+    },
+    {
+      "name": "Órdenes",
+      "short_name": "Órdenes",
+      "description": "Ver órdenes",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "/logo.jpg",
+          "sizes": "512x512"
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "short_name": "Productos",
+      "description": "Gestionar productos",
+      "url": "/products/hub",
+      "icons": [
+        {
+          "src": "/logo.jpg",
+          "sizes": "512x512"
+        }
+      ]
+    }
+  ]
 }
