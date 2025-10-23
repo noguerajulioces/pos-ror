@@ -1,15 +1,18 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+/* Tailwind v3 con tailwindcss-rails */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* === COMPONENTS === */
 @layer components {
   .sidebar-collapsed {
     @apply lg:w-16;
   }
-  
+
   .sidebar-collapsed .sidebar-item-text {
     @apply hidden;
   }
-  
+
   .sidebar-collapsed .sidebar-item-icon {
     @apply justify-center;
   }
@@ -54,18 +57,6 @@
     display: none !important;
   }
 
-  /* Smooth animations */
-  @keyframes tooltipFadeIn {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-
   /* Sidebar item hover effects */
   .sidebar-item {
     @apply transition-all duration-200 ease-in-out;
@@ -86,12 +77,15 @@
   }
 }
 
+/* === UTILITIES === */
 @layer utilities {
   .text-xxs {
     font-size: 0.65rem;
     line-height: 0.85rem;
   }
-  
+
+  /* OJO: Tailwind ya trae la utilidad `truncate`.
+     Si no querés sobrescribirla, renombra esta clase (p. ej. .u-truncate). */
   .truncate {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -127,6 +121,16 @@
   .sidebar-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(156, 163, 175, 0.5);
   }
+
+  /* Animations */
+  @keyframes tooltipFadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
 }
-
-
