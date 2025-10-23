@@ -163,7 +163,7 @@
                       when 'inactive' then 'bg-gray-100 text-gray-800'
                       when 'out_of_stock' then 'bg-red-100 text-red-800'
                       end %>">
-                  <%= product.status.humanize %>
+                  <%= product.status&.humanize %>
                 </span>
               </td>
             </tr>

@@ -72,5 +72,5 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_view.annotate_rendered_view_with_filenames = false
 
-   config.hosts << 'df0fe42c65a2.ngrok-free.app'
+   config.hosts << '142be44abbae.ngrok-free.app'
 end
