@@ -1,4 +1,6 @@
 class CombosController < ApplicationController
+  require 'securerandom'
+
   before_action :set_combo, only: %i[show edit update destroy toggle_status]
 
   def index
@@ -31,8 +33,12 @@ class CombosController < ApplicationController
     @combo.stock = 0 # Los combos no tienen stock físico
     @combo.status = 'active' if @combo.status.blank?
 
+    # Generar SKU único si no existe o está duplicado
+    if @combo.sku.blank? || Product.exists?(sku: @combo.sku)
+      @combo.sku = generate_unique_sku
+    end
+
     if @combo.save
-      create_combo_items
       attach_image if params[:product][:image].present?
       redirect_to combo_path(@combo), notice: 'Combo creado exitosamente.'
     else
@@ -43,11 +49,12 @@ class CombosController < ApplicationController
 
   def edit
     @available_products = available_products_for_combo
+    # Asegurar que los combo_items existentes estén cargados con sus asociaciones
+    @combo.combo_items.includes(:component_product)
   end
 
   def update
     if @combo.update(combo_params)
-      update_combo_items
       attach_image if params[:product][:image].present?
       redirect_to combo_path(@combo), notice: 'Combo actualizado exitosamente.'
     else
@@ -81,9 +88,10 @@ class CombosController < ApplicationController
 
   def combo_params
     params.require(:product).permit(
-      :name, :sku, :price, :description, :category_id, :status,
+      :name, :sku, :price, :description, :category_id, :status, :kind,
       :print_name, :menu_section, :sort_order, :is_featured,
-      :is_vegan, :is_vegetarian, :is_gluten_free
+      :is_vegan, :is_vegetarian, :is_gluten_free,
+      combo_items_attributes: [ :id, :component_product_id, :quantity, :optional, :_destroy ]
     )
   end
 
@@ -92,54 +100,9 @@ class CombosController < ApplicationController
            .where(status: 'active')
            .includes(:category, :unit)
            .order(:name)
+           .select('products.*, products.price, products.stock')
   end
 
-  def create_combo_items
-    return unless params[:combo_items].present?
-
-    combo_items_params = params.permit(combo_items: [ :component_product_id, :quantity, :optional ])[:combo_items]
-    return unless combo_items_params.present?
-
-    combo_items_params.each do |index, item_params|
-      next if item_params[:component_product_id].blank? || item_params[:quantity].blank?
-
-      @combo.combo_items.create!(
-        component_product_id: item_params[:component_product_id],
-        quantity: item_params[:quantity],
-        optional: item_params[:optional] == '1'
-      )
-    end
-  end
-
-  def update_combo_items
-    combo_items_params = params.permit(combo_items: [ :id, :component_product_id, :quantity, :optional ])[:combo_items]
-    return unless combo_items_params.present?
-
-    # Eliminar items existentes que no están en los nuevos parámetros
-    existing_ids = combo_items_params.values.map { |item| item[:id] }.compact
-    @combo.combo_items.where.not(id: existing_ids).destroy_all
-
-    combo_items_params.each do |index, item_params|
-      next if item_params[:component_product_id].blank? || item_params[:quantity].blank?
-
-      if item_params[:id].present?
-        # Actualizar item existente
-        item = @combo.combo_items.find(item_params[:id])
-        item.update!(
-          component_product_id: item_params[:component_product_id],
-          quantity: item_params[:quantity],
-          optional: item_params[:optional] == '1'
-        )
-      else
-        # Crear nuevo item
-        @combo.combo_items.create!(
-          component_product_id: item_params[:component_product_id],
-          quantity: item_params[:quantity],
-          optional: item_params[:optional] == '1'
-        )
-      end
-    end
-  end
 
   def calculate_available_quantity(combo)
     return 0 unless combo.combo_items.any?
@@ -165,5 +128,17 @@ class CombosController < ApplicationController
 
   def attach_image
     @combo.images.create(image: params[:product][:image])
+  end
+
+  def generate_unique_sku
+    base_sku = "COMBO-#{SecureRandom.hex(4).upcase}"
+    counter = 1
+
+    while Product.exists?(sku: base_sku)
+      base_sku = "COMBO-#{SecureRandom.hex(4).upcase}-#{counter}"
+      counter += 1
+    end
+
+    base_sku
   end
 end

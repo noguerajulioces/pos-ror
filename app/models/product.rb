@@ -85,6 +85,9 @@ class Product < ApplicationRecord
   has_many :modifier_groups_products, dependent: :destroy
   has_many :modifier_groups, through: :modifier_groups_products
 
+  # Nested attributes
+  accepts_nested_attributes_for :combo_items, allow_destroy: true
+
   # Enums para restaurante
   enum :kind, { simple: 'simple', recipe: 'recipe', combo: 'combo', modifier: 'modifier' }
   enum :kitchen_station, { grill: 'grill', fryer: 'fryer', oven: 'oven', bar: 'bar' }, prefix: :station
@@ -116,6 +119,8 @@ class Product < ApplicationRecord
   scope :vegan, -> { where(is_vegan: true) }
   scope :vegetarian, -> { where(is_vegetarian: true) }
   scope :gluten_free, -> { where(is_gluten_free: true) }
+
+  accepts_nested_attributes_for :combo_items, allow_destroy: true
 
   def update_average_cost(new_unit_price, new_quantity)
     current_avg   = (average_cost || 0)

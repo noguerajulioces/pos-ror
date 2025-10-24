@@ -1,8 +1,7 @@
-<%= form_with(model: combo, 
-    url: combo.persisted? ? combo_path(combo) : combos_path, 
-    method: combo.persisted? ? :patch : :post,
-    local: true, 
-    class: "mt-8") do |form| %>
+<%= form_with(model: combo, url: combo.persisted? ? combo_path(combo) : combos_path, method: combo.persisted? ? :patch : :post, class: "mt-8") do |form| %>
+  <!-- Campo hidden para asegurar que sea un combo -->
+  <%= form.hidden_field :kind, value: 'combo' %>
+  
   <% if combo.errors.any? %>
     <div class="rounded-md bg-red-50 p-4 mb-6">
       <div class="flex">
@@ -169,24 +168,34 @@
     <div class="px-4 py-6 sm:p-8">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-semibold text-gray-900">Componentes del Combo</h3>
-        <button type="button" 
-                id="add-component-btn"
-                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Agregar Producto
-        </button>
       </div>
 
-      <div id="combo-components-container">
-        <% if combo.persisted? && combo.combo_items.any? %>
-          <% combo.combo_items.each_with_index do |item, index| %>
-            <%= render 'combo_item_fields', f: form, item: item, index: index, products: @available_products %>
+      <div data-controller="rails-nested-form" 
+           data-rails-nested-form-association-value="combo_items"
+           data-rails-nested-form-minimum-value="1">
+        
+        <div data-rails-nested-form-target="target">
+          <%= form.fields_for :combo_items do |combo_item_form| %>
+            <%= render 'combo_item_fields', f: combo_item_form, products: @available_products %>
           <% end %>
-        <% else %>
-          <%= render 'combo_item_fields', f: form, item: nil, index: 0, products: @available_products %>
-        <% end %>
+        </div>
+
+        <template data-rails-nested-form-target="template">
+          <%= form.fields_for :combo_items, ComboItem.new, child_index: 'NEW_RECORD' do |combo_item_form| %>
+            <%= render 'combo_item_fields', f: combo_item_form, products: @available_products %>
+          <% end %>
+        </template>
+
+        <div class="mt-4 flex justify-end">
+          <button type="button" 
+                  data-action="click->rails-nested-form#add"
+                  class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Agregar Producto
+          </button>
+        </div>
       </div>
 
       <div class="mt-4 p-4 bg-blue-50 rounded-lg">
@@ -214,59 +223,3 @@
   </div>
 <% end %>
 
-<!-- Template para nuevos componentes -->
-<template id="combo-item-template">
-  <%= render 'combo_item_fields', f: nil, item: nil, index: '__INDEX__', products: @available_products, is_template: true %>
-</template>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const addComponentBtn = document.getElementById('add-component-btn');
-  const container = document.getElementById('combo-components-container');
-  const template = document.getElementById('combo-item-template');
-  let componentIndex = <%= combo.persisted? ? combo.combo_items.count : 1 %>;
-
-
-  // Agregar nuevo componente
-  if (addComponentBtn && template) {
-    addComponentBtn.addEventListener('click', function() {
-      const newComponent = template.content.cloneNode(true);
-      const html = newComponent.querySelector('div').outerHTML.replace(/__INDEX__/g, componentIndex);
-      container.insertAdjacentHTML('beforeend', html);
-      
-      // Inicializar eventos para el nuevo componente
-      const newSelector = container.querySelector(`[data-product-info-target="product-info-${componentIndex}"]`);
-      if (newSelector) {
-        newSelector.addEventListener('change', function() {
-          updateProductInfo(this);
-        });
-        
-        const quantityInput = newSelector.closest('.combo-component-item').querySelector('input[type="number"]');
-        if (quantityInput) {
-          quantityInput.addEventListener('input', function() {
-            if (newSelector.value) {
-              updateProductInfo(newSelector);
-            }
-          });
-        }
-      }
-      
-      componentIndex++;
-    });
-  }
-
-  // Eliminar componente
-  container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-component-btn')) {
-      e.preventDefault();
-      const componentDiv = e.target.closest('.combo-component-item');
-      if (container.children.length > 1) {
-        componentDiv.remove();
-      } else {
-        alert('Debe haber al menos un componente en el combo.');
-      }
-    }
-  });
-
-});
-</script>

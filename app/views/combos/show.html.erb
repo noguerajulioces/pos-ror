@@ -352,7 +352,7 @@
                 <%= item.quantity %> <%= item.component_product.unit&.abbreviation %>
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <% stock = item.component_product.virtual_stock || 0 %>
+                <% stock = item.component_product.virtual_stock %>
                 <% stock_class = stock > item.quantity ? "text-green-600" : stock > 0 ? "text-yellow-600" : "text-red-600" %>
                 <span class="<%= stock_class %> font-medium">
                   <%= stock %> <%= item.component_product.unit&.abbreviation %>

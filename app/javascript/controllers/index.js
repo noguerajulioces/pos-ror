@@ -6,6 +6,6 @@ import Clipboard from '@stimulus-components/clipboard'
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 eagerLoadControllersFrom("controllers", application)
 
-application.register("nested-form", RailsNestedForm)
+application.register("rails-nested-form", RailsNestedForm)
 application.register("password-visibility", PasswordVisibility)
 application.register('clipboard', Clipboard)
