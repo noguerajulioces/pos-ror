@@ -23,7 +23,7 @@ class Setting < ApplicationRecord
   # Add default scope at the top of the model
   default_scope { order(:var) }
 
-  validates :var, presence: true, uniqueness: true
+  validates :var, presence: true, uniqueness: { scope: :account_id }
 
   def self.get(var)
     setting = find_by(var: var)

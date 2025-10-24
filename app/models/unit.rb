@@ -28,7 +28,7 @@ class Unit < ApplicationRecord
   has_many :products
 
   # Validaciones, por ejemplo:
-  validates :name, presence: true, uniqueness: { scope: :deleted_at }
+  validates :name, presence: true, uniqueness: { scope: [ :account_id, :deleted_at ] }
 
   def self.ransackable_attributes(auth_object = nil)
     [ 'abbreviation', 'account_id', 'created_at', 'deleted_at', 'description', 'id', 'name', 'updated_at' ]
