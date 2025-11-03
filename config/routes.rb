@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :products do
+  resources :products, except: [ :index ] do
     resources :product_images, only: [ :destroy ]
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'
     namespace :products do
