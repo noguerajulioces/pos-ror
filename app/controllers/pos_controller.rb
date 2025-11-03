@@ -104,6 +104,42 @@ class PosController < ApplicationController
     render json: result
   end
 
+  def load_order_to_cart
+    order = Order.where(account_id: current_user.account_id).find(params[:id])
+
+    return render json: { success: false, error: 'El pedido no está en espera' } unless order.on_hold?
+
+    # Clear current cart
+    session[:cart] = []
+
+    # Load order items to cart
+    order.order_items.each do |item|
+      session[:cart] << {
+        'product_id' => item.product_id,
+        'quantity' => item.quantity,
+        'price' => item.price.to_f
+      }
+    end
+
+    # Load order metadata to session
+    session[:customer_id] = order.customer_id
+    session[:customer_name] = order.customer&.full_name
+    session[:order_type] = order.order_type
+    session[:delivery_amount] = order.delivery_amount || 0
+    session[:discount_percentage] = order.discount_percentage
+    session[:discount_reason] = order.discount_reason
+
+    # Calculate discount in session
+    if order.discount_percentage && order.discount_percentage > 0
+      totals = calculate_cart_totals
+      session[:discount] = totals[:discount]
+    end
+
+    render json: { success: true, message: 'Pedido cargado correctamente' }
+  rescue ActiveRecord::RecordNotFound
+    render json: { success: false, error: 'Pedido no encontrado' }
+  end
+
   def search_products
     @q = Product.ransack(name_or_sku_cont: params[:query])
     @products = @q.result(distinct: true).limit(30)

@@ -129,6 +129,7 @@ Rails.application.routes.draw do
   post 'pos/apply_discount', to: 'pos#apply_discount'
   post 'pos/create_order', to: 'pos#create_order'
   post 'pos/change_discount_type', to: 'pos#change_discount_type'
+  post 'pos/load_order_to_cart/:id', to: 'pos#load_order_to_cart', as: 'load_order_to_cart_pos'
   resources :payment_methods
   resources :orders do
     member do

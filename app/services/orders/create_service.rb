@@ -20,7 +20,8 @@ module Orders
         order = create_order
         create_order_items(order)
 
-        create_order_payment(order)
+        # Only create payment if order is completed
+        create_order_payment(order) if order.status == Order::STATUSES[:completed]
 
         # Reduce stock if the order is completed
         if order.status == Order::STATUSES[:completed]
@@ -104,6 +105,8 @@ module Orders
       session[:discount] = 0
       session[:discount_percentage] = nil
       session[:discount_reason] = nil
+      session[:customer_id] = nil
+      session[:customer_name] = nil
       session[:delivery_user_id] = nil
       session[:delivery_user_name] = nil
       session[:delivery_amount] = 0
