@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%= search_form_for @q, url: recipes_path, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">

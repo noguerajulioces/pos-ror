@@ -31,6 +31,9 @@ class Ingredient < ApplicationRecord
   acts_as_tenant(:account)
   acts_as_paranoid
 
+  include NumericFormatter
+  sanitize_numeric_attributes :stock, :min_stock, :average_cost
+
   # Validaciones
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :sku, uniqueness: { scope: :account_id }, allow_blank: true
