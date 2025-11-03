@@ -1,14 +1,12 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_order, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_order, only: [ :show, :edit, :update, :destroy, :assign_delivery_user, :print_preview, :receipt_preview ]
 
   def receipt_preview
-    @order = Order.find(params[:id])
     render template: 'orders/print_templates/default', layout: 'application' # o 'print' si tenés un layout para recibos
   end
 
   def print_preview
-    @order = Order.find(params[:id])
     render layout: 'print'
   end
 
@@ -67,6 +65,22 @@ class OrdersController < ApplicationController
   def destroy
     @order.cancelled!
     redirect_to orders_path, notice: 'Orden cancelada exitosamente.'
+  end
+
+  def assign_delivery_user
+    if @order.update(delivery_user_id: params[:delivery_user_id])
+      respond_to do |format|
+        format.json { render json: { success: true, message: 'Repartidor asignado exitosamente.' } }
+        format.turbo_stream { render turbo_stream: turbo_stream.remove('modal') }
+        format.html { redirect_to @order, notice: 'Repartidor asignado exitosamente.' }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: { success: false, error: 'Error al asignar el repartidor.' }, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace('modal', partial: 'orders/modals/assign_delivery'), status: :unprocessable_entity }
+        format.html { redirect_to @order, alert: 'Error al asignar el repartidor.' }
+      end
+    end
   end
 
   private

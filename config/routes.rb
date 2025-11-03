@@ -134,14 +134,15 @@ Rails.application.routes.draw do
   resources :payment_methods
   resources :orders do
     member do
-      get :print
+      get :print_preview
+      get :receipt_preview
+      patch :assign_delivery_user
     end
   end
   resources :order_payments, except: [ :edit, :update ]
 
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos
   get 'print_message', to: 'print#print_message'
-  get 'orders/:id/print_preview', to: 'orders#print_preview', as: 'order_print_preview'
   resources :ingredients
   resources :purchases do
     member do
@@ -164,9 +165,4 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :orders do
-    member do
-      get :receipt_preview
-    end
-  end
 end

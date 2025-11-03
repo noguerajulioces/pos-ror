@@ -195,18 +195,21 @@ module Pos
 
     # Add this method to handle delivery assignment
     def assign_delivery
-      session[:delivery_user_id] = params[:delivery_user_id]
+      # Only save delivery amount, not user (user assigned later in orders)
       session[:delivery_amount] = params[:amount].to_f
-
-      # Get delivery user name for display
-      delivery_user = User.find(params[:delivery_user_id]) if params[:delivery_user_id].present?
-      session[:delivery_user_name] = delivery_user&.name
+      
+      # Clear delivery user if amount is 0
+      if session[:delivery_amount].zero?
+        session[:delivery_user_id] = nil
+        session[:delivery_user_name] = nil
+        session[:order_type] = 'in_store'
+      else
+        # Set order type to delivery when amount > 0
+        session[:order_type] = 'delivery'
+      end
 
       # Calculate new totals
       totals = calculate_cart_totals
-
-      # Set order type after delivery assignment
-      session[:order_type] = 'delivery'
 
       respond_to do |format|
         format.turbo_stream {
@@ -218,7 +221,6 @@ module Pos
         format.json {
           render json: {
             success: true,
-            delivery_user: delivery_user&.name,
             delivery_amount: totals[:delivery_amount],
             totals: totals,
             order_type: session[:order_type]

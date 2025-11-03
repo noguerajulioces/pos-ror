@@ -42,7 +42,7 @@
         // Abrir ventana de impresión después de procesar el pago
         function openPrintWindow() {
           try {
-            const printUrl = '<%= order_print_preview_path(flash[:print_order_id]) %>';
+            const printUrl = '<%= print_preview_order_path(flash[:print_order_id]) %>';
             console.log('Opening print window with URL:', printUrl);
             const printWindow = window.open(printUrl, '_blank', 'width=400,height=600,scrollbars=yes,resizable=yes');
             
