@@ -113,15 +113,18 @@ class PosController < ApplicationController
     session[:cart] = []
 
     # Load order items to cart
-    order.order_items.each do |item|
+    order.order_items.includes(:product).each do |item|
       session[:cart] << {
         'product_id' => item.product_id,
+        'name' => item.product.name,
         'quantity' => item.quantity,
-        'price' => item.price.to_f
+        'price' => item.price.to_f,
+        'image_url' => item.product.images.first.present? ? url_for(item.product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
       }
     end
 
     # Load order metadata to session
+    session[:on_hold_order_id] = order.id
     session[:customer_id] = order.customer_id
     session[:customer_name] = order.customer&.full_name
     session[:order_type] = order.order_type
@@ -226,17 +229,6 @@ class PosController < ApplicationController
     ).call
 
     if result[:success]
-      # Limpiar sesión
-      session[:cart] = []
-      session[:discount] = 0
-      session[:discount_percentage] = nil
-      session[:discount_reason] = nil
-      session[:customer_id] = nil
-      session[:customer_name] = nil
-      session[:delivery_user_id] = nil
-      session[:delivery_user_name] = nil
-      session[:delivery_amount] = 0
-
       respond_to do |format|
         format.html {
           flash[:notice] = "Pago procesado correctamente. Orden ##{result[:order_id]} completada."

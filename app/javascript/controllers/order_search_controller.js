@@ -42,11 +42,6 @@ export default class extends Controller {
     .then(data => {
       if (data.success) {
         alert(`Pedido #${orderId} cargado al carrito correctamente`)
-        // Close modal and reload the POS
-        const modal = document.querySelector('[data-controller="modal"]')
-        if (modal) {
-          modal.controller.close()
-        }
         window.location.reload()
       } else {
         alert(data.error || 'Error al cargar el pedido')

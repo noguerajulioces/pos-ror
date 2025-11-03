@@ -39,6 +39,21 @@ module Orders
 
 
     def create_order
+      # Check if we're updating an existing on-hold order
+      if session[:on_hold_order_id].present?
+        order = Order.find_by(id: session[:on_hold_order_id], status: 'on_hold')
+        if order
+          # Delete existing order items and recreate them with current cart
+          order.order_items.destroy_all
+          
+          # Update order attributes
+          order.assign_attributes(order_attributes)
+          raise order.errors.full_messages.join(', ') unless order.save
+          return order
+        end
+      end
+      
+      # Create new order
       order = Order.new(order_attributes)
       raise order.errors.full_messages.join(', ') unless order.save
       order
@@ -88,16 +103,12 @@ module Orders
     def create_order_payment(order)
       OrderPayment.create!(
         order: order,
-        payment_method_id: payment_method_id,  # Use the existing payment_method_id method
+        payment_method_id: payment_method_id,
         amount: order.total_amount,
         payment_date: Time.current,
         reference_number: nil,
         notes: 'Pago realizado desde POS'
       )
-    end
-
-    def payment_method_id
-      @params[:payment_method_id].presence || PaymentMethod.first.id
     end
 
     def clear_session_data
@@ -110,6 +121,7 @@ module Orders
       session[:delivery_user_id] = nil
       session[:delivery_user_name] = nil
       session[:delivery_amount] = 0
+      session[:on_hold_order_id] = nil
     end
 
     def cart_calculator
