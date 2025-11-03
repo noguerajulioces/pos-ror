@@ -64,8 +64,7 @@ class Purchases::PostPurchase
       raise StandardError, "No se puede comprar el producto #{product.name} (tipo: #{product.kind})"
     end
 
-    # Actualizar stock y costo promedio
-    product.stock += item.quantity
+    # Actualizar stock y costo promedio (el método también actualiza el stock)
     product.update_average_cost(item.unit_price, item.quantity)
   end
 

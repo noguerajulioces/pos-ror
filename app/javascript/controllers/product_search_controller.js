@@ -10,6 +10,12 @@ export default class extends Controller {
   }
 
   search() {
+    // Guard: only search if we have a query target
+    if (!this.hasQueryTarget) {
+      console.warn("Product search controller: query target not found")
+      return
+    }
+    
     const query = this.queryTarget.value.trim()
     
     if (query.length < 2) {
@@ -54,7 +60,9 @@ export default class extends Controller {
             query.includes(product.id.toString())) {
           this.addToCart(null, product.id.toString());
           // Clear the search input
-          this.queryTarget.value = "";
+          if (this.hasQueryTarget) {
+            this.queryTarget.value = "";
+          }
           // Show a notification
           this.showNotification(`${product.name} añadido al carrito`);
           // Return to categories view
@@ -208,7 +216,9 @@ export default class extends Controller {
   }
   
   clearSearch() {
-    this.queryTarget.value = ""
+    if (this.hasQueryTarget) {
+      this.queryTarget.value = ""
+    }
     this.showCategories()
   }
   

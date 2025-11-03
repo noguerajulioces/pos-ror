@@ -141,8 +141,16 @@ class PosController < ApplicationController
   end
 
   def search_products
+    # Get the kind filter from params, default to all products
+    kind_filter = params[:kind_filter] || 'all'
+
     @q = Product.ransack(name_or_sku_cont: params[:query])
-    @products = @q.result(distinct: true).limit(30)
+    @products = @q.result(distinct: true)
+
+    # Filter by kind if specified
+    if kind_filter != 'all'
+      @products = @products.where(kind: kind_filter)
+    end
 
     render json: {
       products: @products.map do |product|
@@ -151,6 +159,7 @@ class PosController < ApplicationController
           name: product.name,
           price: product.price,
           stock: product.virtual_stock,
+          sku: product.sku,
           description: product.description,
           image_url: product.images.first.present? ? url_for(product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
         }

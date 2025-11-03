@@ -128,6 +128,7 @@ class Product < ApplicationRecord
     total_cost    = (current_avg * current_stock) + (new_unit_price * new_quantity)
     new_stock     = current_stock + new_quantity
     self.average_cost = new_stock.positive? ? (total_cost / new_stock) : 0
+    self.stock = new_stock
     save
   end
 

@@ -28,31 +28,31 @@
 
     <div class="col-span-6 sm:col-span-1" data-purchase-item-type-target="productSelect" style="<%= f.object.purchasable_type == 'Product' ? 'display: block;' : 'display: none;' %>">
       <%= f.label :purchasable_id, "Producto", class: "block text-sm/6 font-medium text-gray-900" %>
-      <div class="relative" data-controller="product-search" data-product-search-selected-value="<%= f.object.purchasable_id %>">
-        <%= f.hidden_field :purchasable_id, data: { "product-search-target": "hiddenField" } %>
+      <div class="relative" data-controller="product-autocomplete" data-product-autocomplete-selected-value="<%= f.object.purchasable_id %>">
+        <%= f.hidden_field :purchasable_id, data: { "product-autocomplete-target": "hiddenField" } %>
         <input type="text" 
                placeholder="Buscar producto..." 
                class="block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-               data-product-search-target="input"
-               data-action="input->product-search#search focus->product-search#showOptions click->product-search#showOptions keydown->product-search#handleKeydown"
+               data-product-autocomplete-target="input"
+               data-action="input->product-autocomplete#search focus->product-autocomplete#showOptions click->product-autocomplete#showOptions keydown->product-autocomplete#handleKeydown"
                autocomplete="off"
                value="<%= f.object.purchasable_id ? Product.find_by(id: f.object.purchasable_id)&.name : '' %>" />
         <button type="button" 
                 class="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
-                data-action="click->product-search#toggleOptions"
-                data-product-search-target="toggleButton">
+                data-action="click->product-autocomplete#toggleOptions"
+                data-product-autocomplete-target="toggleButton">
           <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
           </svg>
         </button>
         
         <div class="fixed z-50 max-h-56 overflow-auto rounded-md bg-white py-1 text-base shadow-lg border border-gray-300 focus:outline-none sm:text-sm hidden"
-             data-product-search-target="options"
+             data-product-autocomplete-target="options"
              style="z-index: 9999; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-          <div data-product-search-target="optionsList">
+          <div data-product-autocomplete-target="optionsList">
             <!-- Options will be populated by JavaScript -->
           </div>
-          <div class="px-3 py-2 text-gray-500 text-sm hidden" data-product-search-target="noResults">
+          <div class="px-3 py-2 text-gray-500 text-sm hidden" data-product-autocomplete-target="noResults">
             No se encontraron productos
           </div>
         </div>

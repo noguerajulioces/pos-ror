@@ -62,21 +62,23 @@ class InventoryMovement < ApplicationRecord
     # Estos tipos no manejan stock físico
     return if product.kind.in?([ 'recipe', 'combo' ])
 
-    current_stock = product.stock || 0
-    new_stock = current_stock + quantity
-
-    # First update the stock value
-    product.update_columns(stock: new_stock)
-
-    # Then update the status based on the new stock value
-    update_product_status(new_stock)
-
+    # For purchases, use update_average_cost which handles both stock and cost
     if purchase? && quantity.positive?
       product.update_average_cost(
         product.current_purchase_price,
         quantity
       )
+      # Stock is now updated, get the new value for status update
+      new_stock = product.stock
+    else
+      # For non-purchase movements, manually update stock
+      current_stock = product.stock || 0
+      new_stock = current_stock + quantity
+      product.update_columns(stock: new_stock)
     end
+
+    # Update status based on the new stock value
+    update_product_status(new_stock)
   end
 
   def update_product_status(new_stock)
