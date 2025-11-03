@@ -51,6 +51,7 @@ class Ingredient < ApplicationRecord
   scope :out_of_stock, -> { where(stock: 0) }
 
   # Callbacks
+  after_initialize :set_default_numeric_values, if: :new_record?
   before_save :update_stock_status
 
   # Métodos
@@ -100,6 +101,12 @@ class Ingredient < ApplicationRecord
   end
 
   private
+
+  def set_default_numeric_values
+    self.stock ||= 0
+    self.min_stock ||= 0
+    self.average_cost ||= 0
+  end
 
   def initial_stock_must_have_cost
     return unless new_record? # Solo para ingredientes nuevos
