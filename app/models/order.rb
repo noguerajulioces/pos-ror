@@ -6,6 +6,7 @@
 #  delivery_amount     :decimal(12, 2)   default(0.0)
 #  discount_percentage :decimal(5, 2)
 #  discount_reason     :string
+#  notes               :text
 #  order_date          :datetime
 #  order_type          :string
 #  receipt_number      :string

@@ -131,6 +131,7 @@ class PosController < ApplicationController
     session[:delivery_amount] = order.delivery_amount || 0
     session[:discount_percentage] = order.discount_percentage
     session[:discount_reason] = order.discount_reason
+    session[:order_notes] = order.notes
 
     # Calculate discount in session
     if order.discount_percentage && order.discount_percentage > 0
@@ -141,6 +142,11 @@ class PosController < ApplicationController
     render json: { success: true, message: 'Pedido cargado correctamente' }
   rescue ActiveRecord::RecordNotFound
     render json: { success: false, error: 'Pedido no encontrado' }
+  end
+
+  def save_order_notes
+    session[:order_notes] = params[:notes]
+    render json: { success: true }
   end
 
   def search_products

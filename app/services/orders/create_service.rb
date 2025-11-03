@@ -45,14 +45,14 @@ module Orders
         if order
           # Delete existing order items and recreate them with current cart
           order.order_items.destroy_all
-          
+
           # Update order attributes
           order.assign_attributes(order_attributes)
           raise order.errors.full_messages.join(', ') unless order.save
           return order
         end
       end
-      
+
       # Create new order
       order = Order.new(order_attributes)
       raise order.errors.full_messages.join(', ') unless order.save
@@ -76,7 +76,8 @@ module Orders
         discount_percentage: session[:discount_percentage],
         discount_reason: session[:discount_reason],
         delivery_user_id: session[:delivery_user_id].presence,
-        delivery_amount: delivery_amount
+        delivery_amount: delivery_amount,
+        notes: session[:order_notes]
       }
     end
 
@@ -122,6 +123,7 @@ module Orders
       session[:delivery_user_name] = nil
       session[:delivery_amount] = 0
       session[:on_hold_order_id] = nil
+      session[:order_notes] = nil
     end
 
     def cart_calculator
