@@ -28,9 +28,9 @@ class PosController < ApplicationController
 
   def products_by_subcategory
     subcategory = Category.find(params[:subcategory_id])
-    products = subcategory.products.order(:name)
+    products = subcategory.products.where.not(status: 'inactive').order(:name)
 
-    products_with_images = products.available.map do |product|
+    products_with_images = products.map do |product|
       product_json = product.as_json(only: [ :id, :name, :price ])
       product_json['stock'] = product.virtual_stock
 
