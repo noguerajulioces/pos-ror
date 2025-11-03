@@ -55,17 +55,13 @@ class Ingredient < ApplicationRecord
 
   # Callbacks
   after_initialize :set_default_numeric_values, if: :new_record?
-  before_save :update_stock_status
+  after_save :update_recipes_status
 
   # Métodos
   def stock_status
     return 'out_of_stock' if stock.zero?
     return 'low_stock' if min_stock && stock <= min_stock
     'in_stock'
-  end
-
-  def update_stock_status
-    # Método para futuras implementaciones de alertas
   end
 
   def deduct_stock(quantity)
@@ -117,6 +113,16 @@ class Ingredient < ApplicationRecord
 
     if average_cost.blank? || average_cost <= 0
       errors.add(:average_cost, 'debe ser mayor a cero cuando hay stock inicial')
+    end
+  end
+
+  def update_recipes_status
+    # Update status of recipes that use this ingredient
+    products.each do |recipe|
+      next unless recipe.recipe? # Only update recipes
+
+      recipe.update_stock_status
+      recipe.save if recipe.changed?
     end
   end
 end

@@ -19,6 +19,8 @@ class RecipesController < ApplicationController
     @product = Product.new(recipe_params)
     @product.kind = 'recipe'
     @product.stock = 0 # Las recetas inician sin stock
+    # Skip recipe validation during create so components can be processed after
+    @product.skip_recipe_validation = true
 
     if @product.save
       create_recipe_components
@@ -35,6 +37,9 @@ class RecipesController < ApplicationController
   end
 
   def update
+    # Skip recipe validation during update so components can be processed after
+    @product.skip_recipe_validation = true
+    
     if @product.update(recipe_params)
       update_recipe_components
       attach_image if params[:product][:image].present?

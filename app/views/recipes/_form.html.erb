@@ -189,12 +189,15 @@
   </div>
 
   <!-- Ingredientes de la Receta -->
-  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+  <div class="mt-8 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" 
+       data-controller="recipe-form" 
+       data-recipe-form-index-value="<%= product.persisted? ? product.recipe_components.count : 1 %>">
     <div class="px-4 py-6 sm:p-8">
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-semibold text-gray-900">Ingredientes de la Receta</h3>
         <button type="button" 
-                id="add-ingredient-btn"
+                data-recipe-form-target="addButton"
+                data-action="click->recipe-form#addIngredient"
                 class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 inline-flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -203,7 +206,8 @@
         </button>
       </div>
 
-      <div id="recipe-ingredients-container">
+      <div data-recipe-form-target="container" 
+           data-action="click->recipe-form#removeIngredient">
         <% if product.persisted? && product.recipe_components.any? %>
           <% product.recipe_components.each_with_index do |component, index| %>
             <%= render 'recipe_component_fields', f: form, component: component, index: index, ingredients: @available_ingredients %>
@@ -228,6 +232,11 @@
         </div>
       </div>
     </div>
+
+    <!-- Template para nuevos ingredientes -->
+    <template data-recipe-form-target="template">
+      <%= render 'recipe_component_fields', f: nil, component: nil, index: '__INDEX__', ingredients: @available_ingredients, is_template: true %>
+    </template>
   </div>
 
   <!-- Botones de acción -->
@@ -237,41 +246,3 @@
         class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
   </div>
 <% end %>
-
-<!-- Template para nuevos ingredientes -->
-<template id="recipe-component-template">
-  <%= render 'recipe_component_fields', f: nil, component: nil, index: '__INDEX__', ingredients: @available_ingredients, is_template: true %>
-</template>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Funcionalidad de ingredientes
-  const addIngredientBtn = document.getElementById('add-ingredient-btn');
-  const container = document.getElementById('recipe-ingredients-container');
-  const template = document.getElementById('recipe-component-template');
-  let componentIndex = <%= product.persisted? ? product.recipe_components.count : 1 %>;
-
-  // Agregar nuevo ingrediente
-  if (addIngredientBtn && template) {
-    addIngredientBtn.addEventListener('click', function() {
-      const newComponent = template.content.cloneNode(true);
-      const html = newComponent.querySelector('div').outerHTML.replace(/__INDEX__/g, componentIndex);
-      container.insertAdjacentHTML('beforeend', html);
-      componentIndex++;
-    });
-  }
-
-  // Eliminar ingrediente
-  container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-ingredient-btn')) {
-      e.preventDefault();
-      const componentDiv = e.target.closest('.recipe-component-item');
-      if (container.children.length > 1) {
-        componentDiv.remove();
-      } else {
-        alert('Debe haber al menos un ingrediente en la receta.');
-      }
-    }
-  });
-});
-</script>
