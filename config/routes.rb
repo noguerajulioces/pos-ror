@@ -96,6 +96,7 @@ Rails.application.routes.draw do
 
   post 'pos/add_product_to_order', to: 'pos#add_product_to_order'
   post 'pos/set_order_type', to: 'pos#set_order_type'
+  post 'pos/set_table', to: 'pos#set_table'
   get 'pos/search_products', to: 'pos#search_products'
 
   resources :cash_registers, only: [ :index, :new, :create, :show ] do
@@ -116,6 +117,7 @@ Rails.application.routes.draw do
       get 'item_discounts', to: 'item_discounts#show'
       get 'discounts', to: 'discounts#show'
       get 'deliveries', to: 'deliveries#show'
+      get 'tables', to: 'tables#show'
     end
 
     post 'add_product_to_cart', to: 'carts#add_product_to_cart'
@@ -132,6 +134,7 @@ Rails.application.routes.draw do
   post 'pos/save_order_notes', to: 'pos#save_order_notes'
   post 'pos/load_order_to_cart/:id', to: 'pos#load_order_to_cart', as: 'load_order_to_cart_pos'
   resources :payment_methods
+  resources :tables
   resources :orders do
     member do
       get :print_preview

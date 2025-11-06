@@ -84,8 +84,21 @@
                 <dt class="text-sm font-medium text-gray-500">Tipo de Orden</dt>
                 <dd class="mt-1 text-sm text-gray-900">
                   <%= @order.order_type == "in_store" ? "En Tienda" : "Delivery" %>
+                  <% if @order.order_type == "in_store" && @order.table.present? %>
+                    <span class="ml-2 inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                      <%= @order.table.name %>
+                    </span>
+                  <% end %>
                 </dd>
               </div>
+              <% if @order.order_type == "in_store" && @order.table.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Mesa</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @order.table.name %>
+                </dd>
+              </div>
+              <% end %>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Método de Pago</dt>
                 <dd class="mt-1 text-sm text-gray-900">

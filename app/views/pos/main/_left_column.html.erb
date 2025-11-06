@@ -51,10 +51,18 @@
         </div>
         <div class="px-4 py-3">
           <span class="text-gray-700">Tipo de Pedido:</span>
-          <span class="float-right font-medium" id="order-type-display"><%= @order_type || "N/A" %></span>
+          <span class="float-right font-medium" id="order-type-display"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
           <input type="hidden" id="selected-order-type" value="<%= @order_type %>">
           <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
           <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
+          <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+            <div class="mt-1">
+              <span class="text-xs text-gray-500">Mesa:</span>
+              <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
+                <%= Table.find(session[:table_id]).name %>
+              </span>
+            </div>
+          <% end %>
         </div>
       </div>
       <div>

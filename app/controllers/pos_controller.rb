@@ -8,6 +8,7 @@ class PosController < ApplicationController
   def show
     @products = Product.available
     @categories = Category.where(parent_id: nil)
+    @order_type = session[:order_type] || 'in_store'
   end
 
   def update_order_type
@@ -93,6 +94,14 @@ class PosController < ApplicationController
     end
   end
 
+  def set_table
+    session[:table_id] = params[:table_id].presence
+
+    respond_to do |format|
+      format.json { render json: { success: true, table_id: session[:table_id] } }
+    end
+  end
+
   def create_order
     result = Orders::CreateService.new(
       cart: session[:cart],
@@ -128,6 +137,7 @@ class PosController < ApplicationController
     session[:customer_id] = order.customer_id
     session[:customer_name] = order.customer&.full_name
     session[:order_type] = order.order_type
+    session[:table_id] = order.table_id
     session[:delivery_amount] = order.delivery_amount || 0
     session[:discount_percentage] = order.discount_percentage
     session[:discount_reason] = order.discount_reason

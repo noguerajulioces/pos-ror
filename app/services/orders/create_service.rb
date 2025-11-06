@@ -73,6 +73,7 @@ module Orders
         payment_method_id: payment_method_id,
         customer_id: session[:customer_id].presence,
         order_type: order_type,
+        table_id: order_type == 'in_store' ? session[:table_id].presence : nil,
         discount_percentage: session[:discount_percentage],
         discount_reason: session[:discount_reason],
         delivery_user_id: session[:delivery_user_id].presence,
@@ -124,6 +125,7 @@ module Orders
       session[:delivery_amount] = 0
       session[:on_hold_order_id] = nil
       session[:order_notes] = nil
+      session[:table_id] = nil
     end
 
     def cart_calculator

@@ -18,6 +18,7 @@
 #  customer_id         :bigint
 #  delivery_user_id    :bigint
 #  payment_method_id   :bigint           not null
+#  table_id            :bigint
 #  user_id             :bigint           not null
 #
 # Indexes
@@ -26,6 +27,7 @@
 #  index_orders_on_customer_id        (customer_id)
 #  index_orders_on_delivery_user_id   (delivery_user_id)
 #  index_orders_on_payment_method_id  (payment_method_id)
+#  index_orders_on_table_id           (table_id)
 #  index_orders_on_user_id            (user_id)
 #
 # Foreign Keys
@@ -34,6 +36,7 @@
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (delivery_user_id => users.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
+#  fk_rails_...  (table_id => tables.id)
 #  fk_rails_...  (user_id => users.id)
 #
 require 'test_helper'

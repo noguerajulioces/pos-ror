@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_141500) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_06_185531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -281,10 +281,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_141500) do
     t.bigint "delivery_user_id"
     t.decimal "delivery_amount", precision: 12, scale: 2, default: "0.0"
     t.text "notes"
+    t.bigint "table_id"
     t.index ["account_id"], name: "index_orders_on_account_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["delivery_user_id"], name: "index_orders_on_delivery_user_id"
     t.index ["payment_method_id"], name: "index_orders_on_payment_method_id"
+    t.index ["table_id"], name: "index_orders_on_table_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
@@ -478,6 +480,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_141500) do
     t.index ["document"], name: "index_suppliers_on_document", unique: true
   end
 
+  create_table "tables", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "active", default: true, null: false
+    t.bigint "account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_tables_on_account_id"
+    t.index ["active"], name: "index_tables_on_active"
+    t.index ["name"], name: "index_tables_on_name"
+  end
+
   create_table "tax_rates", force: :cascade do |t|
     t.string "name", null: false
     t.decimal "percentage", precision: 5, scale: 2, null: false
@@ -563,6 +576,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_141500) do
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "payment_methods"
+  add_foreign_key "orders", "tables"
   add_foreign_key "orders", "users"
   add_foreign_key "orders", "users", column: "delivery_user_id"
   add_foreign_key "payment_methods", "accounts"
@@ -589,6 +603,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_141500) do
   add_foreign_key "sales", "accounts"
   add_foreign_key "settings", "accounts"
   add_foreign_key "suppliers", "accounts"
+  add_foreign_key "tables", "accounts"
   add_foreign_key "tax_rates", "accounts"
   add_foreign_key "units", "accounts"
   add_foreign_key "users", "accounts"

@@ -156,6 +156,10 @@
                       <% else %>
                         <span class="text-gray-400 text-xs">-</span>
                       <% end %>
+                    <% elsif order.order_type == 'in_store' && order.table.present? %>
+                      <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                        <%= order.table.name %>
+                      </span>
                     <% else %>
                       <span class="text-gray-400 text-xs">-</span>
                     <% end %>

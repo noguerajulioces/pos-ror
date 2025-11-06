@@ -18,6 +18,7 @@
 #  customer_id         :bigint
 #  delivery_user_id    :bigint
 #  payment_method_id   :bigint           not null
+#  table_id            :bigint
 #  user_id             :bigint           not null
 #
 # Indexes
@@ -26,6 +27,7 @@
 #  index_orders_on_customer_id        (customer_id)
 #  index_orders_on_delivery_user_id   (delivery_user_id)
 #  index_orders_on_payment_method_id  (payment_method_id)
+#  index_orders_on_table_id           (table_id)
 #  index_orders_on_user_id            (user_id)
 #
 # Foreign Keys
@@ -34,6 +36,7 @@
 #  fk_rails_...  (customer_id => customers.id)
 #  fk_rails_...  (delivery_user_id => users.id)
 #  fk_rails_...  (payment_method_id => payment_methods.id)
+#  fk_rails_...  (table_id => tables.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class Order < ApplicationRecord
@@ -47,6 +50,7 @@ class Order < ApplicationRecord
   belongs_to :payment_method
   belongs_to :customer, optional: true
   belongs_to :delivery_user, class_name: 'User', optional: true
+  belongs_to :table, optional: true
   has_many :order_items, dependent: :destroy
   has_many :order_payments, dependent: :destroy
 
@@ -104,11 +108,11 @@ class Order < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    [ 'created_at', 'customer_id', 'discount_percentage', 'discount_reason', 'id', 'id_as_string', 'order_date', 'order_type', 'payment_method_id', 'status', 'total_amount', 'updated_at', 'user_id', 'delivery_user_id', 'delivery_amount' ]
+    [ 'created_at', 'customer_id', 'discount_percentage', 'discount_reason', 'id', 'id_as_string', 'order_date', 'order_type', 'payment_method_id', 'status', 'table_id', 'total_amount', 'updated_at', 'user_id', 'delivery_user_id', 'delivery_amount' ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ 'customer', 'order_items', 'order_payments', 'payment_method', 'user', 'delivery_user' ]
+    [ 'customer', 'order_items', 'order_payments', 'payment_method', 'user', 'delivery_user', 'table' ]
   end
 
   # Ransacker para convertir ID a string para búsqueda
