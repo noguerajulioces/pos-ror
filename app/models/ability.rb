@@ -87,5 +87,36 @@ class Ability
       cannot :manage, :recipes
       cannot :manage, :simple_products
     end
+
+    # Mesero: puede crear órdenes en espera pero NO puede pagar ni gestionar caja
+    if user.has_role?(:mesero)
+      can :read, :pos
+      can :read, Product
+      can [ :read, :create ], Order
+      can :read, Customer
+      can :read, Category
+      can :read, Table
+      can :read, :cart
+      can :manage, :cart_items
+      cannot :pay, Order  # No puede procesar pagos
+      cannot :destroy, Order
+      cannot :access, :admin_panel
+      cannot :manage, User
+      cannot :manage, :reports
+      cannot :manage, :settings
+      cannot :manage, :cash_registers
+      cannot :manage, PaymentMethod
+      cannot :manage, :suppliers
+      cannot :manage, :ingredients
+      cannot :manage, :units
+      cannot :manage, :currencies
+      cannot :manage, :expenses
+      cannot :manage, :purchases
+      cannot :manage, :stocks
+      cannot :manage, :combos
+      cannot :manage, :recipes
+      cannot :manage, :simple_products
+      cannot [ :open, :close ], CashRegister
+    end
   end
 end

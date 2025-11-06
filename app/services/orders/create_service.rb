@@ -65,9 +65,16 @@ module Orders
       delivery_amount = session[:delivery_amount].to_f || 0
       final_total = base_total + delivery_amount
 
+      # Meseros solo pueden crear órdenes en espera
+      order_status = if current_user.has_role?(:mesero)
+        Order::STATUSES[:on_hold]
+      else
+        params[:status] || Order::STATUSES[:on_hold]
+      end
+
       {
         order_date: Time.current,
-        status: params[:status] || Order::STATUSES[:on_hold],
+        status: order_status,
         total_amount: final_total,
         user_id: current_user.id,
         payment_method_id: payment_method_id,

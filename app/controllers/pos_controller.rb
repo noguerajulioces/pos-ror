@@ -3,7 +3,7 @@ class PosController < ApplicationController
   include CartCalculations
   layout 'pos'
 
-  before_action :check_cash_register, only: [ :show ]
+  before_action :check_cash_register, only: [ :show ], unless: -> { current_user&.has_role?(:mesero) }
 
   def show
     @products = Product.available
@@ -232,6 +232,12 @@ class PosController < ApplicationController
   end
 
   def process_payment
+    # Meseros no pueden procesar pagos
+    if current_user.has_role?(:mesero)
+      redirect_to pos_path, alert: 'Los meseros no pueden procesar pagos. Solo pueden crear órdenes en espera.'
+      return
+    end
+
     totals = calculate_cart_totals
 
     session[:discount] = totals[:discount]

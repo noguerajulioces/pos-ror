@@ -12,7 +12,7 @@
 account = Account.find_or_create_by!(name: 'Sucursal Ruta 1')
 
 # Create roles
-%w[superadmin vendedor cajero].each { |n| Role.find_or_create_by!(name: n) }
+%w[superadmin vendedor cajero mesero].each { |n| Role.find_or_create_by!(name: n) }
 
 # Create the admin user for this account
 user = User.find_or_create_by!(email: 'admin@admin.com') do |u|

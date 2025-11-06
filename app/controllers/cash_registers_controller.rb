@@ -1,6 +1,13 @@
 class CashRegistersController < ApplicationController
   before_action :authenticate_user!
   before_action :check_super_user_access, only: [ :show ]
+  before_action :check_mesero_access, except: [ :show ]
+  
+  def check_mesero_access
+    if current_user.has_role?(:mesero)
+      redirect_to pos_path, alert: 'Los meseros no tienen acceso a la gestión de caja.'
+    end
+  end
 
   def index
     if params[:q] && params[:q][:open_at_lteq].present?
