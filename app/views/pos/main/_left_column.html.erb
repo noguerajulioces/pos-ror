@@ -1,4 +1,4 @@
-<div class="border-r border-gray-300 p-2 md:p-4 flex flex-col h-auto md:h-[calc(100vh-56px)] transition-all duration-300 ease-in-out relative w-full md:w-2/4" 
+<div class="border-r border-gray-300 p-3 md:p-4 flex flex-col h-auto md:h-[calc(100vh-56px)] transition-all duration-300 ease-in-out relative w-full md:w-2/4" 
       data-layout-target="leftColumn"
       data-class-expanded="w-full"
       data-class-normal="w-full md:w-2/4">
@@ -14,15 +14,94 @@
   </button>
   
   <!-- Título del carrito (solo mobile) -->
-  <div class="md:hidden mb-3 pb-2 border-b border-gray-200">
-    <h2 class="text-lg font-semibold text-gray-800">Carrito</h2>
+  <div class="md:hidden mb-4 pb-3 border-b border-gray-200">
+    <h2 class="text-xl font-semibold text-gray-800">Carrito</h2>
   </div>
   
   <!-- Sección de productos (tabla) -->
   <%= render 'pos/main/cart_items' %>
 
   <div class="mt-4 bg-white rounded-md shadow">
-    <div class="grid grid-cols-2 text-sm">
+    <!-- Mobile: Layout vertical más amigable -->
+    <div class="md:hidden space-y-3 p-4">
+      <div class="flex justify-between items-center py-2 border-b border-gray-200">
+        <span class="text-gray-700 text-base">Sub Total</span>
+        <span class="font-semibold text-base" id="cart-subtotal">
+          ₲s. <%= number_with_delimiter((calculate_cart_totals[:subtotal]).to_i, delimiter: '.') %>
+        </span>
+      </div>
+      <div class="flex justify-between items-center py-2 border-b border-gray-200">
+        <span class="text-gray-700 text-base">IVA</span>
+        <span class="font-medium text-base" id="cart-iva">
+          ₲s. <%= number_with_delimiter((calculate_cart_totals[:iva]).to_i, delimiter: '.') %>
+        </span>
+      </div>
+      <div class="flex justify-between items-center py-2 border-b border-gray-200">
+        <div class="flex flex-col">
+          <span class="text-gray-700 text-base" id="discount-label">
+            Descuento <%= session[:discount_percentage] ? " (#{session[:discount_percentage]}%)" : "" %>
+          </span>
+          <% if session[:discount_reason].present? %>
+            <span class="text-xs text-gray-500 mt-1" title="<%= session[:discount_reason] %>">
+              <%= truncate(session[:discount_reason], length: 30) %>
+            </span>
+          <% end %>
+        </div>
+        <span class="font-medium text-red-600 text-base" id="cart-discount">
+          ₲s. <%= number_with_delimiter((calculate_cart_totals[:discount]).to_i, delimiter: '.') %>
+        </span>
+      </div>
+      <div class="flex justify-between items-center py-3 bg-green-50 rounded-md px-3">
+        <span class="text-gray-800 font-bold text-lg">Total</span>
+        <span class="font-bold text-lg text-green-700" id="cart-total">
+          ₲s. <%= number_with_delimiter((calculate_cart_totals[:total]).to_i, delimiter: '.') %>
+        </span>
+      </div>
+      <div class="pt-2 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-700 text-sm">Cliente:</span>
+          <span class="font-medium text-sm text-right" id="customer-info">
+            <% unless session[:customer_name].nil? %>
+              <%= truncate(session[:customer_name], length: 20) %>
+            <% else %>
+              <%=  
+                link_to "Buscar Cliente", "#",
+                class: 'underline decoration-dotted text-indigo-500 hover:text-indigo-700 focus:outline-none text-sm',
+                data: {
+                  turbo_frame: "customer_search_modal",
+                  controller: "modal",
+                  action: "modal#open",
+                  modal_size: "max-w-2xl w-full",
+                  modal_title: "Buscar Cliente",
+                  modal_frame_id: "customer_search_modal",
+                  modal_frame_src: pos_modals_customer_search_path,
+                },
+                id: "customer_search_button" 
+              %>
+            <% end %>
+          </span>
+          <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-700 text-sm">Tipo de Pedido:</span>
+          <span class="font-medium text-sm" id="order-type-display"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
+          <input type="hidden" id="selected-order-type" value="<%= @order_type %>">
+          <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
+          <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
+        </div>
+        <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 text-sm">Mesa:</span>
+            <span class="text-sm font-medium text-indigo-600" id="table-display">
+              <%= Table.find(session[:table_id]).name %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Desktop: Layout original en grid -->
+    <div class="hidden md:grid grid-cols-2 text-sm">
       <div class="border-r border-gray-200">
         <div class="px-4 py-3 border-b border-gray-200">
           <span class="text-gray-700">IVA</span>
@@ -52,14 +131,10 @@
               %>
             <% end %>
           </span>
-          <input type="hidden" id="selected-customer-id" value="<%= session[:customer_id] %>">
         </div>
         <div class="px-4 py-3">
           <span class="text-gray-700">Tipo de Pedido:</span>
           <span class="float-right font-medium" id="order-type-display"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
-          <input type="hidden" id="selected-order-type" value="<%= @order_type %>">
-          <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
-          <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
           <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
             <div class="mt-1">
               <span class="text-xs text-gray-500">Mesa:</span>
@@ -106,8 +181,8 @@
 
   <!-- Order Notes Section -->
   <div class="mt-4 bg-white rounded-md shadow p-4">
-    <label for="order-notes" class="block text-sm font-medium text-gray-700 mb-2">
-      <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <label for="order-notes" class="block text-base md:text-sm font-medium text-gray-700 mb-2">
+      <svg class="w-5 h-5 md:w-4 md:h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
       </svg>
       Notas del Pedido
@@ -115,38 +190,38 @@
     <textarea 
       id="order-notes" 
       rows="3" 
-      class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none"
+      class="block w-full px-4 py-3 md:px-3 md:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base md:text-sm resize-none"
       placeholder="Ej: Chapa ABC123, Extra hielo, Sin cebolla, etc..."
       data-controller="order-notes"
       data-action="input->order-notes#saveNotes"
     ><%= session[:order_notes] %></textarea>
   </div>
 
-  <div class="mt-4 grid <%= current_user.has_role?(:mesero) ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4' %> gap-2 md:gap-0">
+  <div class="mt-4 grid <%= current_user.has_role?(:mesero) ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4' %> gap-3 md:gap-0">
     <% unless current_user.has_role?(:mesero) %>
-    <button class="bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 font-medium border-r border-green-600 focus:outline-none flex items-center justify-center text-sm md:text-base"
+    <button class="bg-green-500 hover:bg-green-600 text-white py-4 md:py-4 font-semibold border-r border-green-600 focus:outline-none flex items-center justify-center text-base md:text-base min-h-[52px] md:min-h-0"
             data-controller="modal"
             data-action="modal#open"
             data-modal-title="Procesar Pago"
             data-modal-size="max-w-4xl w-full"
             data-modal-frame-id="payment_modal"
             data-modal-frame-src="<%= pos_modals_payment_path %>">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
       </svg>
       Pagar
     </button>
     <% end %>
     <button 
-      class="bg-blue-500 hover:bg-blue-600 text-white py-3 md:py-4 font-medium border-r border-blue-600 focus:outline-none flex items-center justify-center text-sm md:text-base"
+      class="bg-blue-500 hover:bg-blue-600 text-white py-4 md:py-4 font-semibold border-r border-blue-600 focus:outline-none flex items-center justify-center text-base md:text-base min-h-[52px] md:min-h-0"
       data-controller="order"
       data-action="order#createOnHold">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
       </svg>
       En espera
     </button>
-    <button class="bg-white hover:bg-gray-100 text-gray-700 py-3 md:py-4 font-medium border-r border-gray-300 focus:outline-none flex items-center justify-center text-sm md:text-base"
+    <button class="bg-white hover:bg-gray-100 text-gray-700 py-4 md:py-4 font-semibold border-r border-gray-300 focus:outline-none flex items-center justify-center text-base md:text-base min-h-[52px] md:min-h-0"
             data-controller="modal"
             data-action="modal#open"
             data-modal-title="Asignar Delivery"
@@ -154,15 +229,15 @@
             data-modal-frame-id="delivery_modal"
             data-modal-frame-src="<%= pos_modals_deliveries_path %>"
             >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
       Delivery
     </button>
-    <button class="bg-red-500 hover:bg-red-600 text-white py-3 md:py-4 font-medium focus:outline-none flex items-center justify-center text-sm md:text-base"
+    <button class="bg-red-500 hover:bg-red-600 text-white py-4 md:py-4 font-semibold focus:outline-none flex items-center justify-center text-base md:text-base min-h-[52px] md:min-h-0"
       data-controller="refresh"
       data-action="refresh#reload">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
       Anular

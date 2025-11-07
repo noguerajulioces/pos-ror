@@ -197,7 +197,7 @@ module Pos
     def assign_delivery
       # Only save delivery amount, not user (user assigned later in orders)
       session[:delivery_amount] = params[:amount].to_f
-      
+
       # Clear delivery user if amount is 0
       if session[:delivery_amount].zero?
         session[:delivery_user_id] = nil
