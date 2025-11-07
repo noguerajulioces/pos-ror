@@ -1,0 +1,19 @@
+<% if customer_name.present? %>
+  <%= customer_name %>
+<% else %>
+  <%=  
+    link_to "Buscar Cliente", "#",
+    class: 'underline decoration-dotted text-indigo-500 hover:text-indigo-700 focus:outline-none',
+    data: {
+      turbo_frame: "customer_search_modal",
+      controller: "modal",
+      action: "modal#open",
+      modal_size: "max-w-2xl w-full",
+      modal_title: "Buscar Cliente",
+      modal_frame_id: "customer_search_modal",
+      modal_frame_src: pos_modals_customer_search_path,
+    },
+    id: "customer_search_button_desktop" 
+  %>
+<% end %>
+

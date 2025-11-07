@@ -9,10 +9,15 @@ class Pos::CustomersController < ApplicationController
         session[:customer_name] = @customer.full_name
 
         format.turbo_stream {
+          # Render partials for customer info updates (specify format as :html)
+          mobile_content = render_to_string(partial: 'pos/main/customer_info_mobile', locals: { customer_name: @customer.full_name }, formats: [:html])
+          desktop_content = render_to_string(partial: 'pos/main/customer_info_desktop', locals: { customer_name: @customer.full_name }, formats: [:html])
+          
           render turbo_stream: [
             turbo_stream.remove('modal'),
-            turbo_stream.update('customer-info', @customer.full_name),
-            turbo_stream.update('selected-customer-id', @customer.id)
+            turbo_stream.update('customer-info-mobile', mobile_content),
+            turbo_stream.update('customer-info-desktop', desktop_content),
+            turbo_stream.update('selected-customer-id-mobile', @customer.id)
           ]
         }
         format.html { redirect_back fallback_location: pos_path, notice: 'Cliente creado exitosamente.' }

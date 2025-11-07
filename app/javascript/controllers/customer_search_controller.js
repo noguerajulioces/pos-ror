@@ -102,32 +102,18 @@ export default class extends Controller {
       method: 'POST',
       headers: {
         "X-CSRF-Token": csrfToken,
-        "Accept": "application/json"
+        "Accept": "text/vnd.turbo-stream.html"
       },
       body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Close modal and update customer info
-        const modal = document.querySelector('[data-controller="modal"]')
-        if (modal) {
-          const modalController = modal.controller
-          modalController.close()
-        }
-        
-        // Update customer info in the POS screen
-        document.getElementById("customer-info").textContent = data.customer.name
-        
-        // Show success message
-        alert(`Cliente ${data.customer.name} creado exitosamente`)
-      } else {
-        // Show errors
-        alert(`Error: ${data.errors.join(', ')}`)
-      }
+    .then(response => response.text())
+    .then(html => {
+      // Let Turbo handle the response (it will update the customer info and close the modal)
+      Turbo.renderStreamMessage(html)
     })
     .catch(error => {
       console.error("Error creating customer:", error)
+      alert('Error al crear el cliente. Por favor intenta de nuevo.')
     })
   }
 
@@ -136,28 +122,8 @@ export default class extends Controller {
     const customerId = event.currentTarget.dataset.customerId
     const customerName = event.currentTarget.dataset.customerFullName || event.currentTarget.dataset.customerName
     
-    // Update customer info in the POS screen
-    const customerInfoElement = document.getElementById("customer-info")
-    if (customerInfoElement) {
-      customerInfoElement.textContent = customerName
-    }
-    
-    // Update hidden input with customer ID
-    const customerIdInput = document.getElementById("selected-customer-id")
-    if (customerIdInput) {
-      customerIdInput.value = customerId
-    }
-    
-    // Save customer selection to session
+    // Save customer selection to session using Turbo Streams
     this.saveCustomerSelection(customerId, customerName)
-    
-    // Find and close the modal by looking for closest modal container
-    const modalElement = event.currentTarget.closest('[data-controller="modal"]') || 
-                         document.querySelector('[data-controller="modal"]')
-    
-    if (modalElement) {
-      modalElement.remove()
-    }
   }
   
   saveCustomerSelection(customerId, customerName) {
@@ -167,12 +133,27 @@ export default class extends Controller {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'text/vnd.turbo-stream.html'
       },
       body: JSON.stringify({
         customer_id: customerId,
         customer_name: customerName
       })
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Let Turbo handle the response
+      Turbo.renderStreamMessage(html)
+      
+      // Close the modal
+      const modalElement = document.querySelector('[data-controller="modal"]')
+      if (modalElement) {
+        const modalController = this.application.getControllerForElementAndIdentifier(modalElement, 'modal')
+        if (modalController) {
+          modalController.close()
+        }
+      }
     })
     .catch(error => console.error('Error saving customer selection:', error))
   }

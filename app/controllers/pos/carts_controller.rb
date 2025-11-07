@@ -37,18 +37,23 @@ module Pos
 
       respond_to do |format|
         format.turbo_stream {
+          # Replace the entire cart-items container to update both mobile and desktop
           render turbo_stream: [
             turbo_stream.replace(
-              'cart-items-body',
-              partial: 'cart_items',
-              locals: { cart_items: session[:cart] }
+              'cart-items',
+              partial: 'pos/main/cart_items'
             ),
-            turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-            turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-            turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-            turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-subtotal-mobile', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-subtotal-desktop', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-iva-mobile', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-iva-desktop', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-discount-mobile', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-discount-desktop', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
             turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
-            turbo_stream.update('discount-label', discount_label)
+            turbo_stream.update('discount-label-mobile', discount_label),
+            turbo_stream.update('discount-label-desktop', discount_label)
           ]
         }
         format.json {
@@ -83,11 +88,11 @@ module Pos
 
       respond_to do |format|
         format.turbo_stream {
+          # Replace the entire cart-items container to update both mobile and desktop
           render turbo_stream: [
             turbo_stream.replace(
-              'cart-items-body',
-              partial: 'cart_items',
-              locals: { cart_items: session[:cart] }
+              'cart-items',
+              partial: 'pos/main/cart_items'
             ),
             turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
@@ -136,9 +141,8 @@ module Pos
         format.turbo_stream {
           render turbo_stream: [
             turbo_stream.replace(
-              'cart-items-body',
-              partial: 'cart_items',
-              locals: { cart_items: [] }
+              'cart-items',
+              partial: 'pos/main/cart_items'
             ),
             turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
@@ -172,14 +176,30 @@ module Pos
         end
       end
 
+      # Recalculate discount if it's a percentage
+      adjust_discount_if_needed
+
+      # Calculate new totals
+      totals = calculate_cart_totals
+
+      # Update discount label
+      discount_label = session[:discount_percentage] ? "Descuento (#{session[:discount_percentage]}%)" : 'Descuento'
+
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace('cart-items-body', partial: 'pos/carts/cart_items', locals: { cart_items: session[:cart] }),
-            turbo_stream.replace('cart-iva', partial: 'pos/carts/cart_iva'),
-            turbo_stream.replace('cart-subtotal', partial: 'pos/carts/cart_subtotal'),
-            turbo_stream.replace('cart-discount', partial: 'pos/carts/cart_discount'),
-            turbo_stream.replace('cart-total', partial: 'pos/carts/cart_total')
+            turbo_stream.replace('cart-items', partial: 'pos/main/cart_items'),
+            turbo_stream.update('cart-subtotal-mobile', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-subtotal-desktop', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-iva-mobile', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-iva-desktop', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-discount-mobile', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-discount-desktop', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
+            turbo_stream.update('discount-label-mobile', discount_label),
+            turbo_stream.update('discount-label-desktop', discount_label)
           ]
         end
       end
@@ -190,7 +210,20 @@ module Pos
       session[:customer_id] = params[:customer_id]
       session[:customer_name] = params[:customer_name]
 
-      render json: { success: true }
+      respond_to do |format|
+        format.json { render json: { success: true } }
+        format.turbo_stream {
+          # Render partials for customer info updates (specify format as :html)
+          mobile_content = render_to_string(partial: 'pos/main/customer_info_mobile', locals: { customer_name: session[:customer_name] }, formats: [:html])
+          desktop_content = render_to_string(partial: 'pos/main/customer_info_desktop', locals: { customer_name: session[:customer_name] }, formats: [:html])
+          
+          render turbo_stream: [
+            turbo_stream.update('customer-info-mobile', mobile_content),
+            turbo_stream.update('customer-info-desktop', desktop_content),
+            turbo_stream.update('selected-customer-id-mobile', session[:customer_id] || '')
+          ]
+        }
+      end
     end
 
     # Add this method to handle delivery assignment

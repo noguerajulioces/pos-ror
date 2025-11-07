@@ -304,15 +304,19 @@ class PosController < ApplicationController
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace(
-            'cart-items-body',
-            partial: 'pos/main/cart_items',
-            locals: { cart_items: session[:cart] }
+            'cart-items',
+            partial: 'pos/main/cart_items'
           ),
-          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
-          turbo_stream.update('discount-label', discount_label)
+          turbo_stream.update('cart-subtotal-mobile', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-subtotal-desktop', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva-mobile', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva-desktop', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount-mobile', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount-desktop', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('discount-label-mobile', discount_label),
+          turbo_stream.update('discount-label-desktop', discount_label)
         ]
       }
       format.json {
@@ -358,15 +362,19 @@ class PosController < ApplicationController
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace(
-            'cart-items-body',
-            partial: 'pos/main/cart_items',
-            locals: { cart_items: session[:cart] }
+            'cart-items',
+            partial: 'pos/main/cart_items'
           ),
-          turbo_stream.update('cart-subtotal', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-iva', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-discount', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
-          turbo_stream.update('cart-total', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
-          turbo_stream.update('discount-label', discount_label)
+          turbo_stream.update('cart-subtotal-mobile', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-subtotal-desktop', "₲s. #{number_with_delimiter(totals[:subtotal].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva-mobile', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-iva-desktop', "₲s. #{number_with_delimiter(totals[:iva].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount-mobile', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-discount-desktop', "₲s. #{number_with_delimiter(totals[:discount].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+          turbo_stream.update('discount-label-mobile', discount_label),
+          turbo_stream.update('discount-label-desktop', discount_label)
         ]
       }
       format.json {

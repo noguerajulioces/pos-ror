@@ -73,25 +73,41 @@ export default class extends Controller {
     .then(data => {
       if (data.success) {
         console.log("DATA ", data);
-        // Update totals in the UI
-        if (document.getElementById('cart-discount')) {
-          document.getElementById('cart-discount').textContent = data.formatted_discount
-          
-          // Store the fixed discount amount in a data attribute for future reference
-          if (discountType === 'fixed') {
-            document.getElementById('cart-discount').dataset.fixedAmount = discountAmount
-          } else {
-            delete document.getElementById('cart-discount').dataset.fixedAmount
+        // Helper function to update an element if it exists
+        const updateElement = (id, value) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.textContent = value;
           }
+        };
+
+        // Update totals in the UI for both mobile and desktop
+        updateElement('cart-discount-mobile', data.formatted_discount);
+        updateElement('cart-discount-desktop', data.formatted_discount);
+        
+        // Store the fixed discount amount in a data attribute for future reference
+        if (discountType === 'fixed') {
+          const mobileDiscount = document.getElementById('cart-discount-mobile');
+          const desktopDiscount = document.getElementById('cart-discount-desktop');
+          if (mobileDiscount) mobileDiscount.dataset.fixedAmount = discountAmount;
+          if (desktopDiscount) desktopDiscount.dataset.fixedAmount = discountAmount;
+        } else {
+          const mobileDiscount = document.getElementById('cart-discount-mobile');
+          const desktopDiscount = document.getElementById('cart-discount-desktop');
+          if (mobileDiscount) delete mobileDiscount.dataset.fixedAmount;
+          if (desktopDiscount) delete desktopDiscount.dataset.fixedAmount;
         }
         
-        document.getElementById('cart-total').textContent = data.formatted_total
-        document.getElementById('cart-subtotal').textContent = data.formatted_subtotal
-        document.getElementById('cart-iva').textContent = data.formatted_iva
+        updateElement('cart-total-mobile', data.formatted_total);
+        updateElement('cart-total-desktop', data.formatted_total);
+        updateElement('cart-subtotal-mobile', data.formatted_subtotal);
+        updateElement('cart-subtotal-desktop', data.formatted_subtotal);
+        updateElement('cart-iva-mobile', data.formatted_iva);
+        updateElement('cart-iva-desktop', data.formatted_iva);
         
-        // Update the discount label if provided
-        if (data.discount_label && document.getElementById('discount-label')) {
-          document.getElementById('discount-label').textContent = data.discount_label
+        // Update the discount label if provided (both mobile and desktop)
+        if (data.discount_label) {
+          let labelText = data.discount_label;
           
           // For fixed discount, we might want to show the original amount if it's different
           if (discountType === 'fixed' && data.discount < discountAmount) {
@@ -102,8 +118,11 @@ export default class extends Controller {
               minimumFractionDigits: 0
             }).format(discountAmount).replace('PYG', '₲s.');
             
-            document.getElementById('discount-label').textContent = `Descuento (${originalAmount})`
+            labelText = `Descuento (${originalAmount})`;
           }
+          
+          updateElement('discount-label-mobile', labelText);
+          updateElement('discount-label-desktop', labelText);
         }
         
         // Close the modal
