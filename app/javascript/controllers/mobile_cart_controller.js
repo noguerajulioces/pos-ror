@@ -73,9 +73,17 @@ export default class extends Controller {
   open() {
     this.isOpen = true
     this.sheetTarget.style.transform = 'translateY(0)'
+    
+    // Enable pointer events on bottomSheet
     this.bottomSheetTarget.classList.remove('pointer-events-none')
+    this.bottomSheetTarget.style.pointerEvents = 'auto'
+    
+    // Show overlay with pointer events
     this.overlayTarget.classList.remove('opacity-0', 'pointer-events-none')
     this.overlayTarget.classList.add('opacity-100', 'pointer-events-auto')
+    this.overlayTarget.style.opacity = ''
+    this.overlayTarget.style.pointerEvents = 'auto'
+    
     // Hide FAB when bottom sheet is open
     this.fabTarget.style.transform = 'scale(0)'
     this.fabTarget.style.opacity = '0'
@@ -85,13 +93,32 @@ export default class extends Controller {
   close() {
     this.isOpen = false
     this.sheetTarget.style.transform = 'translateY(100%)'
+    
+    // Force pointer-events-none on bottomSheet
     this.bottomSheetTarget.classList.add('pointer-events-none')
+    this.bottomSheetTarget.style.pointerEvents = 'none'
+    
+    // Clean up overlay: remove inline styles and ensure pointer-events-none
     this.overlayTarget.classList.remove('opacity-100', 'pointer-events-auto')
     this.overlayTarget.classList.add('opacity-0', 'pointer-events-none')
+    this.overlayTarget.style.opacity = ''
+    this.overlayTarget.style.pointerEvents = 'none'
+    
     // Show FAB when bottom sheet is closed
     this.fabTarget.style.transform = 'scale(1)'
     this.fabTarget.style.opacity = '1'
+    
+    // Restore body scroll
     document.body.style.overflow = ''
+    
+    // Double-check after transition completes (300ms)
+    setTimeout(() => {
+      this.bottomSheetTarget.classList.add('pointer-events-none')
+      this.bottomSheetTarget.style.pointerEvents = 'none'
+      this.overlayTarget.classList.add('pointer-events-none')
+      this.overlayTarget.style.pointerEvents = 'none'
+      this.overlayTarget.style.opacity = ''
+    }, 350)
   }
   
   // Swipe gesture handlers
@@ -133,7 +160,10 @@ export default class extends Controller {
     } else {
       // Snap back to open position
       this.sheetTarget.style.transform = 'translateY(0)'
-      this.overlayTarget.style.opacity = '1'
+      // Use class-based opacity instead of inline style for consistency
+      this.overlayTarget.classList.remove('opacity-0')
+      this.overlayTarget.classList.add('opacity-100')
+      this.overlayTarget.style.opacity = ''
     }
   }
   
