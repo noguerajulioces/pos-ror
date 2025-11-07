@@ -32,11 +32,11 @@ export default class extends Controller {
   updateLayout() {
     if (this.rightColumnVisible) {
       // Show right column
-      this.leftColumnTarget.classList.remove("w-full", "pr-6", "shadow-none")
-      this.leftColumnTarget.classList.add("w-2/4")
+      this.leftColumnTarget.classList.remove("pr-6", "shadow-none", "md:w-full")
+      this.leftColumnTarget.classList.add("md:w-2/4")
       
       this.rightColumnTarget.classList.remove("w-0", "opacity-0", "p-0", "hidden", "shadow-none")
-      this.rightColumnTarget.classList.add("w-2/4", "opacity-100", "p-4", "shadow-md")
+      this.rightColumnTarget.classList.add("w-full", "md:w-2/4", "opacity-100", "p-2", "md:p-4", "shadow-md")
       
       // Adjust toggle button position when right column is visible
       if (this.hasToggleButtonTarget) {
@@ -48,10 +48,10 @@ export default class extends Controller {
       this.toggleIconTarget.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>';
     } else {
       // Hide right column
-      this.leftColumnTarget.classList.remove("w-2/4")
-      this.leftColumnTarget.classList.add("w-full", "pr-6", "shadow-md")
+      this.leftColumnTarget.classList.remove("md:w-2/4")
+      this.leftColumnTarget.classList.add("md:w-full", "pr-6", "shadow-md")
       
-      this.rightColumnTarget.classList.remove("w-2/4", "opacity-100", "p-4", "shadow-md")
+      this.rightColumnTarget.classList.remove("w-full", "md:w-2/4", "opacity-100", "p-2", "md:p-4", "shadow-md")
       this.rightColumnTarget.classList.add("w-0", "opacity-0", "p-0", "hidden", "shadow-none")
       
       // Adjust toggle button position when right column is hidden
