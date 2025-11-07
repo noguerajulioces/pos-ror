@@ -1,26 +1,26 @@
-<nav class="bg-white border-b border-gray-200 px-2 md:px-4 py-2 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 md:gap-0">
-  <div class="flex flex-wrap items-center gap-1 md:gap-2">
-    <%= button_to root_path, method: :get, class: "bg-indigo-600 text-white px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+<nav class="bg-white border-b border-gray-200 px-3 md:px-4 py-3 md:py-2 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-0">
+  <div class="flex flex-wrap items-center gap-2 md:gap-2">
+    <%= button_to root_path, method: :get, class: "bg-indigo-600 text-white px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center min-h-[44px] md:min-h-0" do %>
       <div class="flex items-center">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
         </svg>
-        Dashboard
+        <span class="hidden sm:inline">Dashboard</span>
       </div>
     <% end %>
-    <button class="bg-white text-gray-700 px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
+    <button class="bg-white text-gray-700 px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center min-h-[44px] md:min-h-0"
         data-controller="modal"
         data-action="modal#open"
         data-modal-title="Pedidos"
         data-modal-size="max-w-2xl w-full"
         data-modal-frame-id="orders_modal"
         data-modal-frame-src="<%= pos_modals_orders_path %>">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
       </svg>
-      Pedidos
+      <span class="hidden sm:inline">Pedidos</span>
     </button>
-    <button class="bg-white text-gray-700 px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
+    <button class="bg-white text-gray-700 px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center min-h-[44px] md:min-h-0"
             data-turbo-frame="order_type_modal"
             data-controller="modal order-type"
             data-action="modal#open"
@@ -29,12 +29,12 @@
             data-modal-frame-src="<%= pos_modals_order_type_path %>"
             id="order_type_modal_button"
     >
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
       </svg>
-      Tipo de Pedido
+      <span class="hidden sm:inline">Tipo de Pedido</span>
     </button>
-    <button class="bg-white text-gray-700 px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center"
+    <button class="bg-white text-gray-700 px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center min-h-[44px] md:min-h-0"
               data-turbo-frame="customer_search_modal"
               data-controller="modal"
               data-action="modal#open"
@@ -43,14 +43,14 @@
               data-modal-frame-id="customer_search_modal"
               data-modal-frame-src="<%= pos_modals_customer_search_path %>"
               id="customer_search_button">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
       </svg>
-      Clientes
+      <span class="hidden sm:inline">Clientes</span>
     </button>
     <% unless current_user.has_role?(:mesero) %>
     <button 
-      class="bg-orange-500 text-white px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium border border-orange-600 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center"
+      class="bg-orange-500 text-white px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-orange-600 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center justify-center min-h-[44px] md:min-h-0"
       data-controller="modal"
       data-action="modal#open"
       data-modal-title="Cerrar Caja"
@@ -58,31 +58,32 @@
       data-modal-frame-id="close_register_modal"
       data-modal-frame-src="<%= close_cash_register_path(current_user.cash_registers.open.first) if current_user.cash_registers.open.any? %>"
     >
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
       </svg>
-      <span class="hidden md:inline">Cerrar Caja</span>
+      <span class="hidden sm:inline md:inline">Cerrar Caja</span>
     </button>
     <% end %>
     <button 
-      class="bg-red-600 text-white px-2 md:px-3 py-1.5 rounded-md text-xs md:text-sm font-medium border border-red-700 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center"
+      class="bg-red-600 text-white px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-red-700 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center justify-center min-h-[44px] md:min-h-0"
       data-controller="refresh"
       data-action="refresh#reload"
     >
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
       </svg>
-      Reiniciar
+      <span class="hidden sm:inline">Reiniciar</span>
     </button>
   </div>
   
-  <div class="flex flex-wrap items-center gap-2 md:gap-4">
+  <div class="hidden md:flex flex-wrap items-center gap-2 md:gap-4 mt-2 md:mt-0">
     <div class="flex flex-wrap items-center gap-2 md:gap-4">
       <% Currency.where(display: true).order(:code).each do |currency| %>
-        <div class="flex items-center text-gray-700">
-          <img src="<%= currency.flag_url %>" alt="<%= currency.name %>" class="h-4 mr-1">
+        <div class="flex items-center text-gray-700 bg-gray-50 md:bg-transparent px-2 py-1 md:px-0 md:py-0 rounded-md">
+          <img src="<%= currency.flag_url %>" alt="<%= currency.name %>" class="h-5 md:h-4 mr-1.5 md:mr-1">
           <span class="text-xs md:text-sm">
-            <strong><%= currency.code %></strong>: <%= "₲s. #{number_with_delimiter(currency.exchange_rate, delimiter: '.')}" %> </span>
+            <strong><%= currency.code %></strong>: <span class="hidden sm:inline"><%= "₲s. #{number_with_delimiter(currency.exchange_rate, delimiter: '.')}" %></span><span class="sm:hidden"><%= number_with_delimiter(currency.exchange_rate, delimiter: '.') %></span>
+          </span>
         </div>
       <% end %>
     </div>

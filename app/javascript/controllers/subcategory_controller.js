@@ -70,21 +70,21 @@ export default class extends Controller {
           const stockText = stockStatus ? 'Sin stock' : `Stock: ${product.stock}`;
           
           html += `
-            <div class="w-1/3 p-2 product-item" data-product-id="${product.id}">
-              <div class="border rounded-lg p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col ${stockStatus ? 'border-red-300' : ''}">
-                <div class="h-24 bg-gray-100 rounded-md mb-2 flex items-center justify-center overflow-hidden">
+            <div class="w-1/2 md:w-1/3 p-3 md:p-2 product-item" data-product-id="${product.id}">
+              <div class="border rounded-lg p-3 md:p-2 hover:border-indigo-500 cursor-pointer h-full flex flex-col ${stockStatus ? 'border-red-300' : ''}">
+                <div class="h-32 md:h-24 bg-gray-100 rounded-md mb-3 md:mb-2 flex items-center justify-center overflow-hidden">
                   ${product.image_url ? 
                     `<img src="${product.image_url}" alt="${product.image_alt || product.name}" class="w-full h-full object-cover object-center">` : 
-                    `<svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    `<svg class="w-16 h-16 md:w-12 md:h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>`
                   }
                 </div>
                 <div class="flex-grow">
-                  <h3 class="font-medium text-sm">${product.name}</h3>
-                  <div class="flex justify-between items-center mt-1">
-                    <p class="text-green-600 font-bold">₲s. ${formattedPrice}</p>
-                    <span class="${stockClass} inline-flex rounded-full px-2 text-xs font-semibold leading-5">${stockText}</span>
+                  <h3 class="font-medium text-sm md:text-sm">${product.name}</h3>
+                  <div class="flex justify-between items-center mt-2 md:mt-1">
+                    <p class="text-green-600 font-bold text-sm md:text-sm">₲s. ${formattedPrice}</p>
+                    <span class="${stockClass} inline-flex rounded-full px-2 md:px-2 text-xs md:text-xs font-semibold leading-5 md:leading-5">${stockText}</span>
                   </div>
                 </div>
               </div>
