@@ -2,10 +2,49 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["option", "tableContainer", "tableSelect"]
-  static values = { tablesUrl: String }
+  static values = { 
+    tablesUrl: String,
+    isMesero: Boolean,
+    isMobile: Boolean
+  }
   
   connect() {
     console.log("Order type controller connected")
+    
+    // Si es mesero en mobile, automáticamente establecer tipo de pedido y cargar mesas
+    if (this.isMeseroValue && this.isMobileValue) {
+      // Establecer tipo de pedido como "in_store" automáticamente
+      this.setOrderTypeForMesero()
+      // Mostrar y cargar mesas
+      this.showTableSelection()
+    }
+  }
+  
+  setOrderTypeForMesero() {
+    // Actualizar el display (solo desktop, mobile mostrará la mesa)
+    const orderTypeDisplay = document.getElementById("order-type-display")
+    if (orderTypeDisplay) {
+      // En mobile, el display se actualizará cuando se seleccione una mesa
+      const mobileDisplay = orderTypeDisplay.querySelector('.md\\:hidden')
+      const desktopDisplay = orderTypeDisplay.querySelector('.hidden.md\\:inline')
+      
+      if (desktopDisplay) {
+        desktopDisplay.textContent = "En el local"
+      }
+      if (mobileDisplay) {
+        mobileDisplay.textContent = "Seleccionar"
+        mobileDisplay.className = "md:hidden text-gray-400"
+      }
+    }
+    
+    // Actualizar el input hidden
+    const orderTypeInput = document.getElementById("selected-order-type")
+    if (orderTypeInput) {
+      orderTypeInput.value = "in_store"
+    }
+    
+    // Guardar en sesión
+    this.saveOrderTypeSelection("in_store")
   }
   
   selectType(event) {
@@ -118,31 +157,52 @@ export default class extends Controller {
       
       // Update table display in the POS view
       const tableDisplay = document.getElementById('table-display')
+      const orderTypeDisplay = document.getElementById('order-type-display')
       const tableSelect = this.hasTableSelectTarget ? this.tableSelectTarget : null
       
       if (tableId && tableSelect) {
         const selectedOption = tableSelect.options[tableSelect.selectedIndex]
         const tableName = selectedOption ? selectedOption.textContent : ''
         
-        // Update or create table display
+        // Update mobile display in order-type-display
+        if (orderTypeDisplay) {
+          const mobileDisplay = orderTypeDisplay.querySelector('.md\\:hidden')
+          if (mobileDisplay) {
+            mobileDisplay.textContent = tableName
+            mobileDisplay.className = "md:hidden text-indigo-600"
+          }
+        }
+        
+        // Update or create table display (desktop)
         if (tableDisplay) {
           tableDisplay.textContent = tableName
         } else {
-          // Create table display if it doesn't exist
+          // Create table display if it doesn't exist (desktop)
           const orderTypeDiv = document.querySelector('#order-type-display')?.parentElement
           if (orderTypeDiv) {
             const tableDiv = document.createElement('div')
-            tableDiv.className = 'mt-1'
+            tableDiv.className = 'hidden md:flex justify-between items-center mt-1'
             tableDiv.innerHTML = `
-              <span class="text-xs text-gray-500">Mesa:</span>
-              <span class="float-right text-xs font-medium text-indigo-600" id="table-display">${tableName}</span>
+              <span class="text-gray-500 text-sm">Mesa:</span>
+              <span class="text-sm font-medium text-indigo-600" id="table-display">${tableName}</span>
             `
             orderTypeDiv.appendChild(tableDiv)
           }
         }
-      } else if (tableDisplay) {
-        // Remove table display if no table is selected
-        tableDisplay.parentElement.remove()
+      } else {
+        // No table selected
+        if (orderTypeDisplay) {
+          const mobileDisplay = orderTypeDisplay.querySelector('.md\\:hidden')
+          if (mobileDisplay) {
+            mobileDisplay.textContent = "Seleccionar"
+            mobileDisplay.className = "md:hidden text-gray-400"
+          }
+        }
+        
+        if (tableDisplay) {
+          // Remove table display if no table is selected (desktop)
+          tableDisplay.parentElement.remove()
+        }
       }
     })
     .catch(error => {

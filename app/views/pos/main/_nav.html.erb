@@ -24,15 +24,21 @@
             data-turbo-frame="order_type_modal"
             data-controller="modal order-type"
             data-action="modal#open"
-            data-modal-title="Tipo de Pedido"
+            data-modal-title="<%= mobile_device? ? 'Mesa' : 'Tipo de Pedido' %>"
             data-modal-frame-id="order_type_modal"
             data-modal-frame-src="<%= pos_modals_order_type_path %>"
             id="order_type_modal_button"
     >
-      <svg class="w-5 h-5 md:w-4 md:h-4 mr-1.5 md:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <!-- Icono de mesa para mobile -->
+      <svg class="w-5 h-5 md:hidden mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+      </svg>
+      <!-- Icono de calendario para desktop -->
+      <svg class="hidden md:block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
       </svg>
-      <span class="hidden sm:inline">Tipo de Pedido</span>
+      <span class="hidden sm:inline md:hidden">Mesa</span>
+      <span class="hidden md:inline">Tipo de Pedido</span>
     </button>
     <button class="bg-white text-gray-700 px-4 md:px-3 py-2.5 md:py-1.5 rounded-md text-sm md:text-sm font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center min-h-[44px] md:min-h-0"
               data-turbo-frame="customer_search_modal"
