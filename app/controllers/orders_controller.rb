@@ -13,7 +13,7 @@ class OrdersController < ApplicationController
   def index
     @q = Order.ransack(params[:q])
     @orders = @q.result(distinct: true)
-              .includes(:customer, :payment_method, :delivery_user, :table)
+              .includes(:customer, :payment_method, :delivery_user, :user, :table)
               .order(order_date: :desc)
               .paginate(page: params[:page], per_page: 10)
     @delivery_users = User.joins(:roles)

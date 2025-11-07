@@ -46,8 +46,9 @@ module Orders
           # Delete existing order items and recreate them with current cart
           order.order_items.destroy_all
 
-          # Update order attributes
-          order.assign_attributes(order_attributes)
+          # Update order attributes (excluding user_id to preserve the original creator)
+          attributes = order_attributes.except(:user_id)
+          order.assign_attributes(attributes)
           raise order.errors.full_messages.join(', ') unless order.save
           return order
         end
