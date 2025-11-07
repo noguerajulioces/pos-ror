@@ -2,9 +2,9 @@
       data-layout-target="leftColumn"
       data-class-expanded="w-full"
       data-class-normal="w-full md:w-2/4">
-  <!-- Toggle button for right column - repositioned -->
+  <!-- Toggle button for right column - only visible on desktop -->
   <button 
-    class="absolute -right-4 top-4 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none z-20"
+    class="hidden md:block absolute -right-4 top-4 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none z-20"
     data-action="layout#toggleRightColumn"
     data-layout-target="toggleButton"
     title="Mostrar/Ocultar panel de productos">
@@ -12,6 +12,11 @@
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
     </svg>
   </button>
+  
+  <!-- Título del carrito (solo mobile) -->
+  <div class="md:hidden mb-3 pb-2 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-800">Carrito</h2>
+  </div>
   
   <!-- Sección de productos (tabla) -->
   <%= render 'pos/main/cart_items' %>

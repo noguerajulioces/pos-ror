@@ -1,0 +1,50 @@
+<!-- Barra Superior (Navbar) -->
+<%= render 'pos/main/nav' %>
+
+<!-- Contenedor Principal - Mobile: Productos Full Screen -->
+<div class="flex flex-col flex-1 relative" data-controller="mobile-cart">
+  <!-- Productos - Full width en mobile -->
+  <div class="w-full">
+    <%= render 'pos/main/right_column' %>
+  </div>
+
+  <!-- Bottom Sheet para Mobile (Carrito) -->
+  <div class="fixed inset-x-0 bottom-0 z-50 pointer-events-none" data-mobile-cart-target="bottomSheet">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 opacity-0 pointer-events-none" 
+         data-mobile-cart-target="overlay"
+         data-action="click->mobile-cart#close"></div>
+    
+    <!-- Bottom Sheet Container -->
+    <div class="bg-white rounded-t-2xl shadow-2xl transform transition-transform duration-300 ease-out max-h-[85vh] flex flex-col pointer-events-auto"
+         data-mobile-cart-target="sheet"
+         style="transform: translateY(100%);">
+      <!-- Drag Handle -->
+      <div class="flex justify-center pt-3 pb-2" data-action="touchstart->mobile-cart#handleTouchStart touchmove->mobile-cart#handleTouchMove touchend->mobile-cart#handleTouchEnd">
+        <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
+      </div>
+      
+      <!-- Cart Content -->
+      <div class="flex-1 overflow-y-auto px-4 pb-4">
+        <%= render 'pos/main/left_column' %>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB (Floating Action Button) para Mobile -->
+  <button class="fixed bottom-6 right-6 z-30 bg-indigo-600 text-white rounded-full p-4 shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 pointer-events-auto"
+          data-mobile-cart-target="fab"
+          data-action="click->mobile-cart#toggle"
+          style="transform: scale(1); opacity: 1;">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+    </svg>
+    <!-- Badge con cantidad de items -->
+    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center"
+          data-mobile-cart-target="badge"
+          style="display: none;">
+      <span data-mobile-cart-target="badgeCount">0</span>
+    </span>
+  </button>
+</div>
+

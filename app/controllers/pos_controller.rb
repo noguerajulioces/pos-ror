@@ -1,7 +1,8 @@
 class PosController < ApplicationController
   include ActionView::Helpers::NumberHelper
   include CartCalculations
-  layout 'pos'
+
+  layout :determine_layout
 
   before_action :check_cash_register, only: [ :show ], unless: -> { current_user&.has_role?(:mesero) }
 
@@ -9,6 +10,11 @@ class PosController < ApplicationController
     @products = Product.available
     @categories = Category.where(parent_id: nil)
     @order_type = session[:order_type] || 'in_store'
+
+    # Render different view for mobile
+    if mobile_device?
+      render 'show_mobile'
+    end
   end
 
   def update_order_type
@@ -374,6 +380,14 @@ class PosController < ApplicationController
   end
 
   private
+
+  def determine_layout
+    mobile_device? ? 'pos_mobile' : 'pos'
+  end
+
+  def mobile_device?
+    request.user_agent =~ /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i
+  end
 
   def check_cash_register
     @cash_register = current_user.cash_registers.open.first
