@@ -386,7 +386,8 @@ class PosController < ApplicationController
   end
 
   def mobile_device?
-    request.user_agent =~ /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Opera Mini|IEMobile|WPDesktop/i
+    browser = Browser.new(request.user_agent, accept_language: request.accept_language)
+    browser.device.mobile? || browser.device.tablet?
   end
 
   def check_cash_register

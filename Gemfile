@@ -90,3 +90,6 @@ gem 'pundit'
 
 # Thermal printer support
 gem 'escpos'
+
+# Browser detection
+gem 'browser'

@@ -44,7 +44,25 @@
         <div class="flex flex-wrap border border-dotted border-gray-300 rounded-md" id="categories-container">
           <% if @categories.present? %>
             <% @categories.each_with_index do |category, index| %>
-              <div class="w-1/3 p-2 md:p-3 flex flex-col items-center <%= index % 3 != 2 ? 'border-r border-dotted border-gray-300' : '' %> <%= index < @categories.length - 3 ? 'border-b border-dotted border-gray-300' : '' %>"
+              <% 
+                # Mobile: 2 columns - border right except last column of row (odd index)
+                # Desktop: 3 columns - border right except last column of row (index % 3 == 2)
+                mobile_border_r = (index % 2 != 1) ? 'border-r border-dotted border-gray-300' : ''
+                desktop_border_r = (index % 3 != 2) ? 'md:border-r md:border-dotted md:border-gray-300' : ''
+                
+                # Calculate rows for mobile (2 cols) and desktop (3 cols)
+                mobile_row = index / 2
+                desktop_row = index / 3
+                total_mobile_rows = (@categories.length.to_f / 2).ceil
+                total_desktop_rows = (@categories.length.to_f / 3).ceil
+                
+                # Border bottom: show except in last row
+                # For mobile: check if this is not the last row (compare with total rows)
+                # For desktop: check if this is not the last row
+                mobile_border_b = (mobile_row < total_mobile_rows - 1) ? 'border-b border-dotted border-gray-300' : ''
+                desktop_border_b = (desktop_row < total_desktop_rows - 1) ? 'md:border-b md:border-dotted md:border-gray-300' : ''
+              %>
+              <div class="w-1/2 md:w-1/3 p-2 md:p-3 flex flex-col items-center <%= mobile_border_r %> <%= desktop_border_r %> <%= mobile_border_b %> <%= desktop_border_b %>"
                     data-controller="category"
                     data-action="click->category#showSubcategories"
                     data-category-id-value="<%= category.id %>"
@@ -56,14 +74,22 @@
               </div>
             <% end %>
             
-            <% # Fill remaining cells with empty boxes to maintain grid %>
-            <% remaining_cells = (3 - (@categories.length % 3)) % 3 %>
-            <% remaining_cells.times do |i| %>
-              <div class="w-1/3 p-3 flex flex-col items-center <%= i < remaining_cells - 1 ? 'border-r border-dotted border-gray-300' : '' %>">
-                <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-2 opacity-30">
-                  <span class="text-gray-400 font-bold">+</span>
+            <% # Fill remaining cells with empty boxes to maintain grid - 2 columns on mobile, 3 on desktop %>
+            <% remaining_cells_mobile = (2 - (@categories.length % 2)) % 2 %>
+            <% remaining_cells_desktop = (3 - (@categories.length % 3)) % 3 %>
+            <% max_remaining = [remaining_cells_mobile, remaining_cells_desktop].max %>
+            <% max_remaining.times do |i| %>
+              <% 
+                # Mobile: border right except last column
+                mobile_border_r = (i % 2 != 1 && i < remaining_cells_mobile) ? 'border-r border-dotted border-gray-300' : ''
+                # Desktop: border right except last column
+                desktop_border_r = (i % 3 != 2 && i < remaining_cells_desktop) ? 'md:border-r md:border-dotted md:border-gray-300' : ''
+              %>
+              <div class="w-1/2 md:w-1/3 p-2 md:p-3 flex flex-col items-center <%= mobile_border_r %> <%= desktop_border_r %>">
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-full flex items-center justify-center mb-1 md:mb-2 opacity-30">
+                  <span class="text-gray-400 font-bold text-xs md:text-base">+</span>
                 </div>
-                <span class="text-sm font-medium text-gray-300">Nueva categoría</span>
+                <span class="text-xs md:text-sm font-medium text-gray-300">Nueva categoría</span>
               </div>
             <% end %>
           <% else %>
