@@ -10,8 +10,10 @@ export default class extends Controller {
     }
 
     // Get customer and order type
-    const customerId = document.getElementById('selected-customer-id').value;
-    const orderType = document.getElementById('selected-order-type').value;
+    const customerIdElement = document.getElementById('selected-customer-id-mobile') || document.getElementById('selected-customer-id');
+    const customerId = customerIdElement ? customerIdElement.value : null;
+    const orderTypeElement = document.getElementById('selected-order-type');
+    const orderType = orderTypeElement ? orderTypeElement.value : 'in_store';
 
     // Create the order with on_hold status
     fetch('/pos/create_order', {
