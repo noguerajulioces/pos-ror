@@ -14,15 +14,19 @@ export default class extends Controller {
     this.calculateTotal()
     
     // Listen for when rows are added or removed
-    this.element.addEventListener('nested-form:added', (event) => {
+    this.element.addEventListener('rails-nested-form:add', (event) => {
       setTimeout(() => {
-        // Only format the new row, not existing ones
-        this.formatNewRow(event.detail.target)
-        this.calculateTotal()
+        // Find all rows with data-new-record="true" and get the last one (most recently added)
+        const newRows = this.element.querySelectorAll('.nested-form-wrapper[data-new-record="true"]')
+        if (newRows.length > 0) {
+          const newRow = newRows[newRows.length - 1]
+          this.formatNewRow(newRow)
+          this.calculateTotal()
+        }
       }, 100)
     })
     
-    this.element.addEventListener('nested-form:removed', () => {
+    this.element.addEventListener('rails-nested-form:remove', () => {
       setTimeout(() => this.calculateTotal(), 100)
     })
   }

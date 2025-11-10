@@ -1,7 +1,6 @@
 <%= form_with(model: purchase, class: "bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl w-full", 
     data: { 
-      controller: 'nested-form purchase-calculator',
-      nested_form_wrapper_selector_value: '.nested-form-wrapper' 
+      controller: 'purchase-calculator'
     }) do |form| %>
   <% if purchase.errors.any? %>
     <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md mb-6">
@@ -87,30 +86,34 @@
   <div class="px-4 py-6 sm:px-8 sm:py-6 border-t border-gray-200 w-full">
     <h3 class="text-lg font-medium leading-6 text-gray-900 mb-6">Items de Compra</h3>
     
-    <template data-nested-form-target="template">
-      <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
-        <%= render 'purchase_item_fields', f: item_form %>
-      <% end %>
-    </template>
+    <div data-controller="rails-nested-form" 
+         data-rails-nested-form-wrapper-selector-value=".nested-form-wrapper">
+      
+      <div class="space-y-4 w-full overflow-x-auto">
+        <%= form.fields_for :purchase_items do |item_form| %>
+          <%= render 'purchase_item_fields', f: item_form %>
+        <% end %>
+        
+        <!-- Target where new items will be inserted -->
+        <div data-rails-nested-form-target="target"></div>
+      </div>
 
-    <div class="space-y-4 w-full overflow-x-auto">
-      <%= form.fields_for :purchase_items do |item_form| %>
-        <%= render 'purchase_item_fields', f: item_form %>
-      <% end %>
+      <template data-rails-nested-form-target="template">
+        <%= form.fields_for :purchase_items, PurchaseItem.new, child_index: 'NEW_RECORD' do |item_form| %>
+          <%= render 'purchase_item_fields', f: item_form %>
+        <% end %>
+      </template>
 
-      <!-- Inserted elements will be injected before that target -->
-      <div data-nested-form-target="target"></div>
-    </div>
-
-    <div class="mt-6">
-      <button type="button" 
-              data-action="nested-form#add"
-              class="inline-flex items-center rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Agregar Item
-      </button>
+      <div class="mt-6">
+        <button type="button" 
+                data-action="click->rails-nested-form#add"
+                class="inline-flex items-center rounded-md bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Agregar Item
+        </button>
+      </div>
     </div>
   </div>
 
