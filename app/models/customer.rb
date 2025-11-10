@@ -33,8 +33,8 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :destroy
   # Validaciones para asegurar la integridad de los datos
   validates :first_name, :last_name, presence: true
-  validates :document, presence: true, uniqueness: true
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :document, presence: true, uniqueness: { scope: :account_id }
+  validates :email, uniqueness: { scope: :account_id, case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
   def full_name
     "#{first_name} #{last_name}".strip

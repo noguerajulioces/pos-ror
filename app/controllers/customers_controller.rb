@@ -26,20 +26,35 @@ class CustomersController < ApplicationController
     @customer = Customer.new(customer_params)
 
     respond_to do |format|
-      if @customer.save
-        session[:customer_id] = @customer.id
-        session[:customer_name] = @customer.full_name
-        # Close the modal and update customer info in the POS view
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.remove('modal'),
-            turbo_stream.update('customer-info', @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
-            turbo_stream.update('selected-customer-id', @customer.id)
-          ]
-        }
-        format.html { redirect_back fallback_location: customer_url(@customer), notice: 'Cliente creado con éxito.' }
-        format.json { render json: { success: true, customer: @customer } }
-      else
+      begin
+        if @customer.save
+          session[:customer_id] = @customer.id
+          session[:customer_name] = @customer.full_name
+          # Close the modal and update customer info in the POS view
+          format.turbo_stream {
+            render turbo_stream: [
+              turbo_stream.remove('modal'),
+              turbo_stream.update('customer-info', @customer.full_name || "#{@customer.first_name} #{@customer.last_name}".strip),
+              turbo_stream.update('selected-customer-id', @customer.id)
+            ]
+          }
+          format.html { redirect_back fallback_location: customer_url(@customer), notice: 'Cliente creado con éxito.' }
+          format.json { render json: { success: true, customer: @customer } }
+        else
+          flash.now[:alert] = "No se pudo crear el cliente: #{@customer.errors.full_messages.join(', ')}"
+          format.turbo_stream {
+            render turbo_stream: turbo_stream.replace(
+              'new_customer_form',
+              partial: 'customers/modal_form',
+              locals: { customer: @customer }
+            ), status: :unprocessable_entity
+          }
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
+        end
+      rescue ActiveRecord::RecordNotUnique => e
+        handle_unique_violation(e)
+        flash.now[:alert] = @customer.errors.full_messages.join(', ')
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
             'new_customer_form',
@@ -57,9 +72,24 @@ class CustomersController < ApplicationController
     @customer = Customer.new(customer_params)
 
     respond_to do |format|
-      if @customer.save
-        format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
-      else
+      begin
+        if @customer.save
+          format.html { redirect_to customer_url(@customer), notice: 'Cliente creado con éxito.' }
+        else
+          flash.now[:alert] = "No se pudo crear el cliente: #{@customer.errors.full_messages.join(', ')}"
+          format.turbo_stream {
+            render turbo_stream: turbo_stream.replace(
+              'customer_search_modal',
+              partial: 'pos/customer_search_modal',
+              locals: { customer: @customer }
+            )
+          }
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: { success: false, errors: @customer.errors.full_messages }, status: :unprocessable_entity }
+        end
+      rescue ActiveRecord::RecordNotUnique => e
+        handle_unique_violation(e)
+        flash.now[:alert] = @customer.errors.full_messages.join(', ')
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
             'customer_search_modal',
@@ -74,9 +104,16 @@ class CustomersController < ApplicationController
   end
 
   def update
-    if @customer.update(customer_params)
-      redirect_to @customer, notice: 'Cliente actualizado exitosamente.'
-    else
+    begin
+      if @customer.update(customer_params)
+        redirect_to @customer, notice: 'Cliente actualizado exitosamente.'
+      else
+        flash.now[:alert] = "No se pudo actualizar el cliente: #{@customer.errors.full_messages.join(', ')}"
+        render :edit, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotUnique => e
+      handle_unique_violation(e)
+      flash.now[:alert] = @customer.errors.full_messages.join(', ')
       render :edit, status: :unprocessable_entity
     end
   end
@@ -106,5 +143,17 @@ class CustomersController < ApplicationController
       :notes,
       :document
     )
+  end
+
+  def handle_unique_violation(exception)
+    error_message = exception.message
+    
+    if error_message.include?('email')
+      @customer.errors.add(:email, 'ya está registrado. Por favor, use otro email.')
+    elsif error_message.include?('document')
+      @customer.errors.add(:document, 'ya está registrado. Por favor, use otro documento.')
+    else
+      @customer.errors.add(:base, 'Ya existe un cliente con estos datos. Por favor, verifique la información.')
+    end
   end
 end
