@@ -61,6 +61,20 @@ ActsAsTenant.with_tenant(account) do
     Setting.set(setting[:var], setting[:value])
   end
 
+  # Create payment methods
+  payment_methods = [
+    { name: 'Efectivo', description: 'Pago en efectivo', active: true },
+    { name: 'Tarjeta de crédito', description: 'Pago con tarjeta de crédito', active: true },
+    { name: 'Tarjeta de débito', description: 'Pago con tarjeta de débito', active: true }
+  ]
+
+  payment_methods.each do |payment_data|
+    PaymentMethod.find_or_create_by!(name: payment_data[:name]) do |payment_method|
+      payment_method.description = payment_data[:description]
+      payment_method.active = payment_data[:active]
+    end
+  end
+
   # Crear impuestos básicos
   tax_rates = [
     { name: 'IVA 10%', percentage: 10.0 },
