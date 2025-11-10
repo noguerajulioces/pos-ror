@@ -137,7 +137,7 @@
                     <% else %>
                       <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
                       <% if current_user.has_role?(:superadmin) %>
-                        <%= link_to "Editar", edit_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                        <%= link_to "Editar", hub_products_path, class: "ml-2 text-indigo-600 hover:text-indigo-900", title: "Edite desde el hub de productos" %>
                       <% end %>
                     <% end %>
                   </td>

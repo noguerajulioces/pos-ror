@@ -1,49 +1,31 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[show edit update destroy]
+  before_action :set_product, only: %i[show edit update]
 
   def hub; end
-
-  # def index
-  #  @q = Product.where(kind: 'simple').ransack(params[:q])
-  #  @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
-  # end
 
   def show
   end
 
-  # def new
-  #  @product = Product.new
-  # end
-
-  def create
-    @product = Product.new(product_params)
-
-    if @product.kind == 'recipe'
-      @product.skip_recipe_validation = true
-    end
-
-    ActiveRecord::Base.transaction do
-      if @product.save
-        StockManager.create_initial_stock(@product)
-        attach_image if params[:product][:image].present?
-
-        notice_message = if @product.kind == 'recipe'
-          'Producto de receta creado exitosamente. Ahora puedes agregar ingredientes editando el producto.'
-        else
-          'Producto creado exitosamente.'
-        end
-
-        redirect_to @product, notice: notice_message
-      else
-        render :new, status: :unprocessable_entity
-      end
+  def edit
+    # Redirect to the appropriate controller based on product kind
+    case @product.kind
+    when 'simple'
+      redirect_to edit_simple_product_path(@product)
+    when 'recipe'
+      redirect_to edit_recipe_path(@product)
+    when 'combo'
+      redirect_to edit_combo_path(@product)
+    else
+      # For products without a specific kind, redirect to hub
+      redirect_to hub_products_path, alert: 'Este producto no puede ser editado desde aquí. Use los controladores específicos.'
     end
   end
 
-  # def edit
-  # end
-
   def update
+    # Esta acción no debería ser llamada directamente ya que cada tipo de producto
+    # tiene su propio controlador. Pero la mantenemos por si acaso hay algún formulario
+    # que la use directamente.
+    
     # Para productos de receta, permitir actualización sin ingredientes si se están editando datos básicos
     if @product.kind == 'recipe' && params[:allow_empty_recipe].present?
       @product.skip_recipe_validation = true
@@ -51,16 +33,31 @@ class ProductsController < ApplicationController
 
     if @product.update(product_params)
       attach_image if params[:product][:image].present?
-      redirect_to @product, notice: 'Producto actualizado exitosamente.'
+      
+      # Redirect to the appropriate show page based on product kind
+      case @product.kind
+      when 'simple'
+        redirect_to simple_product_path(@product), notice: 'Producto actualizado exitosamente.'
+      when 'recipe'
+        redirect_to recipe_path(@product), notice: 'Receta actualizada exitosamente.'
+      when 'combo'
+        redirect_to combo_path(@product), notice: 'Combo actualizado exitosamente.'
+      else
+        redirect_to @product, notice: 'Producto actualizado exitosamente.'
+      end
     else
-      render :edit, status: :unprocessable_entity
+      # Si falla, redirigir al edit correspondiente
+      case @product.kind
+      when 'simple'
+        redirect_to edit_simple_product_path(@product), alert: 'Error al actualizar el producto.'
+      when 'recipe'
+        redirect_to edit_recipe_path(@product), alert: 'Error al actualizar la receta.'
+      when 'combo'
+        redirect_to edit_combo_path(@product), alert: 'Error al actualizar el combo.'
+      else
+        redirect_to hub_products_path, alert: 'Error al actualizar el producto.'
+      end
     end
-  end
-
-  def destroy
-    @product.status = 'inactive'
-    @product.save!
-    redirect_to products_path, notice: 'Producto inactivado exitosamente.'
   end
 
   def search

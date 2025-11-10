@@ -14,14 +14,14 @@
           <p>
             Este producto de receta no tiene ingredientes configurados. 
             <%= link_to "Haz clic aquí para agregar ingredientes", 
-                        edit_product_path(@product), 
+                        edit_recipe_path(@product), 
                         class: "font-medium underline text-amber-800 hover:text-amber-600" %>
             y completar la receta.
           </p>
         </div>
         <div class="mt-4">
           <div class="flex">
-            <%= link_to edit_product_path(@product),
+            <%= link_to edit_recipe_path(@product),
                         class: "bg-amber-100 px-2 py-1.5 rounded-md text-sm font-medium text-amber-800 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500" do %>
               <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
