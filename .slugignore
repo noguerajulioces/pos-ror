@@ -1,0 +1,88 @@
+# Heroku slugignore - Archivos que NO deben incluirse en el slug compilado
+# Este archivo reduce el tamaño del slug compilado excluyendo archivos innecesarios
+
+# Logs (pueden ser muy grandes)
+*.log
+log/*
+!log/.keep
+
+# Archivos de desarrollo y test
+test/
+spec/
+coverage/
+.byebug_history
+
+# Archivos temporales
+tmp/*
+!tmp/.keep
+!tmp/pids/
+!tmp/pids/.keep
+!tmp/cache/
+!tmp/cache/.keep
+!tmp/storage/
+!tmp/storage/.keep
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*~
+
+# Storage local (debe usar S3 u otro servicio en producción)
+storage/*
+!storage/.keep
+
+# Archivos de desarrollo
+.env.local
+.env.development
+.env.test
+
+# Documentación (excepto README)
+doc/
+*.md
+!README.md
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.sublime-*
+*.sublime-project
+*.sublime-workspace
+
+# Scripts de desarrollo
+script/
+scripts/
+
+# Archivos de backup
+*.backup
+*.old
+*.bak
+*.swp
+*.swo
+
+# Archivos compilados locales (Heroku los compila durante el build)
+public/assets
+public/packs
+public/packs-test
+
+# Archivos de cache
+.cache/
+
+# Archivos de desarrollo de Rails
+config/application.yml
+config/database.yml.local
+
+# Archivos de git
+.git/
+.gitignore
+.gitattributes
+
+# Node modules (se instalan durante el build si es necesario)
+node_modules/
+
+# Archivos de screenshots y ejemplos
+public/screenshots/
+
+# Archivos de impresión temporales
+tmp/*.txt
+tmp/*.log
+

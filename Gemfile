@@ -83,7 +83,9 @@ gem 'ransack'
 gem 'to_words'
 gem 'paranoia'
 gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
+gem 'wkhtmltopdf-binary', group: :development
+gem 'wkhtmltopdf-heroku', group: :production
+
 gem 'rdoc', '6.12.0'
 gem 'acts_as_tenant'
 gem 'pundit'
