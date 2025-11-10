@@ -19,7 +19,7 @@ class DeliveryController < ApplicationController
                       .order(order_date: :desc)
 
       @delivery_users = User.joins(:roles)
-                           .where(roles: { name: 'Delivery' })
+                           .where(roles: { name: 'delivery' })
                            .where(account_id: current_user.account_id)
                            .active
                            .order(:name)
@@ -34,7 +34,7 @@ class DeliveryController < ApplicationController
   private
 
   def ensure_delivery_access!
-    unless current_user.has_role?('Delivery') || current_user.has_role?(:superadmin)
+    unless current_user.has_role?(:delivery) || current_user.has_role?(:superadmin)
       redirect_to root_path, alert: 'No tienes permisos para acceder a esta sección'
     end
   end

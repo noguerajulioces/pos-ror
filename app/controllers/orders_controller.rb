@@ -17,7 +17,7 @@ class OrdersController < ApplicationController
               .order(order_date: :desc)
               .paginate(page: params[:page], per_page: 10)
     @delivery_users = User.joins(:roles)
-                         .where(roles: { name: 'Delivery' })
+                         .where(roles: { name: 'delivery' })
                          .where(account_id: current_user.account_id)
                          .active
                          .order(:name)

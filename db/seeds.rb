@@ -12,10 +12,10 @@
 account = Account.find_or_create_by!(name: 'Sucursal Ruta 1')
 
 # Create roles
-%w[superadmin vendedor cajero mesero].each { |n| Role.find_or_create_by!(name: n) }
+%w[superadmin vendedor cajero mesero delivery].each { |n| Role.find_or_create_by!(name: n) }
 
 # Create the admin user for this account
-user = User.find_or_create_by!(email: 'admin@admin.com') do |u|
+user = User.find_or_create_by!(email: 'admin@burgerkombi.com') do |u|
   u.name = 'Administrator'
   u.password = '123456'
   u.account_id = account.id
@@ -34,10 +34,9 @@ ActsAsTenant.with_tenant(account) do
 
   # Add currency seeds
   currencies = [
-    { name: 'Dólar', code: 'USD', symbol: '$', exchange_rate: 7350, flag_url: 'https://flagcdn.com/w20/us.png', display: true },
-    { name: 'Peso Argentino', code: 'ARS', symbol: '$', exchange_rate: 85.5, flag_url: 'https://flagcdn.com/w20/ar.png', display: true },
-    { name: 'Real Brasileño', code: 'BRL', symbol: 'R$', exchange_rate: 1250, flag_url: 'https://flagcdn.com/w20/br.png', display: true },
-    { name: 'Guarani', code: 'PYG', symbol: '₲', exchange_rate: 1, flag_url: 'https://flagcdn.com/w20/py.png', display: true }
+    { name: 'Dólar', code: 'USD', symbol: '$', exchange_rate: 7000, flag_url: 'https://flagcdn.com/w20/us.png', display: true },
+    { name: 'Peso Argentino', code: 'ARS', symbol: '$', exchange_rate: 5, flag_url: 'https://flagcdn.com/w20/ar.png', display: true },
+    { name: 'Real Brasileño', code: 'BRL', symbol: 'R$', exchange_rate: 1300, flag_url: 'https://flagcdn.com/w20/br.png', display: true }
   ]
 
   currencies.each do |currency_data|
@@ -48,15 +47,12 @@ ActsAsTenant.with_tenant(account) do
 
   # Company settings
   company_settings = [
-    { var: 'company_name', value: 'TU EMPRESA' },
-    { var: 'company_owner', value: 'JUAN PEREZ PEREZ' },
-    { var: 'company_address', value: 'RUTA 1 C/ AV. CABALLERO 1894, ENCARNACION' },
+    { var: 'company_name', value: 'BURGER KOMBI' },
+    { var: 'company_owner', value: 'Juan Paniagua' },
+    { var: 'company_address', value: 'RUTA 1, ENCARNACION' },
     { var: 'company_ruc', value: '000000000-0' },
     { var: 'company_phone', value: '0975 000000' },
-    { var: 'company_email', value: 'contacto@tuempresa.com' },
-    { var: 'company_invoice_number', value: '001-002-0001516' },
-    { var: 'company_stamp_number', value: '17304657' },
-    { var: 'company_stamp_validity', value: '01/07/2024 al 31/07/2025' },
+    { var: 'company_email', value: 'contacto@burgerkombi.com' },
     { var: 'receipt_final_message', value: '***¡Gracias por su compra!***' },
     { var: 'company_economic_activity', value: 'VENTA DE PRODUCTOS ELECTRÓNICOS' }
   ]
@@ -96,6 +92,9 @@ ActsAsTenant.with_tenant(account) do
       Unit.create!(name: unit_data[:name], abbreviation: unit_data[:abbreviation])
     end
   end
+
+  # Get the 'Unidad' unit to assign to all products
+  unidad = Unit.find_by!(name: 'Unidad')
 
   # Create main categories for Kombi Burger menu
   main_categories = [
@@ -178,13 +177,14 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
   # Sandwich de lomo
   sandwich_category = Category.find_by(name: 'Sandwich de lomo')
   sandwich_products = [
-    { name: 'Sandwich de lomo KB', price: 30000 },
+    { name: 'Sandwich de Lomo KB', price: 30000 },
     { name: 'Sandwich tradicional', price: 25000 }
   ]
 
@@ -196,6 +196,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
@@ -214,23 +215,24 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
   # Pizza
   pizza_category = Category.find_by(name: 'Pizza')
   pizza_products = [
-    { name: 'Mexicana', price: 65000 },
-    { name: 'Napolitana especial', price: 65000 },
-    { name: 'Pepperoni', price: 65000 },
-    { name: 'Pollo con katupiry', price: 65000 },
-    { name: 'Napolitana', price: 60000 },
-    { name: 'Fugazzeta', price: 60000 },
-    { name: 'Capresse', price: 60000 },
-    { name: 'Choclo', price: 60000 },
-    { name: 'Huevo', price: 60000 },
-    { name: 'Jamón', price: 60000 },
-    { name: 'Muzzarella', price: 55000 }
+    { name: 'Pizza Mexicana', price: 65000 },
+    { name: 'Pizza Napolitana especial', price: 65000 },
+    { name: 'Pizza Pepperoni', price: 65000 },
+    { name: 'Pizza Pollo con katupiry', price: 65000 },
+    { name: 'Pizza Napolitana', price: 60000 },
+    { name: 'Pizza Fugazzeta', price: 60000 },
+    { name: 'Pizza Capresse', price: 60000 },
+    { name: 'Pizza Choclo', price: 60000 },
+    { name: 'Pizza Huevo', price: 60000 },
+    { name: 'Pizza Jamón', price: 60000 },
+    { name: 'Pizza Muzzarella', price: 55000 }
   ]
 
   pizza_products.each_with_index do |product_data, index|
@@ -242,6 +244,7 @@ ActsAsTenant.with_tenant(account) do
       product.status = 'active'
       product.kind = 'recipe'
       product.description = 'Con borde + 15.000 Gs.'
+      product.unit = unidad
     end
   end
 
@@ -253,6 +256,7 @@ ActsAsTenant.with_tenant(account) do
     product.price = 10000
     product.status = 'active'
     product.kind = 'recipe'
+    product.unit = unidad
   end
 
   # Picadas
@@ -270,6 +274,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
@@ -289,6 +294,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
@@ -309,6 +315,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
@@ -327,6 +334,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'recipe'
+      product.unit = unidad
     end
   end
 
@@ -349,6 +357,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'simple'
+      product.unit = unidad
     end
   end
 
@@ -367,6 +376,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'simple'
+      product.unit = unidad
     end
   end
 
@@ -385,6 +395,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'simple'
+      product.unit = unidad
     end
   end
 
@@ -404,6 +415,7 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'simple'
+      product.unit = unidad
     end
   end
 
@@ -424,6 +436,10 @@ ActsAsTenant.with_tenant(account) do
       product.price = product_data[:price]
       product.status = 'active'
       product.kind = 'simple'
+      product.unit = unidad
     end
   end
+
+  # Update all products that don't have a unit assigned to use 'Unidad'
+  Product.where(unit_id: nil).update_all(unit_id: unidad.id)
 end

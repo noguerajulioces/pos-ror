@@ -118,5 +118,31 @@ class Ability
       cannot :manage, :simple_products
       cannot [ :open, :close ], CashRegister
     end
+
+    # Delivery: puede ver solo sus órdenes asignadas
+    if user.has_role?(:delivery)
+      can :read, :delivery
+      can :read, Order, delivery_user_id: user.id
+      can :read, Customer
+      cannot :create, Order
+      cannot :destroy, Order
+      cannot :access, :admin_panel
+      cannot :manage, User
+      cannot :manage, :reports
+      cannot :manage, :settings
+      cannot :manage, :cash_registers
+      cannot :manage, :products
+      cannot :manage, :pos
+      cannot :manage, :suppliers
+      cannot :manage, :ingredients
+      cannot :manage, :units
+      cannot :manage, :currencies
+      cannot :manage, :expenses
+      cannot :manage, :purchases
+      cannot :manage, :stocks
+      cannot :manage, :combos
+      cannot :manage, :recipes
+      cannot :manage, :simple_products
+    end
   end
 end

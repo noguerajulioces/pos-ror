@@ -11,9 +11,6 @@
 <%= "=" * line_width %>
 
 <%= "RECIBO DE DINERO".center(line_width) %>
-Timbrado: <%= Setting.get('company_tax_stamp') %>
-Vigencia: <%= Setting.get('company_stamp_validity') %>
-Factura Nro: <%= order&.receipt_number || '000-000-0000000' %>
 
 <%= "=" * line_width %>
 Actividad Económica:
