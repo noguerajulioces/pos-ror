@@ -22,6 +22,9 @@ class IngredientsController < ApplicationController
   end
 
   def show
+    @inventory_movements = @ingredient.inventory_movements
+                                      .order(created_at: :desc)
+                                      .paginate(page: params[:page], per_page: 10)
   end
 
   def new

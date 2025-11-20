@@ -70,7 +70,7 @@ class Product < ApplicationRecord
   belongs_to :unit, optional: true
   belongs_to :tax_rate, optional: true
   has_many :sale_items
-  has_many :inventory_movements, dependent: :destroy
+  has_many :inventory_movements, as: :item, dependent: :destroy
   has_many :variants, class_name: 'ProductVariant', dependent: :destroy
   has_many :images, class_name: 'ProductImage', dependent: :destroy
   has_many :purchase_items, as: :purchasable, dependent: :nullify

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_06_185531) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_20_203255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -181,15 +181,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_06_185531) do
   end
 
   create_table "inventory_movements", force: :cascade do |t|
-    t.bigint "product_id", null: false
+    t.bigint "item_id", null: false
     t.decimal "quantity", precision: 10, scale: 3
     t.string "movement_type"
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "account_id", null: false
+    t.string "item_type", null: false
     t.index ["account_id"], name: "index_inventory_movements_on_account_id"
-    t.index ["product_id"], name: "index_inventory_movements_on_product_id"
+    t.index ["item_id"], name: "index_inventory_movements_on_item_id"
+    t.index ["item_type", "item_id"], name: "index_inventory_movements_on_item_type_and_item_id"
   end
 
   create_table "modifier_groups", force: :cascade do |t|
@@ -560,7 +562,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_06_185531) do
   add_foreign_key "ingredients", "accounts"
   add_foreign_key "ingredients", "units"
   add_foreign_key "inventory_movements", "accounts"
-  add_foreign_key "inventory_movements", "products"
   add_foreign_key "modifier_groups", "accounts"
   add_foreign_key "modifier_groups_products", "accounts"
   add_foreign_key "modifier_groups_products", "modifier_groups"

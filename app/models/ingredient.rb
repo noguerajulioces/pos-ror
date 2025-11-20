@@ -44,6 +44,7 @@ class Ingredient < ApplicationRecord
 
   # Asociaciones
   belongs_to :unit
+  has_many :inventory_movements, as: :item, dependent: :destroy
   has_many :recipe_components, dependent: :destroy
   has_many :products, through: :recipe_components
   has_many :purchase_items, as: :purchasable, dependent: :nullify
