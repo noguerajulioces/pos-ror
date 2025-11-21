@@ -86,7 +86,7 @@
                 min: "0.01",
                 required: true,
                 placeholder: "Ej: 10",
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4" %>
             <p class="mt-1 text-sm text-gray-500">
               Stock actual: <strong><%= @product ? @product.stock : @ingredient.stock %></strong> <%= @product ? @product.unit&.abbreviation : @ingredient.unit.abbreviation %>
             </p>
@@ -99,7 +99,7 @@
                 rows: 3,
                 required: true,
                 placeholder: "Ej: Corrección por conteo físico, Merma, etc.",
-                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" %>
           </div>
 
           <!-- Botones -->
