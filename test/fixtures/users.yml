@@ -31,8 +31,11 @@
 #
 #  fk_rails_...  (account_id => accounts.id)
 #
-one: {}
-# column: value
-#
-two: {}
+one:
+  account: one
+  email: one@example.com
+
+two:
+  account: one
+  email: two@example.com
 # column: value

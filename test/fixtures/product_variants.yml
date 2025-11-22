@@ -29,8 +29,11 @@
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (product_id => products.id)
 #
-one: {}
-# column: value
-#
-two: {}
+# one:
+#   product: one (Product)
+#   account: one
+
+# two:
+#   product: two (Product)
+#   account: one
 # column: value

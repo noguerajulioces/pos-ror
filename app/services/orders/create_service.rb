@@ -78,7 +78,7 @@ module Orders
         status: order_status,
         total_amount: final_total,
         user_id: current_user.id,
-        payment_method_id: payment_method_id,
+        payment_method_id: order_payment_method_id,
         customer_id: session[:customer_id].presence,
         order_type: order_type,
         table_id: order_type == 'in_store' ? session[:table_id].presence : nil,
@@ -95,7 +95,16 @@ module Orders
       Order.order_types.keys.include?(type) ? type : 'in_store'
     end
 
-    def payment_method_id
+    def order_payment_method_id
+      # For any pending payment (credit sale), the order payment method is nil
+      if params[:status] == Order::STATUSES[:pending_payment]
+        return nil
+      end
+
+      transaction_payment_method_id
+    end
+
+    def transaction_payment_method_id
       params[:payment_method_id].presence || payment_method_service.default_payment_method.id
     end
 
@@ -115,7 +124,7 @@ module Orders
 
       OrderPayment.create!(
         order: order,
-        payment_method_id: payment_method_id,
+        payment_method_id: transaction_payment_method_id,
         amount: amount_to_pay,
         payment_date: Time.current,
         reference_number: nil,

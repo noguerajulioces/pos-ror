@@ -75,6 +75,13 @@ export default class extends Controller {
     const isCredit = this.hasCreditCheckboxTarget && this.creditCheckboxTarget.checked
 
     if (isCredit) {
+      // Logic for credit sale partial payment
+      if (amountReceived > 0) {
+        this.enablePaymentMethods()
+      } else {
+        this.disablePaymentMethods()
+      }
+
       if (amountReceived > totalAmount) {
         const change = amountReceived - totalAmount
         document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
@@ -101,12 +108,40 @@ export default class extends Controller {
     
     if (isCredit) {
       statusInput.value = 'pending_payment'
-      // Optional: Visual feedback or disable payment methods if needed
+      // Auto-set amount to 0 for credit sales
+      this.amountReceivedTarget.value = "0"
+      this.disablePaymentMethods()
     } else {
       statusInput.value = 'completed'
+      this.enablePaymentMethods()
     }
     
     this.calculateChange()
+  }
+
+  disablePaymentMethods() {
+    const methodInputs = document.querySelectorAll('.payment-method-option') // Select the clickable options
+    methodInputs.forEach(option => {
+      option.classList.add('opacity-50', 'cursor-not-allowed')
+      option.classList.remove('bg-gray-50', 'border-indigo-500') // Remove selected styling
+      option.setAttribute('data-action', '') // Disable Stimulus action
+      const radioSelected = option.querySelector('.payment-radio-selected')
+      if (radioSelected) {
+        radioSelected.classList.add('hidden')
+      }
+    })
+    // Clear the hidden input value
+    if (this.hasMethodIdTarget) {
+      this.methodIdTarget.value = ''
+    }
+  }
+
+  enablePaymentMethods() {
+    const methodInputs = document.querySelectorAll('.payment-method-option') // Select the clickable options
+    methodInputs.forEach(option => {
+      option.classList.remove('opacity-50', 'cursor-not-allowed')
+      option.setAttribute('data-action', 'click->payment#selectMethod') // Re-enable Stimulus action
+    })
   }
 
   updateCurrencyConversions(changeAmount) {
@@ -175,7 +210,12 @@ export default class extends Controller {
       console.error("Error accessing methodId:", error)
     }
     
-    if (!methodIdValue) {
+    // Validar método de pago
+    // Si es crédito Y el monto recibido es 0, NO es obligatorio el método de pago
+    // En cualquier otro caso (venta normal O crédito con entrega parcial), SI es obligatorio
+    const isCreditWithZeroPayment = isCredit && amountReceived === 0
+    
+    if (!methodIdValue && !isCreditWithZeroPayment) {
       event.preventDefault()
       alert('Debe seleccionar un método de pago')
     }

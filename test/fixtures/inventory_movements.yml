@@ -25,13 +25,15 @@
 #  fk_rails_...  (account_id => accounts.id)
 #
 one:
-  product: one
+  item: one (Product)
   quantity: 1
   movement_type: MyString
   reason: MyString
+  account: one
 
 two:
-  product: two
+  item: two (Product)
   quantity: 1
   movement_type: MyString
   reason: MyString
+  account: one

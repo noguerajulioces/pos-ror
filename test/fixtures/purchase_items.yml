@@ -31,15 +31,17 @@
 #  fk_rails_...  (unit_id => units.id)
 #
 one:
-  product: one
+  purchasable: one (Product)
   purchase: one
   quantity: 1
   unit_price: 9.99
   total_price: 9.99
+  account: one
 
 two:
-  product: two
+  purchasable: two (Product)
   purchase: two
   quantity: 1
   unit_price: 9.99
   total_price: 9.99
+  account: one

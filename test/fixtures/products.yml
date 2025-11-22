@@ -66,6 +66,7 @@ one:
   min_stock: 1
   status: MyString
   category: one
+  account: one
 
 two:
   name: MyString
@@ -77,3 +78,4 @@ two:
   min_stock: 1
   status: MyString
   category: two
+  account: one
