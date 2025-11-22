@@ -1,9 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["bottomSheet", "overlay", "sheet", "fab", "badge", "badgeCount"]
+  static targets = ["bottomSheet", "overlay", "sheet", "badgeCount2"]
   
   connect() {
+    console.log('Mobile cart controller connected')
     this.isOpen = false
     this.touchStartY = 0
     this.touchStartTime = 0
@@ -13,6 +14,7 @@ export default class extends Controller {
     this.close()
     
     // Update badge on initial load
+    console.log('Initial badge update')
     this.updateBadge()
     
     // Listen for cart updates (via Turbo Stream or custom events)
@@ -28,7 +30,10 @@ export default class extends Controller {
     this.setupCartObserver()
     
     // Also check periodically (fallback)
-    this.badgeInterval = setInterval(() => this.updateBadge(), 2000)
+    this.badgeInterval = setInterval(() => {
+      console.log('Periodic badge update')
+      this.updateBadge()
+    }, 2000)
   }
   
   disconnect() {
@@ -89,12 +94,7 @@ export default class extends Controller {
       this.sheetTarget.style.transform = 'translateY(0)'
     })
     
-    // Hide FAB when bottom sheet is open (smooth animation)
-    requestAnimationFrame(() => {
-      this.fabTarget.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-in-out'
-      this.fabTarget.style.transform = 'scale(0)'
-      this.fabTarget.style.opacity = '0'
-    })
+    // FAB removed - using bottom bar instead
     
     document.body.style.overflow = 'hidden'
   }
@@ -114,12 +114,7 @@ export default class extends Controller {
     this.overlayTarget.style.opacity = ''
     this.overlayTarget.style.pointerEvents = 'none'
     
-    // Show FAB when bottom sheet is closed (smooth bounce animation)
-    requestAnimationFrame(() => {
-      this.fabTarget.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-in-out'
-      this.fabTarget.style.transform = 'scale(1)'
-      this.fabTarget.style.opacity = '1'
-    })
+    // FAB removed - using bottom bar instead
     
     // Restore body scroll
     document.body.style.overflow = ''
@@ -204,34 +199,46 @@ export default class extends Controller {
   }
   
   updateBadge() {
-    // Get cart items count from the DOM
-    const cartItemsBody = document.getElementById('cart-items-body')
-    if (!cartItemsBody) {
-      this.hideBadge()
-      return
-    }
+    console.log('updateBadge called')
     
-    const cartRows = cartItemsBody.querySelectorAll('tr')
+    // Try to get item count from session cart directly
     let itemCount = 0
     
-    // Count items (skip empty cart row)
-    cartRows.forEach(row => {
-      const isEmptyRow = row.querySelector('td[colspan]')
-      if (!isEmptyRow) {
-        itemCount++
-      }
-    })
-    
-    if (itemCount > 0) {
-      this.badgeCountTarget.textContent = itemCount > 99 ? '99+' : itemCount
-      this.badgeTarget.style.display = 'flex'
+    // Check mobile cart (divs)
+    const cartItemsBody = document.getElementById('cart-items-body')
+    if (cartItemsBody) {
+      // In mobile, each cart item is a div with class 'p-4'
+      const cartDivs = cartItemsBody.querySelectorAll('div.p-4')
+      itemCount = cartDivs.length
+      console.log('Mobile cart items found:', itemCount)
     } else {
-      this.hideBadge()
+      // Check desktop cart (table rows)
+      const cartItemsBodyDesktop = document.getElementById('cart-items-body-desktop')
+      if (cartItemsBodyDesktop) {
+        const cartRows = cartItemsBodyDesktop.querySelectorAll('tr')
+        // Count items (skip empty cart row)
+        cartRows.forEach(row => {
+          const isEmptyRow = row.querySelector('td[colspan]')
+          if (!isEmptyRow) {
+            itemCount++
+          }
+        })
+        console.log('Desktop cart items found:', itemCount)
+      } else {
+        console.log('No cart-items-body found (mobile or desktop)')
+      }
     }
-  }
-  
-  hideBadge() {
-    this.badgeTarget.style.display = 'none'
+    
+    console.log('Final item count:', itemCount)
+    const displayCount = itemCount > 99 ? '99+' : itemCount.toString()
+    
+    // Update bottom bar badge
+    if (this.hasBadgeCount2Target) {
+      console.log('Updating badge to:', displayCount)
+      this.badgeCount2Target.textContent = displayCount
+    } else {
+      console.log('badgeCount2Target not found')
+    }
   }
 }
 

@@ -82,18 +82,32 @@ export default class extends Controller {
   }
 
   decrementQuantity(event) {
-    const input = this.element.closest('tr').querySelector('input[type="number"]')
-    const newValue = parseInt(input.value) - 1
-    if (newValue >= 1) {
-      input.value = newValue
-      input.dispatchEvent(new Event('change'))
+    event.preventDefault()
+    // Try to find input in mobile structure (div) or desktop structure (tr)
+    const container = this.element.closest('div.p-4') || this.element.closest('tr')
+    const input = container.querySelector('input[type="number"]')
+    
+    if (input) {
+      const currentValue = parseFloat(input.value)
+      const newValue = currentValue - 1
+      if (newValue >= 0.001) {
+        input.value = newValue
+        input.dispatchEvent(new Event('change', { bubbles: true }))
+      }
     }
   }
 
   incrementQuantity(event) {
-    const input = this.element.closest('tr').querySelector('input[type="number"]')
-    input.value = parseInt(input.value) + 1
-    input.dispatchEvent(new Event('change'))
+    event.preventDefault()
+    // Try to find input in mobile structure (div) or desktop structure (tr)
+    const container = this.element.closest('div.p-4') || this.element.closest('tr')
+    const input = container.querySelector('input[type="number"]')
+    
+    if (input) {
+      const currentValue = parseFloat(input.value)
+      input.value = currentValue + 1
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    }
   }
   
   // Asegúrate de que estos métodos estén en tu cart_item_controller.js
