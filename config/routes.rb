@@ -146,6 +146,7 @@ Rails.application.routes.draw do
       patch :assign_delivery_user
     end
   end
+  resources :pending_orders, only: [:index]
   resources :order_payments, except: [ :edit, :update ]
 
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos
