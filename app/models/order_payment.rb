@@ -47,4 +47,29 @@ class OrderPayment < ApplicationRecord
   validates :amount, numericality: { greater_than: 0 }
   validates :payment_method, presence: true
   validates :payment_date, presence: true
+  validate :amount_cannot_exceed_outstanding_balance
+
+  after_save :update_order_status_if_fully_paid
+
+  private
+
+  def amount_cannot_exceed_outstanding_balance
+    return if amount.nil? || order.nil?
+    
+    # Calculate total paid excluding this payment
+    current_total_paid = order.order_payments.where.not(id: id).sum(:amount)
+    
+    if current_total_paid + amount > order.total_amount
+      remaining = order.total_amount - current_total_paid
+      errors.add(:amount, "no puede ser mayor al saldo pendiente (#{remaining})")
+    end
+  end
+
+  def update_order_status_if_fully_paid
+    return unless order.present?
+    
+    if order.status == 'pending_payment' && order.outstanding_balance <= 0
+      order.update(status: 'completed')
+    end
+  end
 end
