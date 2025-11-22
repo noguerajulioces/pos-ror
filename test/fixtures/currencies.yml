@@ -30,6 +30,7 @@ one:
   exchange_rate: 9.99
   flag_url: MyString
   display: false
+  account: one
 
 two:
   name: MyString
@@ -38,3 +39,4 @@ two:
   exchange_rate: 9.99
   flag_url: MyString
   display: false
+  account: one

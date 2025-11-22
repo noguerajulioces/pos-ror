@@ -1,5 +1,5 @@
 class SimpleProductsController < ApplicationController
-  before_action :set_product, only: %i[show edit update destroy update_status]
+  before_action :set_product, only: %i[show edit update destroy update_status adjust_stock_form adjust_stock]
 
   def index
     @q = Product.where(kind: 'simple').ransack(params[:q])
@@ -7,6 +7,9 @@ class SimpleProductsController < ApplicationController
   end
 
   def show
+    @inventory_movements = @product.inventory_movements
+                                   .order(created_at: :desc)
+                                   .paginate(page: params[:page], per_page: 10)
   end
 
   def new
@@ -65,6 +68,49 @@ class SimpleProductsController < ApplicationController
       else
         redirect_to simple_products_path, alert: 'No se puede activar: el producto no tiene stock disponible.'
       end
+    end
+  end
+
+  def adjust_stock_form
+    # Renderiza el modal con el formulario
+    render :adjust_stock_form
+  end
+
+  def adjust_stock
+    service = StockAdjustmentService.new(
+      item: @product,
+      adjustment_type: params[:adjustment_type],
+      quantity: params[:quantity],
+      reason: params[:reason]
+    )
+
+    if service.call
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            # Cerrar modal
+            turbo_stream.update("modal", ""),
+            
+            # Actualizar stock actual
+            turbo_stream.replace("stock_display", 
+              partial: "shared/stock_display", 
+              locals: { item: @product.reload }),
+            
+            # Agregar nueva fila a la tabla (al inicio)
+            turbo_stream.prepend("inventory_movements_table", 
+              partial: "inventory_movements/row", 
+              locals: { movement: service.call, item: @product }),
+            
+            # Mostrar toast de éxito
+            turbo_stream.append("flash_messages", 
+              partial: "shared/flash", 
+              locals: { type: "success", message: "Stock actualizado correctamente" })
+          ]
+        end
+      end
+    else
+      @errors = service.errors
+      render :adjust_stock_form, status: :unprocessable_entity
     end
   end
 

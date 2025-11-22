@@ -32,6 +32,7 @@ one:
   final_amount: 9.99
   status: MyString
   user: one
+  account: one
 
 two:
   open_at: 2025-03-05 10:45:24
@@ -40,3 +41,4 @@ two:
   final_amount: 9.99
   status: MyString
   user: two
+  account: one

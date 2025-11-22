@@ -20,11 +20,11 @@ module Orders
         order = create_order
         create_order_items(order)
 
-        # Only create payment if order is completed
-        create_order_payment(order) if order.status == Order::STATUSES[:completed]
+        # Only create payment if order is completed or pending payment with amount
+        create_order_payment(order) if should_create_payment?(order)
 
-        # Reduce stock if the order is completed
-        if order.status == Order::STATUSES[:completed]
+        # Reduce stock if the order is completed or pending payment
+        if order.status == Order::STATUSES[:completed] || order.status == Order::STATUSES[:pending_payment]
           StockManager.update_stock_from_order(order)
         end
 
@@ -78,7 +78,7 @@ module Orders
         status: order_status,
         total_amount: final_total,
         user_id: current_user.id,
-        payment_method_id: payment_method_id,
+        payment_method_id: order_payment_method_id,
         customer_id: session[:customer_id].presence,
         order_type: order_type,
         table_id: order_type == 'in_store' ? session[:table_id].presence : nil,
@@ -95,7 +95,16 @@ module Orders
       Order.order_types.keys.include?(type) ? type : 'in_store'
     end
 
-    def payment_method_id
+    def order_payment_method_id
+      # For any pending payment (credit sale), the order payment method is nil
+      if params[:status] == Order::STATUSES[:pending_payment]
+        return nil
+      end
+
+      transaction_payment_method_id
+    end
+
+    def transaction_payment_method_id
       params[:payment_method_id].presence || payment_method_service.default_payment_method.id
     end
 
@@ -111,14 +120,22 @@ module Orders
     end
 
     def create_order_payment(order)
+      amount_to_pay = params[:amount_received].to_f > 0 ? params[:amount_received].to_f : order.total_amount
+
       OrderPayment.create!(
         order: order,
-        payment_method_id: payment_method_id,
-        amount: order.total_amount,
+        payment_method_id: transaction_payment_method_id,
+        amount: amount_to_pay,
         payment_date: Time.current,
         reference_number: nil,
         notes: 'Pago realizado desde POS'
       )
+    end
+
+    def should_create_payment?(order)
+      return true if order.status == Order::STATUSES[:completed]
+      return true if order.status == Order::STATUSES[:pending_payment] && params[:amount_received].to_f > 0
+      false
     end
 
     def clear_session_data

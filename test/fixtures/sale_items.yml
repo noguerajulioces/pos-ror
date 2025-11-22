@@ -32,6 +32,7 @@ one:
   quantity: 1
   price: 9.99
   total: 9.99
+  account: one
 
 two:
   sale: two
@@ -39,3 +40,4 @@ two:
   quantity: 1
   price: 9.99
   total: 9.99
+  account: one

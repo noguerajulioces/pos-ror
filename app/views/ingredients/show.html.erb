@@ -59,12 +59,19 @@
           </div>
           <!-- Content -->
           <div class="divide-y divide-gray-200">
-            <div class="flex justify-between items-center px-4 py-4 sm:px-6">
-              <span class="text-sm font-medium text-gray-500">Stock Actual</span>
-              <span class="text-sm font-medium text-gray-900">
-                <%= number_with_delimiter(@ingredient.stock, delimiter: '.') %> <%= @ingredient.unit.abbreviation %>
-              </span>
-            </div>
+          <div class="py-3 flex justify-between px-4 sm:px-6">
+            <span class="text-sm font-medium text-gray-500">Stock Actual</span>
+            <span class="text-sm text-gray-900 text-right">
+              <%= render "shared/stock_display", item: @ingredient %>
+              
+              <div class="mt-2">
+                <%= link_to "Ajustar Stock", 
+                    adjust_stock_form_ingredient_path(@ingredient),
+                    data: { turbo_frame: "modal" },
+                    class: "rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              </div>
+            </span>
+          </div>
             <div class="flex justify-between items-center px-4 py-4 sm:px-6">
               <span class="text-sm font-medium text-gray-500">Stock Mínimo</span>
               <span class="text-sm text-gray-900">
@@ -128,7 +135,12 @@
                       </span>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <% component = product.recipe_components.find_by(ingredient: @ingredient) %>
+              <div class="mt-2">
+                <%= link_to "Ajustar Stock", 
+                    adjust_stock_form_ingredient_path(@ingredient),
+                    data: { turbo_frame: "modal" },
+                    class: "rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+              </div>        <% component = product.recipe_components.find_by(ingredient: @ingredient) %>
                       <%= component ? "#{component.quantity} #{component.unit.name}" : 'N/A' %>
                     </td>
                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -141,6 +153,45 @@
           </div>
         <% else %>
           <p class="text-sm text-gray-500">Este ingrediente no está siendo usado en ningún producto.</p>
+        <% end %>
+      </div>
+
+      <!-- Movimientos de Stock -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Movimientos de Stock</h3>
+        
+        <% if @inventory_movements.any? %>
+          <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Fecha y Hora</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cantidad</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Razón</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Stock Resultante</th>
+                </tr>
+              </thead>
+              <tbody id="inventory_movements_table" class="divide-y divide-gray-200 bg-white">
+                <% @inventory_movements.each do |movement| %>
+                  <%= render "inventory_movements/row", movement: movement, item: @ingredient %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="mt-4 justify-center border-t flex">
+            <%= will_paginate @inventory_movements, renderer: TailwindPaginateRenderer %>
+          </div>
+        <% else %>
+          <div class="text-center py-12 bg-gray-50 rounded-lg">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">Sin movimientos</h3>
+            <p class="mt-1 text-sm text-gray-500">Este ingrediente aún no tiene movimientos de stock registrados.</p>
+          </div>
         <% end %>
       </div>
     </div>

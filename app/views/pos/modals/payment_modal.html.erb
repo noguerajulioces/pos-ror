@@ -144,9 +144,23 @@
             </div>
             <%= f.hidden_field :payment_method_id, value: "", data: { payment_target: "methodId" } %>
           <% end %>
-          <%= f.hidden_field :status, value: 'completed' %>
+          <%= f.hidden_field :status, value: 'completed', data: { payment_target: "statusInput" } %>
           <%= f.hidden_field :customer_id, value: session[:customer_id] %>
           <%= f.hidden_field :order_type, value: session[:order_type] %>
+        </div>
+        
+        <!-- Opción de Fiado -->
+        <div class="mt-2 flex items-center">
+          <div class="flex items-center h-5">
+            <input id="credit_sale" type="checkbox" 
+                   class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                   data-payment-target="creditCheckbox"
+                   data-action="change->payment#toggleCredit">
+          </div>
+          <div class="ml-2 text-sm">
+            <label for="credit_sale" class="font-medium text-gray-700">Venta a Crédito / Fiado</label>
+            <p class="text-gray-500 text-xs">El pago queda pendiente. Requiere cliente.</p>
+          </div>
         </div>
       </div>
 

@@ -17,7 +17,7 @@
 #  account_id          :bigint           not null
 #  customer_id         :bigint
 #  delivery_user_id    :bigint
-#  payment_method_id   :bigint           not null
+#  payment_method_id   :bigint
 #  table_id            :bigint
 #  user_id             :bigint           not null
 #
@@ -47,7 +47,7 @@ class Order < ApplicationRecord
   sanitize_numeric_attributes :total_amount, :discount_percentage, :delivery_amount
 
   belongs_to :user
-  belongs_to :payment_method
+  belongs_to :payment_method, optional: true
   belongs_to :customer, optional: true
   belongs_to :delivery_user, class_name: 'User', optional: true
   belongs_to :table, optional: true
@@ -60,7 +60,8 @@ class Order < ApplicationRecord
   STATUSES = {
     on_hold: 'on_hold',
     completed: 'completed',
-    cancelled: 'cancelled'
+    cancelled: 'cancelled',
+    pending_payment: 'pending_payment'
   }
 
   # Define order types as enum
@@ -105,6 +106,14 @@ class Order < ApplicationRecord
 
   def outstanding_balance
     total_amount - total_paid
+  end
+
+  def display_payment_method
+    if payment_method.present? && outstanding_balance <= 0
+      payment_method.name
+    else
+      "Crédito"
+    end
   end
 
   def self.ransackable_attributes(auth_object = nil)

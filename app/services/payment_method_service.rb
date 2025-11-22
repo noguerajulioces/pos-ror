@@ -5,4 +5,6 @@ class PaymentMethodService
       payment_method.active = true
     end
   end
+
+
 end

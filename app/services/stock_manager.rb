@@ -3,7 +3,7 @@ class StockManager
     return unless product.stock&.positive?
 
     InventoryMovement.create!(
-      product: product,
+      item: product,
       movement_type: 'adjustment',
       quantity: product.stock,
       reason: 'Stock inicial',
@@ -77,7 +77,7 @@ class StockManager
 
   def create_inventory_movement(item, quantity, movement_type)
     InventoryMovement.create!(
-      product: item.product,
+      item: item.product,
       movement_type: movement_type,
       quantity: quantity,
       reason: movement_reason(quantity, movement_type)
@@ -140,7 +140,7 @@ class StockManager
 
   def create_inventory_movement_for_product(product, quantity, movement_type, reason)
     InventoryMovement.create!(
-      product: product,
+      item: product,
       movement_type: movement_type,
       quantity: quantity,
       reason: reason

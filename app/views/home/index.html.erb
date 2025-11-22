@@ -191,8 +191,18 @@
                       </p>
                     </div>
                     <div>
-                      <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= order.status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                        <%= order.status.humanize %>
+                      <% status_class = case order.status 
+                         when 'completed' then "bg-green-100 text-green-800"
+                         when 'on_hold' then "bg-yellow-100 text-yellow-800"
+                         when 'cancelled' then "bg-red-100 text-red-800"
+                         when 'pending_payment' then "bg-orange-100 text-orange-800"
+                         else "bg-gray-100 text-gray-800"
+                         end %>
+                      <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= status_class %>">
+                        <%= order.status == "completed" ? "Completado" : 
+                            order.status == "on_hold" ? "En Espera" : 
+                            order.status == "cancelled" ? "Cancelado" : 
+                            order.status == "pending_payment" ? "Pago Pendiente" : order.status.humanize %>
                       </span>
                     </div>
                     <div class="flex-shrink-0 text-sm font-medium text-gray-900">

@@ -32,8 +32,12 @@ one:
   order: one
   amount: 9.99
   payment_date: 2025-03-12 15:09:15
+  payment_method: one
+  account: one
 
 two:
   order: two
   amount: 9.99
   payment_date: 2025-03-12 15:09:15
+  payment_method: one
+  account: one

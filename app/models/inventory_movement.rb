@@ -3,29 +3,30 @@
 # Table name: inventory_movements
 #
 #  id            :bigint           not null, primary key
+#  item_type     :string           not null
 #  movement_type :string
 #  quantity      :decimal(10, 3)
 #  reason        :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  account_id    :bigint           not null
-#  product_id    :bigint           not null
+#  item_id       :bigint           not null
 #
 # Indexes
 #
-#  index_inventory_movements_on_account_id  (account_id)
-#  index_inventory_movements_on_product_id  (product_id)
+#  index_inventory_movements_on_account_id             (account_id)
+#  index_inventory_movements_on_item_id                (item_id)
+#  index_inventory_movements_on_item_type_and_item_id  (item_type,item_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (account_id => accounts.id)
-#  fk_rails_...  (product_id => products.id)
 #
 class InventoryMovement < ApplicationRecord
   acts_as_tenant(:account)
 
   attr_accessor :skip_stock_update
-  belongs_to :product
+  belongs_to :item, polymorphic: true
 
   # Define movement types
   enum :movement_type, {
@@ -37,7 +38,7 @@ class InventoryMovement < ApplicationRecord
   }
 
   # Validations
-  validates :movement_type, :quantity, :product_id, presence: true
+  validates :movement_type, :quantity, :item_id, :item_type, presence: true
   validates :reason, presence: true, if: :adjustment?
 
   # Callbacks
@@ -49,7 +50,7 @@ class InventoryMovement < ApplicationRecord
   scope :outgoing, -> { where('quantity < 0') }
 
   def final_stock
-    previous_movements = product.inventory_movements.where('created_at <= ?', created_at)
+    previous_movements = item.inventory_movements.where('created_at <= ?', created_at)
     previous_movements.sum(:quantity)
   end
 
@@ -60,33 +61,39 @@ class InventoryMovement < ApplicationRecord
 
     # No actualizar stock físico para productos recipe o combo
     # Estos tipos no manejan stock físico
-    return if product.kind.in?([ 'recipe', 'combo' ])
+    if item_type == 'Product' && item.kind.in?([ 'recipe', 'combo' ])
+      return
+    end
 
     # For purchases, use update_average_cost which handles both stock and cost
     if purchase? && quantity.positive?
-      product.update_average_cost(
-        product.current_purchase_price,
-        quantity
-      )
+      # Obtener el precio de compra dependiendo del tipo
+      purchase_price = if item_type == 'Product'
+                         item.current_purchase_price
+                       else
+                         item.average_cost || 0
+                       end
+
+      item.update_average_cost(purchase_price, quantity)
       # Stock is now updated, get the new value for status update
-      new_stock = product.stock
+      new_stock = item.stock
     else
       # For non-purchase movements, manually update stock
-      current_stock = product.stock || 0
+      current_stock = item.stock || 0
       new_stock = current_stock + quantity
-      product.update_columns(stock: new_stock)
+      item.update_columns(stock: new_stock)
     end
 
-    # Update status based on the new stock value
-    update_product_status(new_stock)
+    # Update status based on the new stock value (only for products)
+    update_item_status(new_stock) if item_type == 'Product'
   end
 
-  def update_product_status(new_stock)
+  def update_item_status(new_stock)
     if new_stock <= 0
-      product.update_columns(status: 'out_of_stock')
-    elsif product.status != 'inactive'
+      item.update_columns(status: 'out_of_stock')
+    elsif item.status != 'inactive'
       # Only change to active if it's not already set to inactive
-      product.update_columns(status: 'active')
+      item.update_columns(status: 'active')
     end
   end
 end

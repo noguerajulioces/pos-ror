@@ -35,9 +35,11 @@ one:
   description: MyText
   expense_date: 2025-03-04
   purchase: one
+  account: one
 
 two:
   amount: 9.99
   description: MyText
   expense_date: 2025-03-04
   purchase: two
+  account: one

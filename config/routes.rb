@@ -24,6 +24,8 @@ Rails.application.routes.draw do
     end
     member do
       get :unit
+      get :adjust_stock_form
+      post :adjust_stock
     end
   end
 
@@ -35,6 +37,8 @@ Rails.application.routes.draw do
     resources :images, only: [ :destroy ], controller: 'product_images'
     member do
       patch :update_status
+      get :adjust_stock_form
+      post :adjust_stock
     end
   end
 
@@ -142,6 +146,7 @@ Rails.application.routes.draw do
       patch :assign_delivery_user
     end
   end
+  resources :pending_orders, only: [:index]
   resources :order_payments, except: [ :edit, :update ]
 
   post 'pos/process_payment', to: 'pos#process_payment', as: :process_payment_pos

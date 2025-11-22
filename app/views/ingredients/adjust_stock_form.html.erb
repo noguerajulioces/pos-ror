@@ -1,0 +1,118 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+    <!-- Modal container -->
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <!-- Header -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">
+            Ajustar Stock
+          </h3>
+          <p class="mt-1 text-sm text-gray-500">
+            <%= @product ? @product.name : @ingredient.name %>
+          </p>
+        </div>
+
+        <!-- Form -->
+        <%= form_with url: @product ? adjust_stock_simple_product_path(@product) : adjust_stock_ingredient_path(@ingredient), 
+                      method: :post,
+                      data: { turbo_frame: "_top" } do |form| %>
+          
+          <!-- Errores -->
+          <% if defined?(@errors) && @errors.any? %>
+            <div class="mb-4 rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    <%= @errors.join(", ") %>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Tipo de ajuste -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              Tipo de ajuste
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 hover:border-indigo-500 focus:outline-none">
+                <%= form.radio_button :adjustment_type, 'add', 
+                    checked: true,
+                    class: "sr-only peer" %>
+                <span class="flex flex-1">
+                  <span class="flex flex-col">
+                    <span class="block text-sm font-medium text-gray-900">➕ Agregar Stock</span>
+                    <span class="mt-1 flex items-center text-sm text-gray-500">Sumar al inventario</span>
+                  </span>
+                </span>
+                <svg class="h-5 w-5 text-indigo-600 hidden peer-checked:block absolute top-4 right-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-indigo-600"></span>
+              </label>
+
+              <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 hover:border-indigo-500 focus:outline-none">
+                <%= form.radio_button :adjustment_type, 'remove',
+                    class: "sr-only peer" %>
+                <span class="flex flex-1">
+                  <span class="flex flex-col">
+                    <span class="block text-sm font-medium text-gray-900">➖ Quitar Stock</span>
+                    <span class="mt-1 flex items-center text-sm text-gray-500">Restar del inventario</span>
+                  </span>
+                </span>
+                <svg class="h-5 w-5 text-indigo-600 hidden peer-checked:block absolute top-4 right-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent peer-checked:border-indigo-600"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Cantidad -->
+          <div class="mb-6">
+            <%= form.label :quantity, "Cantidad", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.number_field :quantity, 
+                step: "0.01",
+                min: "0.01",
+                required: true,
+                placeholder: "Ej: 10",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-3 px-4" %>
+            <p class="mt-1 text-sm text-gray-500">
+              Stock actual: <strong><%= @product ? @product.stock : @ingredient.stock %></strong> <%= @product ? @product.unit&.abbreviation : @ingredient.unit.abbreviation %>
+            </p>
+          </div>
+
+          <!-- Razón -->
+          <div class="mb-6">
+            <%= form.label :reason, "Razón del ajuste", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_area :reason,
+                rows: 3,
+                required: true,
+                placeholder: "Ej: Corrección por conteo físico, Merma, etc.",
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" %>
+          </div>
+
+          <!-- Botones -->
+          <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+            <%= form.submit "Guardar Ajuste", 
+                class: "inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" %>
+            <%= link_to "Cancelar", 
+                @product ? simple_product_path(@product) : ingredient_path(@ingredient),
+                data: { turbo_frame: "_top" },
+                class: "mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

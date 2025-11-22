@@ -259,7 +259,15 @@ class PosController < ApplicationController
     if result[:success]
       respond_to do |format|
         format.html {
-          flash[:notice] = "Pago procesado correctamente. Orden ##{result[:order_id]} completada."
+          if result[:order_id]
+            order = Order.find(result[:order_id])
+            message = if order.pending_payment?
+              "Venta a crédito registrada. Orden ##{result[:order_id]} pendiente de pago."
+            else
+              "Pago procesado correctamente. Orden ##{result[:order_id]} completada."
+            end
+            flash[:notice] = message
+          end
           flash[:print_order_id] = result[:order_id]
           flash[:show_print_popup] = true
           redirect_to pos_path

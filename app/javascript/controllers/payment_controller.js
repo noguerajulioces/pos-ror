@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["methodId", "amountReceived", "changeAmount"]
+  static targets = ["methodId", "amountReceived", "changeAmount", "creditCheckbox", "statusInput"]
 
   connect() {
     console.log("Payment controller connected")
@@ -71,14 +71,77 @@ export default class extends Controller {
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
     
-    if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
-      const change = amountReceived - totalAmount
-      document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
-      this.changeAmountTarget.value = change
+    // Si es venta a crédito, el cambio es 0 si el monto es menor al total
+    const isCredit = this.hasCreditCheckboxTarget && this.creditCheckboxTarget.checked
+
+    if (isCredit) {
+      // Logic for credit sale partial payment
+      if (amountReceived > 0) {
+        this.enablePaymentMethods()
+      } else {
+        this.disablePaymentMethods()
+      }
+
+      if (amountReceived > totalAmount) {
+        const change = amountReceived - totalAmount
+        document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
+        this.changeAmountTarget.value = change
+      } else {
+        document.getElementById('change-amount').textContent = '₲s. 0'
+        this.changeAmountTarget.value = 0
+      }
     } else {
-      document.getElementById('change-amount').textContent = '₲s. 0'
-      this.changeAmountTarget.value = 0
+      if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
+        const change = amountReceived - totalAmount
+        document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
+        this.changeAmountTarget.value = change
+      } else {
+        document.getElementById('change-amount').textContent = '₲s. 0'
+        this.changeAmountTarget.value = 0
+      }
     }
+  }
+
+  toggleCredit(event) {
+    const isCredit = event.target.checked
+    const statusInput = document.querySelector('input[name="status"]')
+    
+    if (isCredit) {
+      statusInput.value = 'pending_payment'
+      // Auto-set amount to 0 for credit sales
+      this.amountReceivedTarget.value = "0"
+      this.disablePaymentMethods()
+    } else {
+      statusInput.value = 'completed'
+      this.enablePaymentMethods()
+    }
+    
+    this.calculateChange()
+  }
+
+  disablePaymentMethods() {
+    const methodInputs = document.querySelectorAll('.payment-method-option') // Select the clickable options
+    methodInputs.forEach(option => {
+      option.classList.add('opacity-50', 'cursor-not-allowed')
+      option.classList.remove('bg-gray-50', 'border-indigo-500') // Remove selected styling
+      option.setAttribute('data-action', '') // Disable Stimulus action
+      const radioSelected = option.querySelector('.payment-radio-selected')
+      if (radioSelected) {
+        radioSelected.classList.add('hidden')
+      }
+    })
+    // Clear the hidden input value
+    if (this.hasMethodIdTarget) {
+      this.methodIdTarget.value = ''
+    }
+  }
+
+  enablePaymentMethods() {
+    const methodInputs = document.querySelectorAll('.payment-method-option') // Select the clickable options
+    methodInputs.forEach(option => {
+      option.classList.remove('opacity-50', 'cursor-not-allowed')
+      option.setAttribute('data-action', 'click->payment#selectMethod') // Re-enable Stimulus action
+    })
   }
 
   updateCurrencyConversions(changeAmount) {
@@ -105,10 +168,30 @@ export default class extends Controller {
     const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     
-    if (amountReceived < totalAmount) {
-      event.preventDefault()
-      alert('El monto recibido debe ser mayor o igual al total a pagar')
-      return
+    const isCredit = this.hasCreditCheckboxTarget && this.creditCheckboxTarget.checked
+
+    if (isCredit) {
+      // Para crédito, validar que haya cliente seleccionado
+      const customerId = document.querySelector('input[name="customer_id"]').value
+      if (!customerId) {
+        event.preventDefault()
+        alert('Para ventas a crédito (Fiado) es obligatorio seleccionar un cliente.')
+        return
+      }
+
+      // Validar que el monto no sea igual o mayor al total para ventas a crédito
+      if (amountReceived >= totalAmount) {
+        event.preventDefault()
+        alert('En una venta a crédito, el monto recibido no puede ser igual o mayor al total. Si es pago completo, desmarque la opción de Fiado.')
+        return
+      }
+    } else {
+      // Para venta normal, validar monto completo
+      if (amountReceived < totalAmount) {
+        event.preventDefault()
+        alert('El monto recibido debe ser mayor o igual al total a pagar')
+        return
+      }
     }
     
     // Check if methodIdTarget exists before trying to access it
@@ -127,7 +210,12 @@ export default class extends Controller {
       console.error("Error accessing methodId:", error)
     }
     
-    if (!methodIdValue) {
+    // Validar método de pago
+    // Si es crédito Y el monto recibido es 0, NO es obligatorio el método de pago
+    // En cualquier otro caso (venta normal O crédito con entrega parcial), SI es obligatorio
+    const isCreditWithZeroPayment = isCredit && amountReceived === 0
+    
+    if (!methodIdValue && !isCreditWithZeroPayment) {
       event.preventDefault()
       alert('Debe seleccionar un método de pago')
     }

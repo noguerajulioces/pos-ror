@@ -25,6 +25,7 @@
 #
 class ProductVariant < ApplicationRecord
   acts_as_tenant(:account)
+  belongs_to :product
 
   include NumericFormatter
   sanitize_numeric_attributes :price

@@ -19,7 +19,7 @@
 #  account_id          :bigint           not null
 #  customer_id         :bigint
 #  delivery_user_id    :bigint
-#  payment_method_id   :bigint           not null
+#  payment_method_id   :bigint
 #  table_id            :bigint
 #  user_id             :bigint           not null
 #
@@ -47,6 +47,7 @@ one:
   status: MyString
   user: one
   payment_method: one
+  account: one
 
 two:
   order_date: 2025-03-05 10:40:26
@@ -54,3 +55,4 @@ two:
   status: MyString
   user: two
   payment_method: two
+  account: one
