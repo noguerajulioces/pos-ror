@@ -55,6 +55,8 @@ class OrderPayment < ApplicationRecord
 
   def amount_cannot_exceed_outstanding_balance
     return if amount.nil? || order.nil?
+    # Only validate for orders with pending_payment status
+    return unless order.status == 'pending_payment'
     
     # Calculate total paid excluding this payment
     current_total_paid = order.order_payments.where.not(id: id).sum(:amount)
