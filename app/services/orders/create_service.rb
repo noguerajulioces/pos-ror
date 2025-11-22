@@ -20,11 +20,11 @@ module Orders
         order = create_order
         create_order_items(order)
 
-        # Only create payment if order is completed
-        create_order_payment(order) if order.status == Order::STATUSES[:completed]
+        # Only create payment if order is completed or pending payment with amount
+        create_order_payment(order) if should_create_payment?(order)
 
-        # Reduce stock if the order is completed
-        if order.status == Order::STATUSES[:completed]
+        # Reduce stock if the order is completed or pending payment
+        if order.status == Order::STATUSES[:completed] || order.status == Order::STATUSES[:pending_payment]
           StockManager.update_stock_from_order(order)
         end
 
@@ -111,14 +111,22 @@ module Orders
     end
 
     def create_order_payment(order)
+      amount_to_pay = params[:amount_received].to_f > 0 ? params[:amount_received].to_f : order.total_amount
+
       OrderPayment.create!(
         order: order,
         payment_method_id: payment_method_id,
-        amount: order.total_amount,
+        amount: amount_to_pay,
         payment_date: Time.current,
         reference_number: nil,
         notes: 'Pago realizado desde POS'
       )
+    end
+
+    def should_create_payment?(order)
+      return true if order.status == Order::STATUSES[:completed]
+      return true if order.status == Order::STATUSES[:pending_payment] && params[:amount_received].to_f > 0
+      false
     end
 
     def clear_session_data

@@ -25,7 +25,7 @@ module Products
 
     def create_inventory_movement
       InventoryMovement.create!(
-        product: product,
+        item: product,
         movement_type: 'adjustment',
         quantity: quantity,
         reason: "Ajuste manual de (#{user.name}): #{reason}"

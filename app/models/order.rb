@@ -60,7 +60,8 @@ class Order < ApplicationRecord
   STATUSES = {
     on_hold: 'on_hold',
     completed: 'completed',
-    cancelled: 'cancelled'
+    cancelled: 'cancelled',
+    pending_payment: 'pending_payment'
   }
 
   # Define order types as enum

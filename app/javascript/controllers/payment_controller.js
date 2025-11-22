@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["methodId", "amountReceived", "changeAmount"]
+  static targets = ["methodId", "amountReceived", "changeAmount", "creditCheckbox", "statusInput"]
 
   connect() {
     console.log("Payment controller connected")
@@ -71,14 +71,42 @@ export default class extends Controller {
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
     
-    if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
-      const change = amountReceived - totalAmount
-      document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
-      this.changeAmountTarget.value = change
+    // Si es venta a crédito, el cambio es 0 si el monto es menor al total
+    const isCredit = this.hasCreditCheckboxTarget && this.creditCheckboxTarget.checked
+
+    if (isCredit) {
+      if (amountReceived > totalAmount) {
+        const change = amountReceived - totalAmount
+        document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
+        this.changeAmountTarget.value = change
+      } else {
+        document.getElementById('change-amount').textContent = '₲s. 0'
+        this.changeAmountTarget.value = 0
+      }
     } else {
-      document.getElementById('change-amount').textContent = '₲s. 0'
-      this.changeAmountTarget.value = 0
+      if (!isNaN(amountReceived) && amountReceived >= totalAmount) {
+        const change = amountReceived - totalAmount
+        document.getElementById('change-amount').textContent = `₲s. ${this.formatNumber(change)}`
+        this.changeAmountTarget.value = change
+      } else {
+        document.getElementById('change-amount').textContent = '₲s. 0'
+        this.changeAmountTarget.value = 0
+      }
     }
+  }
+
+  toggleCredit(event) {
+    const isCredit = event.target.checked
+    const statusInput = document.querySelector('input[name="status"]')
+    
+    if (isCredit) {
+      statusInput.value = 'pending_payment'
+      // Optional: Visual feedback or disable payment methods if needed
+    } else {
+      statusInput.value = 'completed'
+    }
+    
+    this.calculateChange()
   }
 
   updateCurrencyConversions(changeAmount) {
@@ -105,10 +133,23 @@ export default class extends Controller {
     const amountReceived = parseFloat(this.amountReceivedTarget.value.replace(/\./g, '').replace(',', '.')) || 0
     const totalAmount = parseFloat(document.getElementById('total-amount-value').value)
     
-    if (amountReceived < totalAmount) {
-      event.preventDefault()
-      alert('El monto recibido debe ser mayor o igual al total a pagar')
-      return
+    const isCredit = this.hasCreditCheckboxTarget && this.creditCheckboxTarget.checked
+
+    if (isCredit) {
+      // Para crédito, validar que haya cliente seleccionado
+      const customerId = document.querySelector('input[name="customer_id"]').value
+      if (!customerId) {
+        event.preventDefault()
+        alert('Para ventas a crédito (Fiado) es obligatorio seleccionar un cliente.')
+        return
+      }
+    } else {
+      // Para venta normal, validar monto completo
+      if (amountReceived < totalAmount) {
+        event.preventDefault()
+        alert('El monto recibido debe ser mayor o igual al total a pagar')
+        return
+      }
     }
     
     // Check if methodIdTarget exists before trying to access it
