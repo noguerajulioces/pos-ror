@@ -143,6 +143,13 @@ export default class extends Controller {
         alert('Para ventas a crédito (Fiado) es obligatorio seleccionar un cliente.')
         return
       }
+
+      // Validar que el monto no sea igual o mayor al total para ventas a crédito
+      if (amountReceived >= totalAmount) {
+        event.preventDefault()
+        alert('En una venta a crédito, el monto recibido no puede ser igual o mayor al total. Si es pago completo, desmarque la opción de Fiado.')
+        return
+      }
     } else {
       // Para venta normal, validar monto completo
       if (amountReceived < totalAmount) {
