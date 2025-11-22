@@ -76,20 +76,5 @@
     </div>
     
     <%= yield %>
-    
-    <script>
-      // Auto-abrir diálogo de impresión cuando se carga la página
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          window.print();
-        }, 500);
-      });
-      
-      // Cerrar ventana después de imprimir (opcional)
-      window.addEventListener('afterprint', function() {
-        // Descomentar la siguiente línea si quieres que se cierre automáticamente
-        // setTimeout(function() { window.close(); }, 1000);
-      });
-    </script>
   </body>
 </html>
