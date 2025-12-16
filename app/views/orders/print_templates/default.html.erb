@@ -67,3 +67,24 @@ Fecha impresión: <%= Time.zone.now.strftime('%d/%m/%Y %H:%M') %>
 <%= "=" * line_width %>
 <%= Setting.get('receipt_final_message').to_s.center(line_width) %>
 <%= "=" * line_width %>
+
+<style>
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  body {
+    width: 80mm;
+    margin: 0;
+    padding: 2mm;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    line-height: 1.2;
+  }
+</style>
+<script>
+  window.onload = function() {
+    window.print();
+  }
+</script>

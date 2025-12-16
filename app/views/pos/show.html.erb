@@ -9,3 +9,7 @@
   <!-- Columna Derecha -->
   <%= render 'pos/main/right_column' %>
 </div>
+
+<% if params[:print_order_id].present? %>
+  <iframe src="<%= receipt_preview_order_path(params[:print_order_id]) %>" style="display:none;"></iframe>
+<% end %>
