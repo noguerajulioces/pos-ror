@@ -84,7 +84,9 @@ class SimpleProductsController < ApplicationController
       reason: params[:reason]
     )
 
-    if service.call
+    movement = service.call
+    
+    if movement
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
@@ -99,7 +101,7 @@ class SimpleProductsController < ApplicationController
             # Agregar nueva fila a la tabla (al inicio)
             turbo_stream.prepend("inventory_movements_table", 
               partial: "inventory_movements/row", 
-              locals: { movement: service.call, item: @product }),
+              locals: { movement: movement, item: @product }),
             
             # Mostrar toast de éxito
             turbo_stream.append("flash_messages", 

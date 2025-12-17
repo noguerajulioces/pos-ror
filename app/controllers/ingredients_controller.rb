@@ -147,7 +147,9 @@ class IngredientsController < ApplicationController
       reason: params[:reason]
     )
 
-    if service.call
+    movement = service.call
+    
+    if movement
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
@@ -162,7 +164,7 @@ class IngredientsController < ApplicationController
             # Agregar nueva fila a la tabla (al inicio)
             turbo_stream.prepend("inventory_movements_table", 
               partial: "inventory_movements/row", 
-              locals: { movement: service.call, item: @ingredient }),
+              locals: { movement: movement, item: @ingredient }),
             
             # Mostrar toast de éxito
             turbo_stream.append("flash_messages", 
