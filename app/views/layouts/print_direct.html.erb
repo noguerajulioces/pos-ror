@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recibo - Orden #<%= @order.id %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <style>
+      /* Estilos base para pantalla */
+      body {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.2;
+        margin: 0;
+        padding: 10px;
+        background: white;
+      }
+      
+      .receipt {
+        max-width: 300px;
+        margin: 0 auto;
+        background: white;
+      }
+      
+      .center { text-align: center; }
+      .right { text-align: right; }
+      .bold { font-weight: bold; }
+      
+      .separator {
+        border-top: 1px solid #000;
+        margin: 5px 0;
+      }
+      
+      .item-line {
+        display: flex;
+        justify-content: space-between;
+        margin: 2px 0;
+      }
+      
+      /* Estilos optimizados para impresión en térmica 80mm */
+      @media print {
+        @page {
+          size: 80mm auto; /* 80mm de ancho, altura automática para rollo continuo */
+          margin: 0;
+        }
+        
+        body {
+          width: 80mm;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .receipt {
+          max-width: 80mm;
+          width: 80mm;
+          margin: 0;
+          padding: 2mm 3mm; /* Pequeños márgenes para no cortar texto */
+          border: none;
+        }
+        
+        /* Asegurar que todo sea monocromático para impresoras térmicas */
+        * {
+          color: #000 !important;
+          background: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        
+        /* Evitar saltos de página dentro de elementos */
+        .item-line, .separator {
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>

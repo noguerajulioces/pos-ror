@@ -7,7 +7,9 @@ class OrdersController < ApplicationController
   end
 
   def print_preview
-    render layout: 'print'
+    # Renderizar sin layout para que sea cargado en iframe oculto
+    # El Stimulus print controller disparará automáticamente window.print()
+    render layout: 'print_direct'
   end
 
   def index

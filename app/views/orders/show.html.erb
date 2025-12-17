@@ -36,6 +36,19 @@
         </div>
       </div>
       <div class="flex space-x-3">
+        <%= link_to print_preview_order_path(@order), 
+            class: "inline-flex items-center rounded-md bg-green-50 px-3 py-2 text-sm font-semibold text-green-700 shadow-sm hover:bg-green-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600", 
+            title: "Imprimir Recibo",
+            data: { 
+              controller: "print", 
+              action: "click->print#print",
+              print_url_value: print_preview_order_path(@order)
+            } do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+          </svg>
+          Imprimir Recibo
+        <% end %>
         <% if current_user.has_role?(:superadmin) %>
           <% if @order.status != "cancelled" %>
             <%= button_to order_path(@order), method: :delete, 
