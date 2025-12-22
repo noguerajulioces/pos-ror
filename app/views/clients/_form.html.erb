@@ -1,15 +1,16 @@
-<%= form_with(model: customer, 
-              url: create_form_customers_path,
-              method: :post,
+<%= form_with(model: client, 
+              url: client.persisted? ? client_path(client) : clients_path,
+              method: client.persisted? ? :patch : :post,
+              scope: :customer,
               class: "space-y-6") do |f| %>  
-  <% if customer.errors.any? %>
+  <% if client.errors.any? %>
     <div class="rounded-md bg-red-50 p-4 mb-6">
       <div class="flex">
         <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800">Se encontraron <%= customer.errors.count %> errores:</h3>
+          <h3 class="text-sm font-medium text-red-800">Se encontraron <%= client.errors.count %> errores:</h3>
           <div class="mt-2 text-sm text-red-700">
             <ul class="list-disc space-y-1 pl-5">
-              <% customer.errors.full_messages.each do |msg| %>
+              <% client.errors.full_messages.each do |msg| %>
                 <li><%= msg %></li>
               <% end %>
             </ul>
@@ -81,7 +82,7 @@
 
   <div class="py-5 px-2">
     <div class="flex justify-end">
-      <%= link_to "Cancelar", customers_path, class: "rounded-md bg-white py-2 px-4 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <%= link_to "Cancelar", clients_path, class: "rounded-md bg-white py-2 px-4 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       <%= f.submit 'Guardar', class: "ml-3 inline-flex justify-center rounded-md bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
     </div>
   </div>
