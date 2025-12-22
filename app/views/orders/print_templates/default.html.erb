@@ -1,5 +1,5 @@
 <%# app/views/orders/print_templates/default.html.erb %>
-<% line_width = 48 %>
+<% line_width = 40 %>
 
 <%= Setting.get('company_name').to_s.center(line_width) %>
 <%= Setting.get('company_owner').to_s.center(line_width) %>
@@ -78,9 +78,7 @@ Fecha impresión: <%= Time.zone.now.strftime('%d/%m/%Y %H:%M') %>
     margin: 0;
     padding: 2mm;
     font-family: 'Courier New', monospace;
-    font-size: 12px;
     white-space: pre-wrap;
-    line-height: 1.2;
   }
 </style>
 <script>
