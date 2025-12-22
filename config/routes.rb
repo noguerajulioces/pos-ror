@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       post :create_form
     end
   end
+  resources :clients
   resources :suppliers
   resources :users
   resources :expenses, except: [ :show ]
