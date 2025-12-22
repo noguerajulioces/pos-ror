@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%= search_form_for @q, url: clients_path, class: "mt-8 mb-4" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
       <div class="px-4 py-6 sm:p-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
@@ -37,7 +37,7 @@
       </div>
       <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
         <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", customers_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+        <%= link_to "Limpiar", clients_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
@@ -60,26 +60,26 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <% @clients.each.with_index(1) do |customer, index| %>
+              <% @clients.each.with_index(1) do |client, index| %>
                 <tr>
                   <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                     <%= index %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                    <%= "#{customer.first_name} #{customer.last_name}" %>
+                    <%= "#{client.first_name} #{client.last_name}" %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= customer.email %>
+                    <%= client.email %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= customer.phone || "-" %>
+                    <%= client.phone || "-" %>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= customer.document || "-" %>
+                    <%= client.document || "-" %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", customer_path(customer), class: "text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Editar", edit_customer_path(customer), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to "Ver", client_path(client), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to "Editar", edit_client_path(client), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
                   </td>
                 </tr>
               <% end %>
@@ -92,5 +92,5 @@
 </div>
 
 <div class="mt-4 justify-center border-t flex">
-  <%= will_paginate @customers, renderer: TailwindPaginateRenderer %>
+  <%= will_paginate @clients, renderer: TailwindPaginateRenderer %>
 </div>
