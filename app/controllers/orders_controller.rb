@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
 
   def receipt_preview
     @order = Order.find(params[:id])
-    render template: 'orders/print_templates/default', layout: 'application' # o 'print' si tenés un layout para recibos
+    render template: 'orders/print_templates/default', layout: false, locals: { order: @order }
   end
 
   def index

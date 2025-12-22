@@ -181,7 +181,7 @@ class PosController < ApplicationController
 
     if result[:success]
 
-      PrintService.print_order(result[:order_id])
+      # PrintService.print_order(result[:order_id])
 
       session[:cart] = []
       session[:discount] = 0
@@ -191,7 +191,7 @@ class PosController < ApplicationController
       session[:customer_name] = nil
 
       respond_to do |format|
-        format.html { redirect_to pos_path, notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }
+        format.html { redirect_to pos_path(print_order_id: result[:order_id]), notice: "Pago procesado correctamente. Orden ##{result[:order_id]} completada." }
       end
     else
       respond_to do |format|
