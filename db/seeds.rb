@@ -7,14 +7,19 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-Account.create!(name: 'Ferreteria el Rey')
+# Create the account first and store it in a variable
+account = Account.create!(name: 'Ferreteria el Rey')
 
-User.create(name: 'Administrator', email: 'admin@admin.com', password: 123456, account_id: Account.first.id)
+# Create the administrator user
+User.create!(
+  name: 'Administrator',
+  email: 'admin@admin.com',
+  password: '123456',
+  account_id: account.id
+)
 
-# db/seeds.rb
-
-# Asegúrate de que exista una unidad para los productos
-unit = Unit.find_or_create_by!(name: 'Pieza')
+# Create the default unit for products
+unit = Unit.find_or_create_by!(name: 'Pieza', account_id: account.id)
 
 # Add currency seeds
 currencies = [
@@ -25,7 +30,7 @@ currencies = [
 ]
 
 currencies.each do |currency_data|
-  Currency.find_or_create_by!(code: currency_data[:code]) do |currency|
+  Currency.find_or_create_by!(code: currency_data[:code], account_id: account.id) do |currency|
     currency.update(currency_data)
   end
 end
@@ -44,6 +49,9 @@ company_settings = [
   { var: 'company_economic_activity', value: 'VENTA DE PRODUCTOS ELECTRÓNICOS' }
 ]
 
-company_settings.each do |setting|
-  Setting.set(setting[:var], setting[:value])
+# Set the account context for tenant-scoped models
+ActsAsTenant.with_tenant(account) do
+  company_settings.each do |setting|
+    Setting.set(setting[:var], setting[:value])
+  end
 end
