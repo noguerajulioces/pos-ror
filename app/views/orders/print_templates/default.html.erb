@@ -1,3 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo</title>
+    <style>
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+        body {
+            width: 80mm;
+            margin: 0;
+            padding: 2mm;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            color: #000;
+            background: #fff;
+            white-space: pre-wrap;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .bold { font-weight: bold; }
+    </style>
+</head>
+<body>
 <%# app/views/orders/print_templates/default.html.erb %>
 <% line_width = 40 %>
 
@@ -68,20 +96,10 @@ Fecha impresión: <%= Time.zone.now.strftime('%d/%m/%Y %H:%M') %>
 <%= Setting.get('receipt_final_message').to_s.center(line_width) %>
 <%= "=" * line_width %>
 
-<style>
-  @page {
-    size: 80mm auto;
-    margin: 0;
-  }
-  body {
-    width: 80mm;
-    margin: 0;
-    padding: 2mm;
-    white-space: pre-wrap;
-  }
-</style>
 <script>
   window.onload = function() {
     window.print();
   }
 </script>
+</body>
+</html>
