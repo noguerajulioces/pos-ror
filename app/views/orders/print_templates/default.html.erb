@@ -9,10 +9,15 @@
             size: 80mm auto;
             margin: 0;
         }
-        body {
+        html, body {
             width: 80mm;
+            min-height: 100%;
             margin: 0;
+            padding: 0;
+        }
+        body {
             padding: 2mm;
+            padding-bottom: 10mm; /* Extra buffer to prevent early cut */
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
             line-height: 1.2;
