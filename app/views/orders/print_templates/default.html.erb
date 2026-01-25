@@ -103,8 +103,9 @@ Fecha impresión: <%= Time.zone.now.strftime('%d/%m/%Y %H:%M') %>
 <%= "#{currency.name} (#{currency.symbol}): #{number_to_currency(currency.convert_from_guarani(order.total_amount), unit: "#{currency.symbol} ", precision: 2, delimiter: '.')}" %>
 <% end %>
 <%= "=" * line_width %>
-<%= Setting.get('receipt_final_message').to_s.center(line_width) %>
-<%= "=" * line_width %>
+<%= Setting.get('receipt_final_message').to_s.strip.center(line_width) %>
+<!-- Final spacer to ensure clean cut without garbage -->
+<div style="height: 5mm; overflow: hidden;"></div>
 </div>
 
 <script>
