@@ -9,15 +9,15 @@
 <div class="financial-summary" style="margin-top: 20px; border-top: 2px solid #ccc; border-bottom: 2px solid #ccc; padding: 15px 0; display: flex; justify-content: space-between;">
   <div style="width: 30%;">
     <strong style="display: block; color: #666; font-size: 12px;">Total Ingresos</strong>
-    <span style="font-size: 20px; color: #16a34a;"><%= format_currency(@incomes_total) %></span>
+    <span style="font-size: 20px; color: #16a34a;"><%= number_to_currency(@incomes_total, precision: 0, unit: 'Gs.') %></span>
   </div>
   <div style="width: 30%;">
     <strong style="display: block; color: #666; font-size: 12px;">Total Gastos</strong>
-    <span style="font-size: 20px; color: #dc2626;"><%= format_currency(@expenses_total) %></span>
+    <span style="font-size: 20px; color: #dc2626;"><%= number_to_currency(@expenses_total, precision: 0, unit: 'Gs.') %></span>
   </div>
   <div style="width: 30%;">
     <strong style="display: block; color: #666; font-size: 12px;">Balance Neto</strong>
-    <span style="font-size: 20px; font-weight: bold; <%= @balance >= 0 ? 'color: #4f46e5;' : 'color: #dc2626;' %>"><%= format_currency(@balance) %></span>
+    <span style="font-size: 20px; font-weight: bold; <%= @balance >= 0 ? 'color: #4f46e5;' : 'color: #dc2626;' %>"><%= number_to_currency(@balance, precision: 0, unit: 'Gs.') %></span>
   </div>
 </div>
 
@@ -43,7 +43,7 @@
           <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;"><%= entry[:type] %></td>
           <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;"><%= entry[:description] %></td>
           <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; text-align: right; <%= entry[:type] == 'Ingreso' ? 'color: #16a34a;' : 'color: #dc2626;' %>">
-            <%= entry[:type] == 'Ingreso' ? '+' : '-' %><%= format_currency(entry[:amount]) %>
+            <%= entry[:type] == 'Ingreso' ? '+' : '-' %><%= number_to_currency(entry[:amount], precision: 0, unit: 'Gs.') %>
           </td>
         </tr>
       <% end %>
