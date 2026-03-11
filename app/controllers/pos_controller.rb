@@ -110,6 +110,22 @@ class PosController < ApplicationController
     end
   end
 
+  def update_order_type_and_table
+    @order_type = params[:order_type]
+    session[:order_type] = @order_type
+    
+    # Solo guarda la mesa si el tipo es in_store, la limpia si es delivery
+    if @order_type == "in_store"
+      session[:table_id] = params[:table_id].presence
+    else
+      session[:table_id] = nil
+    end
+
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   def create_order
     result = Orders::CreateService.new(
       cart: session[:cart],

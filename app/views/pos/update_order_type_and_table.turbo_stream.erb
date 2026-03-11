@@ -1,0 +1,54 @@
+<%= turbo_stream.update "order-type-display-mobile" do %>
+  <% if @order_type == "in_store" %>
+    <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+      <span class="md:hidden text-indigo-600"><%= Table.find(session[:table_id]).name %></span>
+      <span class="hidden md:inline">En el local</span>
+    <% else %>
+      <span class="md:hidden text-gray-400">Seleccionar</span>
+      <span class="hidden md:inline">En el local</span>
+    <% end %>
+  <% else %>
+    <span class="md:hidden text-indigo-600">Delivery</span>
+    <span class="hidden md:inline">Delivery</span>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "order-type-display-desktop" do %>
+  <%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %>
+<% end %>
+
+<%= turbo_stream.replace "table-display-container-mobile" do %>
+  <div id="table-display-container-mobile">
+    <% if @order_type == "in_store" && session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+      <div class="hidden md:flex justify-between items-center mt-1">
+        <span class="text-xs text-gray-500">Mesa:</span>
+        <span class="text-xs font-medium text-indigo-600" id="table-display">
+          <%= Table.find(session[:table_id]).name %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "table-display-container-desktop" do %>
+  <div id="table-display-container-desktop">
+    <% if @order_type == "in_store" && session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+      <div class="mt-1">
+        <span class="text-xs text-gray-500">Mesa:</span>
+        <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
+          <%= Table.find(session[:table_id]).name %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= turbo_stream.append "body" do %>
+  <script>
+    document.querySelectorAll('.fixed.inset-0').forEach(el => {
+      if (el.dataset.controller === 'modal') {
+        el.remove();
+      }
+    });
+  </script>
+<% end %>

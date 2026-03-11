@@ -104,6 +104,7 @@ Rails.application.routes.draw do
   post 'pos/add_product_to_order', to: 'pos#add_product_to_order'
   post 'pos/set_order_type', to: 'pos#set_order_type'
   post 'pos/set_table', to: 'pos#set_table'
+  post 'pos/update_order_type_and_table', to: 'pos#update_order_type_and_table'
   get 'pos/search_products', to: 'pos#search_products'
 
   resources :cash_registers, only: [ :index, :new, :create, :show ] do

@@ -86,7 +86,7 @@
         <div class="flex justify-between items-center">
           <span class="text-gray-700 text-sm md:hidden">Mesa:</span>
           <span class="text-gray-700 text-sm hidden md:inline">Tipo de Pedido:</span>
-          <span class="font-medium text-sm" id="order-type-display">
+          <span class="font-medium text-sm" id="order-type-display-mobile">
             <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
               <span class="md:hidden text-indigo-600"><%= Table.find(session[:table_id]).name %></span>
               <span class="hidden md:inline"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
@@ -99,14 +99,16 @@
           <input type="hidden" id="discount-percentage" value="<%= session[:discount_percentage] %>">
           <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
         </div>
-        <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
-          <div class="hidden md:flex justify-between items-center">
-            <span class="text-gray-500 text-sm">Mesa:</span>
-            <span class="text-sm font-medium text-indigo-600" id="table-display">
-              <%= Table.find(session[:table_id]).name %>
-            </span>
-          </div>
-        <% end %>
+        <div id="table-display-container-mobile">
+          <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+            <div class="hidden md:flex justify-between items-center mt-1">
+              <span class="text-xs text-gray-500">Mesa:</span>
+              <span class="text-xs font-medium text-indigo-600" id="table-display">
+                <%= Table.find(session[:table_id]).name %>
+              </span>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
     
@@ -144,15 +146,17 @@
         </div>
         <div class="px-4 py-3">
           <span class="text-gray-700">Tipo de Pedido:</span>
-          <span class="float-right font-medium" id="order-type-display"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
-          <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
-            <div class="mt-1">
-              <span class="text-xs text-gray-500">Mesa:</span>
-              <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
-                <%= Table.find(session[:table_id]).name %>
-              </span>
-            </div>
-          <% end %>
+          <span class="float-right font-medium" id="order-type-display-desktop"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
+          <div id="table-display-container-desktop">
+            <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+              <div class="mt-1">
+                <span class="text-xs text-gray-500">Mesa:</span>
+                <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
+                  <%= Table.find(session[:table_id]).name %>
+                </span>
+              </div>
+            <% end %>
+          </div>
         </div>
       </div>
       <div>
