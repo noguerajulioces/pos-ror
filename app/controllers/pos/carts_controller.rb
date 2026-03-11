@@ -237,8 +237,9 @@ module Pos
         session[:delivery_user_name] = nil
         session[:order_type] = 'in_store'
       else
-        # Set order type to delivery when amount > 0
+        # Set order type to delivery when amount > 0 and clear table
         session[:order_type] = 'delivery'
+        session[:table_id] = nil
       end
 
       # Calculate new totals
@@ -246,9 +247,33 @@ module Pos
 
       respond_to do |format|
         format.turbo_stream {
+          # Preparar script inyectado de cerrado forzado del modal
+          modal_close_script = <<~JS
+            <script>
+              document.querySelectorAll('.fixed.inset-0').forEach(el => {
+                if (el.dataset.controller === 'modal') {
+                  el.remove();
+                }
+              });
+            </script>
+          JS
+          
+          delivery_label_html = <<~HTML
+            <span class="md:hidden text-indigo-600">Delivery</span>
+            <span class="hidden md:inline">Delivery</span>
+          HTML
+          
+          # Construir la estructura de streams
           render turbo_stream: [
             turbo_stream.remove('modal'),
-            turbo_stream.replace('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals })
+            turbo_stream.replace('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
+            turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
+            turbo_stream.update('order-type-display-desktop', "Delivery"),
+            turbo_stream.update('order-type-display-mobile', delivery_label_html),
+            turbo_stream.replace('table-display-container-mobile', '<div id="table-display-container-mobile"></div>'),
+            turbo_stream.replace('table-display-container-desktop', '<div id="table-display-container-desktop"></div>'),
+            turbo_stream.append('body', modal_close_script)
           ]
         }
         format.json {
