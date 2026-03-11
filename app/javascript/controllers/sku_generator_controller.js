@@ -1,18 +1,31 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["nameField", "skuField"]
+  static targets = ["nameField", "skuField", "button"]
   static values = { prefix: String }
+
+  connect() {
+    this.updateButtonState()
+  }
+
+  updateButtonState() {
+    if (this.hasButtonTarget) {
+      const name = this.nameFieldTarget.value.trim()
+      this.buttonTarget.disabled = name === ''
+      
+      // Estilo visual cuando está deshabilitado
+      if (this.buttonTarget.disabled) {
+        this.buttonTarget.classList.add('opacity-50', 'cursor-not-allowed')
+      } else {
+        this.buttonTarget.classList.remove('opacity-50', 'cursor-not-allowed')
+      }
+    }
+  }
 
   generateSku() {
     const name = this.nameFieldTarget.value.trim()
     
-    if (name === '') {
-      const itemType = this.getItemType()
-      alert(`Por favor, ingresa el nombre ${itemType} primero.`)
-      this.nameFieldTarget.focus()
-      return
-    }
+    if (name === '') return
 
     // Generar SKU basado en el nombre
     let sku = this.prefixValue + '-' + name
