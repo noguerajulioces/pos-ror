@@ -266,7 +266,7 @@ module Pos
           # Construir la estructura de streams
           render turbo_stream: [
             turbo_stream.remove('modal'),
-            turbo_stream.replace('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
+            turbo_stream.update('delivery-section', partial: 'pos/main/delivery_section', locals: { totals: totals }),
             turbo_stream.update('cart-total-mobile', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
             turbo_stream.update('cart-total-desktop', "₲s. #{number_with_delimiter(totals[:total].to_i, delimiter: '.')}"),
             turbo_stream.update('order-type-display-desktop', "Delivery"),
