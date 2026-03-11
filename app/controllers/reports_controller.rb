@@ -92,4 +92,49 @@ class ReportsController < ApplicationController
                             .order('movement_count DESC')
                             .limit(5)
   end
+
+  def income_expenses
+    @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current.beginning_of_month
+    @end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current.end_of_month
+
+    # Get completed orders for incomes
+    @orders = Order.where(status: 'completed', order_date: @start_date.beginning_of_day..@end_date.end_of_day).order(order_date: :asc)
+    @incomes_total = @orders.sum(:total_amount)
+
+    # Get expenses
+    @expenses = Expense.where(expense_date: @start_date..@end_date).order(expense_date: :asc)
+    @expenses_total = @expenses.sum(:amount)
+
+    @balance = @incomes_total - @expenses_total
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "ingresos_gastos_#{@start_date}_al_#{@end_date}",
+               layout: 'pdf',
+               template: 'reports/income_expenses',
+               disposition: 'attachment'
+      end
+      format.csv do
+        require 'csv'
+        csv_data = CSV.generate(headers: true) do |csv|
+          csv << ["Fecha", "Tipo", "Descripción", "Monto"]
+          
+          @orders.each do |order|
+            csv << [order.order_date.to_date, "Ingreso", "Orden ##{order.id}", order.total_amount]
+          end
+          
+          @expenses.each do |expense|
+            csv << [expense.expense_date, "Gasto", expense.description, expense.amount]
+          end
+          
+          csv << []
+          csv << ["TOTAL INGRESOS", "", "", @incomes_total]
+          csv << ["TOTAL GASTOS", "", "", @expenses_total]
+          csv << ["BALANCE", "", "", @balance]
+        end
+        send_data csv_data, filename: "ingresos_gastos_#{@start_date}_al_#{@end_date}.csv", type: "text/csv"
+      end
+    end
+  end
 end

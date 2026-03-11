@@ -58,5 +58,18 @@
         <p class="text-sm text-gray-500">Gastos y categorías</p>
       </div>
     <% end %>
+
+    <%= link_to income_expenses_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+      <div class="flex-shrink-0">
+        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        <p class="text-sm font-medium text-gray-900">Reporte de Ingresos y Gastos</p>
+        <p class="text-sm text-gray-500">Flujo de caja y balance</p>
+      </div>
+    <% end %>
   </div>
 </div>

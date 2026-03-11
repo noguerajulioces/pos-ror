@@ -1,0 +1,107 @@
+<div class="px-4 sm:px-6 lg:px-8 py-8">
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">Reporte de Ingresos y Gastos</h1>
+      <p class="mt-2 text-sm text-gray-700">Resumen financiero del período seleccionado.</p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex space-x-3">
+      <%= link_to income_expenses_reports_path(start_date: @start_date, end_date: @end_date, format: :pdf), class: "inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto", target: "_blank" do %>
+        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Descargar PDF
+      <% end %>
+
+      <%= link_to income_expenses_reports_path(start_date: @start_date, end_date: @end_date, format: :csv), class: "inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" do %>
+        <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        Descargar CSV
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Formulario de filtro de fechas -->
+  <div class="mt-8 bg-white shadow rounded-lg p-6">
+    <%= form_with url: income_expenses_reports_path, method: :get, class: "flex flex-col sm:flex-row gap-4 items-end" do |f| %>
+      <div class="flex-1">
+        <%= f.label :start_date, "Fecha Inicio", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.date_field :start_date, value: @start_date, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      </div>
+      <div class="flex-1">
+        <%= f.label :end_date, "Fecha Fin", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.date_field :end_date, value: @end_date, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      </div>
+      <div>
+        <%= f.submit "Filtrar", class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Tarjetas de resumen -->
+  <dl class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Total Ingresos</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-green-600"><%= number_to_currency(@incomes_total, precision: 0) %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Total Gastos</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-red-600"><%= number_to_currency(@expenses_total, precision: 0) %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-indigo-50 px-4 py-5 shadow sm:p-6">
+      <dt class="truncate text-sm font-medium text-indigo-900">Balance Neto</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight <%= @balance >= 0 ? 'text-indigo-600' : 'text-red-600' %>"><%= number_to_currency(@balance, precision: 0) %></dd>
+    </div>
+  </dl>
+
+  <!-- Tabla de detalles -->
+  <div class="mt-8 flex flex-col">
+    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Fecha</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Tipo</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
+                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Monto</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <!-- Combinar y ordenar ingresos y gastos -->
+              <% combined_entries = (@orders.map { |o| {date: o.order_date.to_date, type: 'Ingreso', description: "Orden ##{o.id}", amount: o.total_amount} } + 
+                                     @expenses.map { |e| {date: e.expense_date, type: 'Gasto', description: e.description, amount: e.amount} })
+                                    .sort_by { |e| e[:date] }.reverse %>
+              
+              <% if combined_entries.any? %>
+                <% combined_entries.each do |entry| %>
+                  <tr>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-6"><%= l(entry[:date]) %></td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                      <% if entry[:type] == 'Ingreso' %>
+                        <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">Ingreso</span>
+                      <% else %>
+                        <span class="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">Gasto</span>
+                      <% end %>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= entry[:description] %></td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-right font-medium <%= entry[:type] == 'Ingreso' ? 'text-green-600' : 'text-red-600' %>">
+                      <%= entry[:type] == 'Ingreso' ? '+' : '-' %><%= number_to_currency(entry[:amount], precision: 0) %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td colspan="4" class="py-4 pl-4 pr-3 text-sm text-center text-gray-500 sm:pl-6">
+                    No hay registros para este rango de fechas.
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

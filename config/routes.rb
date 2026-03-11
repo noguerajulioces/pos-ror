@@ -174,6 +174,7 @@ Rails.application.routes.draw do
       get :orders
       get :stocks
       get :expenses
+      get :income_expenses
     end
   end
 

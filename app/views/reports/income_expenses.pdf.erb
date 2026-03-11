@@ -1,0 +1,60 @@
+<div class="report-header">
+  <div class="company-info">
+    <h1>Reporte de Ingresos y Gastos</h1>
+    <p>Período: <%= l(@start_date) %> al <%= l(@end_date) %></p>
+    <p>Generado: <%= l(Time.current, format: :short) %></p>
+  </div>
+</div>
+
+<div class="financial-summary" style="margin-top: 20px; border-top: 2px solid #ccc; border-bottom: 2px solid #ccc; padding: 15px 0; display: flex; justify-content: space-between;">
+  <div style="width: 30%;">
+    <strong style="display: block; color: #666; font-size: 12px;">Total Ingresos</strong>
+    <span style="font-size: 20px; color: #16a34a;"><%= format_currency(@incomes_total) %></span>
+  </div>
+  <div style="width: 30%;">
+    <strong style="display: block; color: #666; font-size: 12px;">Total Gastos</strong>
+    <span style="font-size: 20px; color: #dc2626;"><%= format_currency(@expenses_total) %></span>
+  </div>
+  <div style="width: 30%;">
+    <strong style="display: block; color: #666; font-size: 12px;">Balance Neto</strong>
+    <span style="font-size: 20px; font-weight: bold; <%= @balance >= 0 ? 'color: #4f46e5;' : 'color: #dc2626;' %>"><%= format_currency(@balance) %></span>
+  </div>
+</div>
+
+<div class="report-content" style="margin-top: 20px;">
+  <h2>Detalle de Movimientos</h2>
+  <table class="report-table" style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px;">
+    <thead>
+      <tr style="background-color: #f3f4f6;">
+        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Fecha</th>
+        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Tipo</th>
+        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #d1d5db;">Descripción</th>
+        <th style="padding: 8px; text-align: right; border-bottom: 1px solid #d1d5db;">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% combined_entries = (@orders.map { |o| {date: o.order_date.to_date, type: 'Ingreso', description: "Orden ##{o.id}", amount: o.total_amount} } + 
+                             @expenses.map { |e| {date: e.expense_date, type: 'Gasto', description: e.description, amount: e.amount} })
+                            .sort_by { |e| e[:date] }.reverse %>
+                            
+      <% combined_entries.each do |entry| %>
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;"><%= l(entry[:date]) %></td>
+          <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;"><%= entry[:type] %></td>
+          <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;"><%= entry[:description] %></td>
+          <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; text-align: right; <%= entry[:type] == 'Ingreso' ? 'color: #16a34a;' : 'color: #dc2626;' %>">
+            <%= entry[:type] == 'Ingreso' ? '+' : '-' %><%= format_currency(entry[:amount]) %>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if combined_entries.empty? %>
+        <tr>
+          <td colspan="4" style="padding: 15px; text-align: center; color: #6b7280; font-style: italic;">
+            No hay registros para este rango de fechas.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
