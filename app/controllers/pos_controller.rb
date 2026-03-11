@@ -7,7 +7,6 @@ class PosController < ApplicationController
   before_action :check_cash_register, only: [ :show ], unless: -> { current_user&.has_role?(:mesero) }
 
   def show
-    @products = Product.available
     @categories = Category.where(parent_id: nil)
     @order_type = session[:order_type] || 'in_store'
 
@@ -35,7 +34,10 @@ class PosController < ApplicationController
 
   def products_by_subcategory
     subcategory = Category.find(params[:subcategory_id])
-    products = subcategory.products.where.not(status: 'inactive').order(:name)
+    products = subcategory.products
+                          .includes(:product_images, recipe_components: :ingredient, combo_items: :component_product)
+                          .where.not(status: 'inactive')
+                          .order(:name)
 
     products_with_images = products.map do |product|
       product_json = product.as_json(only: [ :id, :name, :price ])
@@ -170,7 +172,7 @@ class PosController < ApplicationController
     kind_filter = params[:kind_filter] || 'all'
 
     @q = Product.ransack(name_or_sku_cont: params[:query])
-    @products = @q.result(distinct: true)
+    @products = @q.result(distinct: true).includes(:images, recipe_components: :ingredient, combo_items: :component_product)
 
     # Filter by kind if specified
     if kind_filter != 'all'
