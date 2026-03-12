@@ -14,7 +14,9 @@ class ReportsController < ApplicationController
         render pdf: "productos_reporte_#{Date.current}",
                layout: 'pdf',
                template: 'reports/products',
-               disposition: 'attachment'
+               disposition: 'attachment',
+               page_size: 'A4',
+               encoding: 'UTF-8'
       end
     end
   end
@@ -134,6 +136,49 @@ class ReportsController < ApplicationController
           csv << ["BALANCE", "", "", @balance]
         end
         send_data csv_data, filename: "ingresos_gastos_#{@start_date}_al_#{@end_date}.csv", type: "text/csv"
+      end
+    end
+  end
+
+  def credits
+    @q = Order.where(status: 'pending_payment').ransack(params[:q])
+    @orders = @q.result.includes(:customer, :user)
+                  .order(order_date: :desc)
+
+    @total_amount = @orders.sum(:total_amount)
+    @total_paid = @orders.joins(:order_payments).sum('order_payments.amount')
+    @total_outstanding = @total_amount - @total_paid
+
+    @orders_paginated = @orders.paginate(page: params[:page], per_page: 15)
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "reporte_creditos_#{Date.current}",
+               layout: 'pdf',
+               template: 'reports/credits',
+               disposition: 'attachment',
+               page_size: 'A4',
+               encoding: 'UTF-8'
+      end
+      format.csv do
+        require 'csv'
+        csv_data = CSV.generate(headers: true) do |csv|
+          csv << ["Fecha", "Cliente", "Vendedor", "Total", "Pagado", "Pendiente"]
+          @orders.each do |order|
+            csv << [
+              order.order_date.strftime("%d/%m/%Y"),
+              order.customer&.name || "N/A",
+              order.user.name,
+              order.total_amount,
+              order.total_paid,
+              order.outstanding_balance
+            ]
+          end
+          csv << []
+          csv << ["TOTALES", "", "", @total_amount, @total_paid, @total_outstanding]
+        end
+        send_data csv_data, filename: "reporte_creditos_#{Date.current}.csv"
       end
     end
   end
