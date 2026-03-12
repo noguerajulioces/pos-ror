@@ -42,7 +42,7 @@
 </head>
 <body>
   <div class="header">
-    <h1>Reporte de Créditos / Fiado</h1>
+    <h1>Cuentas por Cobrar (Fiado)</h1>
     <p>Generado el <%= l(Time.current, format: :long) %></p>
   </div>
 
@@ -50,7 +50,7 @@
     <tr>
       <td style="border: none; padding: 0;">
         <div class="stat-box" style="width: 90%;">
-          <div class="stat-label">Total Créditos</div>
+          <div class="stat-label">Total Cuentas por Cobrar</div>
           <div class="stat-value"><%= number_to_currency(@total_amount, unit: 'Gs. ', precision: 0, delimiter: '.') %></div>
         </div>
       </td>
