@@ -86,7 +86,7 @@
         <tr>
           <td><%= l(order.order_date.to_date, format: :default) %></td>
           <td>#<%= order.id %></td>
-          <td><%= order.customer&.name || "N/A" %></td>
+          <td><%= order.customer&.full_name || "N/A" %></td>
           <td><%= order.user.name %></td>
           <td class="text-right"><%= number_to_currency(order.total_amount, unit: '', precision: 0, delimiter: '.') %></td>
           <td class="text-right text-green"><%= number_to_currency(order.total_paid, unit: '', precision: 0, delimiter: '.') %></td>

@@ -168,7 +168,7 @@ class ReportsController < ApplicationController
           @orders.each do |order|
             csv << [
               order.order_date.strftime("%d/%m/%Y"),
-              order.customer&.name || "N/A",
+              order.customer&.full_name || "N/A",
               order.user.name,
               order.total_amount,
               order.total_paid,
