@@ -115,6 +115,13 @@ module Pos
 
     # Add this method to clear the cart
     def clear_cart
+      # Si hay un pedido en espera cargado en el POS, cancelarlo
+      if session[:on_hold_order_id].present?
+        order = Order.find_by(id: session[:on_hold_order_id])
+        order.update(status: 'cancelled') if order&.on_hold?
+        session[:on_hold_order_id] = nil
+      end
+
       # Reset the cart in the session
       session[:cart] = []
 
@@ -130,6 +137,11 @@ module Pos
       session[:delivery_user_id] = nil
       session[:delivery_user_name] = nil
       session[:delivery_amount] = 0
+
+      # Reset Order Info (Table, Notes, Type)
+      session[:table_id] = nil
+      session[:order_notes] = nil
+      session[:order_type] = 'in_store'
 
       # Calculate new totals
       totals = calculate_cart_totals
