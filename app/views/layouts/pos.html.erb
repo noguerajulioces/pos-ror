@@ -35,59 +35,59 @@
     <%= yield %>
     
     <% if flash[:show_print_popup] && flash[:print_order_id] %>
+      <meta name="turbo-cache-control" content="no-cache">
       <script>
-        console.log('Print popup script loaded');
-        console.log('Order ID:', '<%= flash[:print_order_id] %>');
-        
-        // Trigger impresión directa usando el Stimulus controller
-        function triggerDirectPrint() {
-          try {
-            const printUrl = '<%= print_preview_order_path(flash[:print_order_id]) %>';
-            console.log('Triggering direct print with URL:', printUrl);
-            
-            // Crear un iframe oculto (igual que el Stimulus controller)
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.right = '0';
-            iframe.style.bottom = '0';
-            iframe.style.width = '0';
-            iframe.style.height = '0';
-            iframe.style.border = '0';
-            iframe.src = printUrl;
-            
-            document.body.appendChild(iframe);
-            
-            iframe.onload = () => {
-              try {
-                // Esperar un poco para que carguen estilos/imágenes
-                setTimeout(() => {
-                  iframe.contentWindow.focus();
-                  iframe.contentWindow.print();
-                  
-                  // Remover iframe después de un delay
+        (function() {
+          const orderId = '<%= flash[:print_order_id] %>';
+          const printKey = 'printed_order_' + orderId;
+
+          // Evitar reimprimir si ya fue disparado (cache de Turbo o bfcache del browser)
+          if (sessionStorage.getItem(printKey)) return;
+          sessionStorage.setItem(printKey, '1');
+
+          function triggerDirectPrint() {
+            try {
+              const printUrl = '<%= print_preview_order_path(flash[:print_order_id]) %>';
+
+              const iframe = document.createElement('iframe');
+              iframe.style.position = 'fixed';
+              iframe.style.right = '0';
+              iframe.style.bottom = '0';
+              iframe.style.width = '0';
+              iframe.style.height = '0';
+              iframe.style.border = '0';
+              iframe.src = printUrl;
+
+              document.body.appendChild(iframe);
+
+              iframe.onload = () => {
+                try {
                   setTimeout(() => {
-                    document.body.removeChild(iframe);
-                  }, 60000);
-                }, 500);
-              } catch (e) {
-                console.error("Error printing:", e);
-                alert('Error al abrir la impresión. Por favor, intenta imprimir manualmente desde Órdenes.');
-              }
-            };
-          } catch (error) {
-            console.error('Error triggering print:', error);
-            alert('Error al preparar la impresión. Por favor, intenta desde Órdenes.');
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    setTimeout(() => {
+                      document.body.removeChild(iframe);
+                    }, 60000);
+                  }, 500);
+                } catch (e) {
+                  console.error("Error printing:", e);
+                  alert('Error al abrir la impresión. Por favor, intenta imprimir manualmente desde Órdenes.');
+                }
+              };
+            } catch (error) {
+              console.error('Error triggering print:', error);
+              alert('Error al preparar la impresión. Por favor, intenta desde Órdenes.');
+            }
           }
-        }
-        
-        // Intentar activar impresión inmediatamente si el DOM ya está cargado
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() {
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+              setTimeout(triggerDirectPrint, 500);
+            });
+          } else {
             setTimeout(triggerDirectPrint, 500);
-          });
-        } else {
-          setTimeout(triggerDirectPrint, 500);
-        }
+          }
+        })();
       </script>
     <% end %>
   </body>
