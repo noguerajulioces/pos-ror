@@ -200,7 +200,7 @@
                          end %>
                       <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium <%= status_class %>">
                         <%= order.status == "completed" ? "Completado" : 
-                            order.status == "on_hold" ? "En Espera" : 
+                            order.status == "on_hold" ? "Cuenta Abierta" : 
                             order.status == "cancelled" ? "Cancelado" : 
                             order.status == "pending_payment" ? "Pago Pendiente" : order.status.humanize %>
                       </span>

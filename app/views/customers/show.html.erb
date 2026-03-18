@@ -183,8 +183,8 @@
                        end %>
                     <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
                       <%= order.status == "completed" ? "Completado" : 
-                          order.status == "on_hold" ? "En Espera" : 
-                          order.status == "cancelled" ? "Cancelado" : order.status %>
+                          order.status == "on_hold" ? "Cuenta Abierta" : 
+                          order.status == "cancelled" ? "Cancelado" : order.status.titleize %>
                     </span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

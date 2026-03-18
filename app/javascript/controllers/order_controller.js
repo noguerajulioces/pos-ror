@@ -32,7 +32,7 @@ export default class extends Controller {
     .then(data => {
       if (data.success) {
         // Show success message
-        alert('Pedido guardado en espera correctamente');
+        alert('Cuenta abierta correctamente');
         
         // Clear the cart (optional - you might want to keep the cart)
         window.location.href = '/pos';

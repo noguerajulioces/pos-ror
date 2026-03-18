@@ -140,7 +140,7 @@ class PosController < ApplicationController
   def load_order_to_cart
     order = Order.where(account_id: current_user.account_id).find(params[:id])
 
-    return render json: { success: false, error: 'El pedido no está en espera' } unless order.on_hold?
+    return render json: { success: false, error: 'La cuenta no está abierta' } unless order.on_hold?
 
     # Clear current cart
     session[:cart] = []
@@ -258,7 +258,7 @@ class PosController < ApplicationController
   def process_payment
     # Meseros no pueden procesar pagos
     if current_user.has_role?(:mesero)
-      redirect_to pos_path, alert: 'Los meseros no pueden procesar pagos. Solo pueden crear órdenes en espera.'
+      redirect_to pos_path, alert: 'Los meseros no pueden procesar pagos. Solo pueden abrir cuentas.'
       return
     end
 

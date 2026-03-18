@@ -23,8 +23,8 @@ module Orders
         # Only create payment if order is completed or pending payment with amount
         create_order_payment(order) if should_create_payment?(order)
 
-        # Reduce stock if the order is completed or pending payment
-        if order.status == Order::STATUSES[:completed] || order.status == Order::STATUSES[:pending_payment]
+        # Reduce stock if the order is completed, pending payment, or ON HOLD
+        if [ Order::STATUSES[:completed], Order::STATUSES[:pending_payment], Order::STATUSES[:on_hold] ].include?(order.status)
           StockManager.update_stock_from_order(order)
         end
 
@@ -43,6 +43,9 @@ module Orders
       if session[:on_hold_order_id].present?
         order = Order.find_by(id: session[:on_hold_order_id], status: 'on_hold')
         if order
+          # REVERT stock before deleting items (to avoid double deduction or stock leaks)
+          StockManager.revert_stock_from_order(order)
+          
           # Delete existing order items and recreate them with current cart
           order.order_items.destroy_all
 
@@ -156,7 +159,8 @@ module Orders
     def cart_calculator
       @cart_calculator ||= Orders::CartCalculator.new(
         cart: cart,
-        discount: session[:discount].to_f
+        global_discount: session[:discount].to_f,
+        global_discount_percentage: session[:discount_percentage].to_f
       )
     end
 

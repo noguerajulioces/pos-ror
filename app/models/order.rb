@@ -56,6 +56,8 @@ class Order < ApplicationRecord
 
   default_scope { order(order_date: :desc) }
 
+  before_update :revert_stock_if_cancelled, if: :will_save_change_to_status?
+
   # Define order statuses
   STATUSES = {
     on_hold: 'on_hold',
@@ -127,5 +129,13 @@ class Order < ApplicationRecord
   # Ransacker para convertir ID a string para búsqueda
   ransacker :id_as_string do |parent|
     Arel::Nodes::NamedFunction.new('CAST', [ parent.table[:id].as('VARCHAR') ])
+  end
+
+  private
+
+  def revert_stock_if_cancelled
+    if status == STATUSES[:cancelled] && status_was == STATUSES[:on_hold]
+      StockManager.revert_stock_from_order(self)
+    end
   end
 end

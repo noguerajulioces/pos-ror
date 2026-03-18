@@ -25,7 +25,7 @@
                end %>
             <span class="<%= status_class %> inline-flex rounded-full px-3 py-1 text-xs font-semibold leading-5 ml-2">
               <%= @order.status == "completed" ? "Completado" : 
-                  @order.status == "on_hold" ? "En Espera" : 
+                  @order.status == "on_hold" ? "Cuenta Abierta" : 
                   @order.status == "cancelled" ? "Cancelado" : 
                   @order.status == "pending_payment" ? "Pago Pendiente" : @order.status %>
             </span>
