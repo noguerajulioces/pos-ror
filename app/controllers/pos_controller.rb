@@ -138,7 +138,7 @@ class PosController < ApplicationController
   end
 
   def pending_kitchen_items
-    order_id = session[:on_hold_order_id]
+    order_id = params[:order_id] || session[:on_hold_order_id]
     return render json: { error: 'No hay cuenta abierta' }, status: :unprocessable_entity unless order_id
 
     order = Order.includes(order_items: :product).find_by(id: order_id)
@@ -160,11 +160,11 @@ class PosController < ApplicationController
       }
     end
 
-    render json: { items: items }
+    render json: { order_id: order.id, items: items }
   end
 
   def print_kitchen
-    order_id = session[:on_hold_order_id]
+    order_id = params[:order_id] || session[:on_hold_order_id]
     return render json: { error: 'No hay cuenta abierta' }, status: :unprocessable_entity unless order_id
 
     order = Order.includes(order_items: :product).includes(:table, :customer).find_by(id: order_id)
@@ -208,6 +208,29 @@ class PosController < ApplicationController
     render layout: 'kitchen_print'
   end
 
+  def reload_cart
+    order_id = session[:on_hold_order_id]
+    if order_id
+      order = Order.includes(order_items: :product).find_by(id: order_id, status: 'on_hold')
+      if order
+        session[:cart] = order.order_items.group_by(&:product_id).map do |_pid, items|
+          canonical = items.max_by(&:kitchen_printed_quantity)
+          {
+            'product_id' => canonical.product_id.to_s,
+            'name'       => canonical.product.name,
+            'quantity'   => canonical.quantity.to_f,
+            'price'      => canonical.price.to_f,
+            'code'       => canonical.product.respond_to?(:sku) ? canonical.product.sku : nil
+          }
+        end
+      end
+    end
+    @order_type = session[:order_type] || 'in_store'
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   def load_order_to_cart
     order = Order.where(account_id: current_user.account_id).find(params[:id])
 
@@ -229,6 +252,7 @@ class PosController < ApplicationController
     end
 
     # Load order metadata to session
+    session[:last_kitchen_print] = nil
     session[:on_hold_order_id] = order.id
     session[:customer_id] = order.customer_id
     session[:customer_name] = order.customer&.full_name

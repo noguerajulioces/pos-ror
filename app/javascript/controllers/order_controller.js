@@ -23,7 +23,7 @@ export default class extends Controller {
     })
   }
 
-  _showKitchenSelectionModal(items) {
+  _showKitchenSelectionModal(items, onClose = null, orderId = null) {
     const rows = items.map(item => {
       const checked = item.pending ? 'checked' : ''
       const badgeNew = item.pending
@@ -42,7 +42,7 @@ export default class extends Controller {
     }).join('')
 
     const modalHTML = `
-      <div id="kitchen-selection-modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-[70]">
+      <div id="kitchen-selection-modal" data-order-id="${orderId || ''}" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-[70]">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-sm flex flex-col max-h-[90vh]">
           <div class="flex items-center justify-between p-4 border-b flex-shrink-0">
             <h3 class="text-lg font-semibold text-gray-900">Enviar a Cocina</h3>
@@ -69,6 +69,7 @@ export default class extends Controller {
 
     document.getElementById('kitchen-modal-close').addEventListener('click', () => {
       document.getElementById('kitchen-selection-modal').remove()
+      if (onClose) onClose()
     })
 
     document.getElementById('kitchen-print-confirm').addEventListener('click', () => {
@@ -77,19 +78,20 @@ export default class extends Controller {
         alert('Selecciona al menos un item')
         return
       }
+      const orderId = document.getElementById('kitchen-selection-modal').dataset.orderId
       document.getElementById('kitchen-selection-modal').remove()
-      this._submitKitchenPrint(checked)
+      this._submitKitchenPrint(checked, orderId, onClose)
     })
   }
 
-  _submitKitchenPrint(itemIds) {
+  _submitKitchenPrint(itemIds, orderId = null, onDone = null) {
     fetch('/pos/print_kitchen', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       },
-      body: JSON.stringify({ item_ids: itemIds })
+      body: JSON.stringify({ item_ids: itemIds, order_id: orderId })
     })
     .then(response => response.json())
     .then(data => {
@@ -98,36 +100,26 @@ export default class extends Controller {
       } else {
         alert(data.error || 'Error al imprimir')
       }
+      if (onDone) onDone()
     })
     .catch(error => {
       console.error('Error al imprimir cocina:', error)
       alert('Error al conectar con el servidor')
+      if (onDone) onDone()
     })
   }
 
-  _reprintLast() {
-    fetch('/pos/print_kitchen', {
+  _reloadCart() {
+    fetch('/pos/reload_cart', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Accept': 'text/vnd.turbo-stream.html',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ item_ids: [] })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success && data.kitchen_print_url && data.reprint) {
-        if (confirm('No hay items nuevos. ¿Reimprimir el último ticket de cocina?')) {
-          this._openKitchenPrint(data.kitchen_print_url)
-        }
-      } else {
-        alert(data.error || 'No hay items pendientes para cocina')
       }
     })
-    .catch(error => {
-      console.error('Error:', error)
-      alert('Error al conectar con el servidor')
-    })
+    .then(response => response.text())
+    .then(html => Turbo.renderStreamMessage(html))
+    .catch(error => console.error('Error recargando carrito:', error))
   }
 
   _openKitchenPrint(url) {
@@ -146,6 +138,53 @@ export default class extends Controller {
         setTimeout(() => document.body.removeChild(iframe), 60000)
       }, 500)
     }
+  }
+
+  createAndPrint() {
+    const cartItemsBody = document.getElementById('cart-items-body')
+    if (cartItemsBody.querySelector('td[colspan="4"]')) {
+      alert('No hay productos en el carrito')
+      return
+    }
+
+    const customerIdElement = document.getElementById('selected-customer-id-mobile') || document.getElementById('selected-customer-id')
+    const customerId = customerIdElement ? customerIdElement.value : null
+    const orderTypeElement = document.getElementById('selected-order-type')
+    const orderType = orderTypeElement ? orderTypeElement.value : 'in_store'
+
+    fetch('/pos/create_order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ status: 'on_hold', customer_id: customerId, order_type: orderType })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.success) {
+        alert(data.error || 'Error al guardar el pedido')
+        return
+      }
+      // Order saved — now fetch kitchen items using the returned order_id
+      return fetch(`/pos/pending_kitchen_items?order_id=${data.order_id}`, {
+        headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content }
+      })
+    })
+    .then(response => response && response.json())
+    .then(data => {
+      if (!data) return
+      if (data.error) { window.location.href = '/pos'; return }
+      if (data.items && data.items.length > 0) {
+        this._showKitchenSelectionModal(data.items, () => this._reloadCart(), data.order_id)
+      } else {
+        this._reloadCart()
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error)
+      alert('Error al procesar la solicitud')
+    })
   }
 
   createOnHold() {

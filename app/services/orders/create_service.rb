@@ -29,6 +29,8 @@ module Orders
         end
 
         clear_session_data
+        # For on_hold orders keep the session reference so POS can reload the cart
+        session[:on_hold_order_id] = order.id if order.status == Order::STATUSES[:on_hold]
         success_response(order.id)
       end
     rescue => e
