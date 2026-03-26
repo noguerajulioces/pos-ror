@@ -27,7 +27,7 @@ class Supplier < ApplicationRecord
   acts_as_tenant(:account)
 
   validates :document, presence: true
-  validates :document, uniqueness: true
+  validates :document, uniqueness: { scope: :account_id }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validate :company_name_or_contact_name_present
 
