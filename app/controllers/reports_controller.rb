@@ -96,8 +96,8 @@ class ReportsController < ApplicationController
   end
 
   def income_expenses
-    @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current.beginning_of_month
-    @end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current.end_of_month
+    @start_date = Date.parse(params[:start_date]) rescue Date.current.beginning_of_month
+    @end_date   = Date.parse(params[:end_date])   rescue Date.current.end_of_month
 
     # Get completed orders for incomes
     @orders = Order.where(status: 'completed', order_date: @start_date.beginning_of_day..@end_date.end_of_day).order(order_date: :asc)
