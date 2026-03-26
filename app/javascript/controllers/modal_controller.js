@@ -25,9 +25,9 @@ export default class extends Controller {
     const modalSize = event.currentTarget.dataset.modalSize || "max-w-lg w-full"
   
     const modalHTML = `
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-[70]" data-controller="modal">
-        <div class="bg-white rounded-lg shadow-xl ${modalSize} mx-auto">
-          <div class="flex items-center justify-between p-4 border-b">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-start md:items-center justify-center p-4 pt-6 md:pt-4 z-[70]" data-controller="modal">
+        <div class="bg-white rounded-lg shadow-xl ${modalSize} mx-auto flex flex-col max-h-[90vh] w-full">
+          <div class="flex items-center justify-between p-4 border-b flex-shrink-0">
             <h3 class="text-lg font-medium text-gray-900">${title}</h3>
             <button data-action="modal#close" class="text-gray-400 hover:text-gray-500">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,7 +35,7 @@ export default class extends Controller {
               </svg>
             </button>
           </div>
-          <div class="p-4" id="modal-content">
+          <div class="p-4 overflow-y-auto flex-1" id="modal-content">
             <turbo-frame id="${frameId}" src="${frameSrc}">
             </turbo-frame>
           </div>
