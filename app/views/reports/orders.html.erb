@@ -29,7 +29,7 @@
               <dt class="text-sm font-medium text-gray-500 truncate">Total Ventas</dt>
               <dd class="flex items-baseline">
                 <div class="text-md font-semibold text-gray-900">
-                  <%= number_to_currency(Order.completed.sum(:total_amount), unit: 'Gs. ', precision: 0, delimiter: '.') %>
+                  <%= number_to_currency(@total_amount, unit: 'Gs. ', precision: 0, delimiter: '.') %>
                 </div>
               </dd>
             </dl>
@@ -51,7 +51,7 @@
               <dt class="text-sm font-medium text-gray-500 truncate">Ventas Completadas</dt>
               <dd class="flex items-baseline">
                 <div class="text-md font-semibold text-gray-900">
-                  <%= @orders.completed.count %>
+                  <%= @total_completed %>
                 </div>
               </dd>
             </dl>
@@ -73,7 +73,7 @@
               <dt class="text-sm font-medium text-gray-500 truncate">Ventas Pendientes</dt>
               <dd class="flex items-baseline">
                 <div class="text-md font-semibold text-gray-900">
-                  <%= @orders.on_hold.count %>
+                  <%= @total_on_hold %>
                 </div>
               </dd>
             </dl>
@@ -95,7 +95,7 @@
               <dt class="text-sm font-medium text-gray-500 truncate">Ventas Canceladas</dt>
               <dd class="flex items-baseline">
                 <div class="text-md font-semibold text-gray-900">
-                  <%= @orders.cancelled.count %>
+                  <%= @total_cancelled %>
                 </div>
               </dd>
             </dl>

@@ -22,9 +22,15 @@ class ReportsController < ApplicationController
   end
 
   def orders
-    @orders = Order.includes(:customer, :user, :payment_method, :order_items)
-                  .order(order_date: :desc)
-                  .paginate(page: params[:page], per_page: 15)
+    base = Order.includes(:customer, :user, :payment_method, :order_items)
+                .order(order_date: :desc)
+
+    @total_completed = base.completed.count
+    @total_on_hold   = base.on_hold.count
+    @total_cancelled = base.cancelled.count
+    @total_amount    = base.completed.sum(:total_amount)
+
+    @orders = base.paginate(page: params[:page], per_page: 15)
 
     respond_to do |format|
       format.html
