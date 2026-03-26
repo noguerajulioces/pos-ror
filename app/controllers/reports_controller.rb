@@ -52,7 +52,7 @@ class ReportsController < ApplicationController
     @inventory_metrics = {
       total_value: @products.sum('stock * average_cost'),
       average_margin: @products.average('(price - COALESCE(manual_purchase_price, average_cost)) / NULLIF(COALESCE(manual_purchase_price, average_cost), 0) * 100'),
-      stock_health: @products.in_stock.count.to_f / @products.count * 100
+      stock_health: @products.count > 0 ? (@products.in_stock.count.to_f / @products.count * 100) : 0
     }
 
     # Stock status breakdown
