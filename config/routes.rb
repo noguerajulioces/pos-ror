@@ -138,6 +138,7 @@ Rails.application.routes.draw do
 
   post 'pos/apply_discount', to: 'pos#apply_discount'
   post 'pos/create_order', to: 'pos#create_order'
+  get  'pos/pending_kitchen_items', to: 'pos#pending_kitchen_items', as: 'pos_pending_kitchen_items'
   post 'pos/print_kitchen', to: 'pos#print_kitchen', as: 'pos_print_kitchen'
   get  'pos/kitchen_ticket', to: 'pos#kitchen_ticket', as: 'pos_kitchen_ticket'
   post 'pos/change_discount_type', to: 'pos#change_discount_type'

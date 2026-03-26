@@ -2,23 +2,130 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   printKitchen() {
+    fetch('/pos/pending_kitchen_items', {
+      headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error)
+        return
+      }
+      if (data.items && data.items.length > 0) {
+        this._showKitchenSelectionModal(data.items)
+      } else {
+        alert('No hay items en el pedido')
+      }
+    })
+    .catch(error => {
+      console.error('Error al obtener items de cocina:', error)
+      alert('Error al conectar con el servidor')
+    })
+  }
+
+  _showKitchenSelectionModal(items) {
+    const rows = items.map(item => {
+      const checked = item.pending ? 'checked' : ''
+      const badgeNew = item.pending
+        ? `<span class="text-xs bg-orange-100 text-orange-700 font-semibold px-2 py-0.5 rounded-full">+${item.delta % 1 === 0 ? item.delta : item.delta}</span>`
+        : `<span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">enviado</span>`
+      const borderClass = item.pending ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
+      return `
+        <label class="flex items-center gap-3 p-3 rounded-lg border ${borderClass} hover:bg-orange-50 cursor-pointer">
+          <input type="checkbox" value="${item.id}" ${checked}
+                 class="kitchen-item-check w-5 h-5 rounded accent-orange-500">
+          <span class="flex-1 font-medium text-gray-800">${item.name}</span>
+          <span class="font-bold text-gray-700 mr-1">x${item.quantity % 1 === 0 ? item.quantity : item.quantity}</span>
+          ${badgeNew}
+        </label>
+      `
+    }).join('')
+
+    const modalHTML = `
+      <div id="kitchen-selection-modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-[70]">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm flex flex-col max-h-[90vh]">
+          <div class="flex items-center justify-between p-4 border-b flex-shrink-0">
+            <h3 class="text-lg font-semibold text-gray-900">Enviar a Cocina</h3>
+            <button id="kitchen-modal-close" class="text-gray-400 hover:text-gray-500">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 overflow-y-auto flex-1 space-y-2">
+            ${rows}
+          </div>
+          <div class="p-4 border-t flex-shrink-0">
+            <button id="kitchen-print-confirm"
+                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors">
+              Imprimir seleccionados
+            </button>
+          </div>
+        </div>
+      </div>
+    `
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML)
+
+    document.getElementById('kitchen-modal-close').addEventListener('click', () => {
+      document.getElementById('kitchen-selection-modal').remove()
+    })
+
+    document.getElementById('kitchen-print-confirm').addEventListener('click', () => {
+      const checked = Array.from(document.querySelectorAll('.kitchen-item-check:checked')).map(cb => cb.value)
+      if (checked.length === 0) {
+        alert('Selecciona al menos un item')
+        return
+      }
+      document.getElementById('kitchen-selection-modal').remove()
+      this._submitKitchenPrint(checked)
+    })
+  }
+
+  _submitKitchenPrint(itemIds) {
     fetch('/pos/print_kitchen', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-      }
+      },
+      body: JSON.stringify({ item_ids: itemIds })
     })
     .then(response => response.json())
     .then(data => {
       if (data.success && data.kitchen_print_url) {
         this._openKitchenPrint(data.kitchen_print_url)
       } else {
-        alert(data.error || 'No hay items pendientes para cocina')
+        alert(data.error || 'Error al imprimir')
       }
     })
     .catch(error => {
       console.error('Error al imprimir cocina:', error)
+      alert('Error al conectar con el servidor')
+    })
+  }
+
+  _reprintLast() {
+    fetch('/pos/print_kitchen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ item_ids: [] })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.kitchen_print_url && data.reprint) {
+        if (confirm('No hay items nuevos. ¿Reimprimir el último ticket de cocina?')) {
+          this._openKitchenPrint(data.kitchen_print_url)
+        }
+      } else {
+        alert(data.error || 'No hay items pendientes para cocina')
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error)
       alert('Error al conectar con el servidor')
     })
   }

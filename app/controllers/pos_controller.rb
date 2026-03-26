@@ -137,6 +137,32 @@ class PosController < ApplicationController
     render json: result.slice(:success, :order_id, :error)
   end
 
+  def pending_kitchen_items
+    order_id = session[:on_hold_order_id]
+    return render json: { error: 'No hay cuenta abierta' }, status: :unprocessable_entity unless order_id
+
+    order = Order.includes(order_items: :product).find_by(id: order_id)
+    return render json: { error: 'Orden no encontrada' }, status: :not_found unless order
+
+    items = order.order_items.group_by(&:product_id).map do |_pid, group|
+      # Use the record with the highest kitchen_printed_quantity as the canonical one
+      # (same logic as merge_order_items dedup)
+      canonical   = group.max_by(&:kitchen_printed_quantity)
+      quantity    = canonical.quantity
+      printed_qty = canonical.kitchen_printed_quantity
+      delta       = quantity - printed_qty
+      {
+        id:       canonical.id,
+        name:     canonical.product.name,
+        quantity: quantity,
+        pending:  delta > 0,
+        delta:    delta
+      }
+    end
+
+    render json: { items: items }
+  end
+
   def print_kitchen
     order_id = session[:on_hold_order_id]
     return render json: { error: 'No hay cuenta abierta' }, status: :unprocessable_entity unless order_id
@@ -144,15 +170,33 @@ class PosController < ApplicationController
     order = Order.includes(order_items: :product).includes(:table, :customer).find_by(id: order_id)
     return render json: { error: 'Orden no encontrada' }, status: :not_found unless order
 
-    kitchen_items = order.order_items.select { |i| i.quantity > i.kitchen_printed_quantity }
-    return render json: { error: 'No hay items pendientes para cocina' }, status: :unprocessable_entity if kitchen_items.empty?
+    selected_ids = Array(params[:item_ids]).map(&:to_i)
 
-    session[:kitchen_print] = {
+    # When IDs are explicitly selected, include all those items regardless of delta (allows resending)
+    kitchen_items = if selected_ids.present?
+      order.order_items.select { |i| selected_ids.include?(i.id) }
+    else
+      order.order_items.select { |i| i.quantity > i.kitchen_printed_quantity }
+    end
+
+    return render json: { error: 'No hay items seleccionados' }, status: :unprocessable_entity if kitchen_items.empty?
+
+    aggregated_items = kitchen_items.group_by { |i| i.product_id }.map do |_pid, group|
+      canonical = group.max_by(&:kitchen_printed_quantity)
+      delta     = canonical.quantity - canonical.kitchen_printed_quantity
+      qty       = delta > 0 ? delta : canonical.quantity  # delta if pending, total if resent
+      { name: canonical.product.name, quantity: qty }
+    end
+
+    ticket_data = {
       order_id:      order.id,
       table_name:    order.table&.name,
       customer_name: order.customer&.full_name,
-      items:         kitchen_items.map { |i| { name: i.product.name, quantity: i.quantity - i.kitchen_printed_quantity } }
+      items:         aggregated_items
     }
+
+    session[:kitchen_print]      = ticket_data
+    session[:last_kitchen_print] = ticket_data
 
     kitchen_items.each { |i| i.update_column(:kitchen_printed_quantity, i.quantity) }
 
@@ -160,7 +204,7 @@ class PosController < ApplicationController
   end
 
   def kitchen_ticket
-    @kitchen_data = session.delete(:kitchen_print)
+    @kitchen_data = session.delete(:kitchen_print)&.with_indifferent_access
     render layout: 'kitchen_print'
   end
 

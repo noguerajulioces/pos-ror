@@ -17,8 +17,8 @@ module Orders
       return failure_response('El carrito está vacío') if cart.empty?
 
       ActiveRecord::Base.transaction do
-        order = create_order
-        create_order_items(order)
+        order, is_new = create_order
+        create_order_items(order) if is_new
 
         # Only create payment if order is completed or pending payment with amount
         create_order_payment(order) if should_create_payment?(order)
@@ -53,18 +53,25 @@ module Orders
           attributes = order_attributes.except(:user_id)
           order.assign_attributes(attributes)
           raise order.errors.full_messages.join(', ') unless order.save
-          return order
+          return [order, false]
         end
       end
 
       # Create new order
       order = Order.new(order_attributes)
       raise order.errors.full_messages.join(', ') unless order.save
-      order
+      [order, true]
     end
 
     def merge_order_items(order)
-      existing_items = order.order_items.index_by(&:product_id)
+      # Remove duplicate order_items (same product_id), keeping the one with highest kitchen_printed_quantity
+      order.order_items.group_by(&:product_id).each do |_pid, items|
+        next if items.size == 1
+        keeper = items.max_by(&:kitchen_printed_quantity)
+        items.reject { |i| i.id == keeper.id }.each(&:destroy!)
+      end
+
+      existing_items = order.order_items.reload.index_by(&:product_id)
       cart_product_ids = cart.map { |i| i['product_id'].to_i }
 
       # Update or create items from cart
@@ -191,6 +198,7 @@ module Orders
       session[:on_hold_order_id] = nil
       session[:order_notes] = nil
       session[:table_id] = nil
+      session[:last_kitchen_print] = nil
     end
 
     def cart_calculator
