@@ -95,7 +95,7 @@ class Product < ApplicationRecord
 
   # Validaciones
   validates :name, :price, :sku, presence: true
-  validates :sku, uniqueness: true
+  validates :sku, uniqueness: { scope: :account_id }
   validates :prep_time_seconds, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :sort_order, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validate :recipe_must_have_components, if: :recipe?, unless: :skip_recipe_validation

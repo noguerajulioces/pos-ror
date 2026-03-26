@@ -20,8 +20,8 @@
 #
 # Indexes
 #
-#  index_customers_on_account_id  (account_id)
-#  index_customers_on_email       (email) UNIQUE
+#  index_customers_on_account_id            (account_id)
+#  index_customers_on_account_id_and_email  (account_id,email) UNIQUE
 #
 # Foreign Keys
 #
@@ -33,9 +33,9 @@ class Customer < ApplicationRecord
   has_many :orders, dependent: :destroy
   # Validaciones para asegurar la integridad de los datos
   validates :first_name, :last_name, presence: true
-  validates :document, uniqueness: true, allow_blank: true
+  validates :document, uniqueness: { scope: :account_id }, allow_blank: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
-  validates :email, uniqueness: true, allow_blank: true
+  validates :email, uniqueness: { scope: :account_id }, allow_blank: true
 
   before_validation :normalize_email
 

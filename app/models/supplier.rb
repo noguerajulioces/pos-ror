@@ -16,8 +16,8 @@
 #
 # Indexes
 #
-#  index_suppliers_on_account_id  (account_id)
-#  index_suppliers_on_document    (document) UNIQUE
+#  index_suppliers_on_account_id               (account_id)
+#  index_suppliers_on_account_id_and_document  (account_id,document) UNIQUE
 #
 # Foreign Keys
 #
