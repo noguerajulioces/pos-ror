@@ -212,11 +212,20 @@
   </div>
 
 
+  <div id="cart-actions">
   <%
     is_mesero     = current_user.has_role?(:mesero)
     has_open_order = session[:on_hold_order_id].present?
     # mesero sin cuenta: 3 cols | mesero con cuenta: 4 cols | cajero: 4 cols
-    grid_cols = is_mesero && has_open_order ? 'grid-cols-2 md:grid-cols-4' : (is_mesero ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-4')
+    grid_cols = if is_mesero && has_open_order
+      'grid-cols-2 md:grid-cols-4'
+    elsif is_mesero
+      'grid-cols-1 md:grid-cols-3'
+    elsif has_open_order
+      'grid-cols-2 md:grid-cols-5'  # pagar + actualizar + actualizar e imprimir + delivery + anular
+    else
+      'grid-cols-2 md:grid-cols-4'
+    end
   %>
   <div class="mt-2 mb-32 md:mb-0 grid <%= grid_cols %> gap-3 md:gap-0">
     <% unless is_mesero %>
@@ -247,10 +256,10 @@
       class="bg-orange-500 hover:bg-orange-600 text-white py-4 md:py-4 font-semibold border-r border-orange-600 focus:outline-none flex items-center justify-center text-base md:text-base min-h-[52px] md:min-h-0"
       data-controller="order"
       data-action="order#createAndPrint">
-      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 md:w-5 md:h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
       </svg>
-      <span>Actualizar e Imprimir</span>
+      <span class="leading-tight text-center">Imprimir Cocina</span>
     </button>
     <% else %>
     <button
@@ -284,5 +293,6 @@
       </svg>
       Anular
     </button>
+  </div>
   </div>
 </div>
