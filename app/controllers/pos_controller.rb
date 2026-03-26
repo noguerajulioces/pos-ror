@@ -134,7 +134,34 @@ class PosController < ApplicationController
       session: session
     ).call
 
-    render json: result
+    render json: result.slice(:success, :order_id, :error)
+  end
+
+  def print_kitchen
+    order_id = session[:on_hold_order_id]
+    return render json: { error: 'No hay cuenta abierta' }, status: :unprocessable_entity unless order_id
+
+    order = Order.includes(order_items: :product).includes(:table, :customer).find_by(id: order_id)
+    return render json: { error: 'Orden no encontrada' }, status: :not_found unless order
+
+    kitchen_items = order.order_items.select { |i| i.quantity > i.kitchen_printed_quantity }
+    return render json: { error: 'No hay items pendientes para cocina' }, status: :unprocessable_entity if kitchen_items.empty?
+
+    session[:kitchen_print] = {
+      order_id:      order.id,
+      table_name:    order.table&.name,
+      customer_name: order.customer&.full_name,
+      items:         kitchen_items.map { |i| { name: i.product.name, quantity: i.quantity - i.kitchen_printed_quantity } }
+    }
+
+    kitchen_items.each { |i| i.update_column(:kitchen_printed_quantity, i.quantity) }
+
+    render json: { success: true, kitchen_print_url: pos_kitchen_ticket_path }
+  end
+
+  def kitchen_ticket
+    @kitchen_data = session.delete(:kitchen_print)
+    render layout: 'kitchen_print'
   end
 
   def load_order_to_cart

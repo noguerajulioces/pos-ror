@@ -1,0 +1,41 @@
+<% if @kitchen_data.present? %>
+  <div class="ticket">
+    <div class="header">COCINA</div>
+
+    <div class="meta">
+      <% if @kitchen_data[:table_name].present? %>
+        <div class="meta-line">
+          <span><strong>Mesa:</strong></span>
+          <span><%= @kitchen_data[:table_name] %></span>
+        </div>
+      <% end %>
+      <% if @kitchen_data[:customer_name].present? %>
+        <div class="meta-line">
+          <span><strong>Cliente:</strong></span>
+          <span><%= @kitchen_data[:customer_name] %></span>
+        </div>
+      <% end %>
+      <div class="meta-line">
+        <span><strong>Orden #:</strong></span>
+        <span><%= @kitchen_data[:order_id] %></span>
+      </div>
+      <div class="meta-line">
+        <span><strong>Hora:</strong></span>
+        <span><%= Time.current.strftime("%H:%M") %></span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <div class="items-title">Preparar:</div>
+    <div class="separator"></div>
+
+    <% @kitchen_data[:items].each do |item| %>
+      <div class="item">
+        <span class="item-name"><%= item[:name] %></span>
+        <span class="item-qty">x<%= item[:quantity].to_i == item[:quantity] ? item[:quantity].to_i : item[:quantity] %></span>
+      </div>
+    <% end %>
+
+    <div class="separator"></div>
+  </div>
+<% end %>

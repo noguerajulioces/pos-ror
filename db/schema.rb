@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_26_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_26_000001) do
     t.datetime "updated_at", null: false
     t.decimal "subtotal", precision: 10, scale: 2
     t.bigint "account_id", null: false
+    t.decimal "kitchen_printed_quantity", precision: 10, scale: 3, default: "0.0", null: false
     t.index ["account_id"], name: "index_order_items_on_account_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"

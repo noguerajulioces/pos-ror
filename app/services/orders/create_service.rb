@@ -43,11 +43,11 @@ module Orders
       if session[:on_hold_order_id].present?
         order = Order.find_by(id: session[:on_hold_order_id], status: 'on_hold')
         if order
-          # REVERT stock before deleting items (to avoid double deduction or stock leaks)
+          # REVERT stock before merging items
           StockManager.revert_stock_from_order(order)
-          
-          # Delete existing order items and recreate them with current cart
-          order.order_items.destroy_all
+
+          # Smart merge: update/create/delete items instead of destroy_all
+          merge_order_items(order)
 
           # Update order attributes (excluding user_id to preserve the original creator)
           attributes = order_attributes.except(:user_id)
@@ -61,6 +61,40 @@ module Orders
       order = Order.new(order_attributes)
       raise order.errors.full_messages.join(', ') unless order.save
       order
+    end
+
+    def merge_order_items(order)
+      existing_items = order.order_items.index_by(&:product_id)
+      cart_product_ids = cart.map { |i| i['product_id'].to_i }
+
+      # Update or create items from cart
+      cart.each do |cart_item|
+        product_id = cart_item['product_id'].to_i
+        new_qty    = cart_item['quantity'].to_f
+
+        if existing_items[product_id]
+          # Item exists — update quantity, preserve kitchen_printed_quantity
+          existing_items[product_id].update!(
+            quantity: new_qty,
+            price: cart_item['price'].to_f,
+            subtotal: cart_item['price'].to_f * new_qty
+          )
+        else
+          # New item — kitchen has not seen it yet
+          order.order_items.create!(
+            product_id: product_id,
+            quantity: new_qty,
+            price: cart_item['price'].to_f,
+            subtotal: cart_item['price'].to_f * new_qty,
+            kitchen_printed_quantity: 0
+          )
+        end
+      end
+
+      # Destroy items removed from cart
+      existing_items.each do |product_id, item|
+        item.destroy! unless cart_product_ids.include?(product_id)
+      end
     end
 
     def order_attributes
@@ -117,7 +151,8 @@ module Orders
           product_id: item['product_id'],
           quantity: item['quantity'],
           price: item['price'],
-          subtotal: item['price'].to_f * item['quantity'].to_f
+          subtotal: item['price'].to_f * item['quantity'].to_f,
+          kitchen_printed_quantity: 0
         )
       end
     end
@@ -165,7 +200,9 @@ module Orders
     end
 
     def success_response(order_id)
-      { success: true, order_id: order_id }
+      order = Order.includes(order_items: :product).includes(:table, :customer).find(order_id)
+      kitchen_items = order.order_items.select { |i| i.quantity > i.kitchen_printed_quantity }
+      { success: true, order_id: order_id, kitchen_items: kitchen_items, order: order }
     end
 
     def failure_response(error_message)

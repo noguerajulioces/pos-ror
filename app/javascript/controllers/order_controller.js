@@ -1,6 +1,46 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  printKitchen() {
+    fetch('/pos/print_kitchen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.kitchen_print_url) {
+        this._openKitchenPrint(data.kitchen_print_url)
+      } else {
+        alert(data.error || 'No hay items pendientes para cocina')
+      }
+    })
+    .catch(error => {
+      console.error('Error al imprimir cocina:', error)
+      alert('Error al conectar con el servidor')
+    })
+  }
+
+  _openKitchenPrint(url) {
+    const iframe = document.createElement('iframe')
+    iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;'
+    iframe.src = url
+    document.body.appendChild(iframe)
+    iframe.onload = () => {
+      setTimeout(() => {
+        try {
+          iframe.contentWindow.focus()
+          iframe.contentWindow.print()
+        } catch(e) {
+          console.error('Error al imprimir ticket de cocina:', e)
+        }
+        setTimeout(() => document.body.removeChild(iframe), 60000)
+      }, 500)
+    }
+  }
+
   createOnHold() {
     // Check if cart is empty
     const cartItemsBody = document.getElementById('cart-items-body');
@@ -31,10 +71,6 @@ export default class extends Controller {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Show success message
-        alert('Cuenta abierta correctamente');
-        
-        // Clear the cart (optional - you might want to keep the cart)
         window.location.href = '/pos';
       } else {
         alert(data.error || 'Error al guardar el pedido');

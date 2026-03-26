@@ -4,15 +4,16 @@
 #
 # Table name: order_items
 #
-#  id         :bigint           not null, primary key
-#  price      :decimal(, )
-#  quantity   :decimal(10, 3)
-#  subtotal   :decimal(10, 2)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  account_id :bigint           not null
-#  order_id   :bigint           not null
-#  product_id :bigint           not null
+#  id                       :bigint           not null, primary key
+#  kitchen_printed_quantity :decimal(10, 3)   default(0.0), not null
+#  price                    :decimal(, )
+#  quantity                 :decimal(10, 3)
+#  subtotal                 :decimal(10, 2)
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  account_id               :bigint           not null
+#  order_id                 :bigint           not null
+#  product_id               :bigint           not null
 #
 # Indexes
 #
