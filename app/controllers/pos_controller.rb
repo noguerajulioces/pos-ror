@@ -172,14 +172,15 @@ class PosController < ApplicationController
     # Clear current cart
     session[:cart] = []
 
-    # Load order items to cart
-    order.order_items.includes(:product).each do |item|
+    # Load order items to cart (group by product to prevent duplicates, take first item's quantity)
+    order.order_items.includes(:product).group_by(&:product_id).each do |_product_id, items|
+      item = items.first
       session[:cart] << {
         'product_id' => item.product_id,
-        'name' => item.product.name,
-        'quantity' => item.quantity,
-        'price' => item.price.to_f,
-        'image_url' => item.product.images.first.present? ? url_for(item.product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
+        'name'       => item.product.name,
+        'quantity'   => item.quantity.to_f,
+        'price'      => item.price.to_f,
+        'image_url'  => item.product.images.first.present? ? url_for(item.product.images.first.image.variant(resize_to_fill: [ 100, 100 ])) : nil
       }
     end
 

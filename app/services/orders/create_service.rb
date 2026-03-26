@@ -146,12 +146,14 @@ module Orders
     end
 
     def create_order_items(order)
-      cart.each do |item|
+      cart.group_by { |i| i['product_id'].to_i }.each do |product_id, items|
+        total_qty = items.sum { |i| i['quantity'].to_f }
+        price     = items.first['price'].to_f
         order.order_items.create!(
-          product_id: item['product_id'],
-          quantity: item['quantity'],
-          price: item['price'],
-          subtotal: item['price'].to_f * item['quantity'].to_f,
+          product_id: product_id,
+          quantity:   total_qty,
+          price:      price,
+          subtotal:   price * total_qty,
           kitchen_printed_quantity: 0
         )
       end
