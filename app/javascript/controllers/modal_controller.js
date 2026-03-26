@@ -25,7 +25,7 @@ export default class extends Controller {
     const modalSize = event.currentTarget.dataset.modalSize || "max-w-lg w-full"
   
     const modalHTML = `
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50" data-controller="modal">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-[70]" data-controller="modal">
         <div class="bg-white rounded-lg shadow-xl ${modalSize} mx-auto">
           <div class="flex items-center justify-between p-4 border-b">
             <h3 class="text-lg font-medium text-gray-900">${title}</h3>
