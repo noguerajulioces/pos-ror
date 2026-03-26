@@ -2,13 +2,15 @@
   <div class="ticket">
     <div class="header">COCINA</div>
 
-    <div class="meta">
+    <div class="mesa-banner">
       <% if @kitchen_data[:table_name].present? %>
-        <div class="meta-line">
-          <span><strong>Mesa:</strong></span>
-          <span><%= @kitchen_data[:table_name] %></span>
-        </div>
+        MESA: <%= @kitchen_data[:table_name] %>
+      <% else %>
+        PARA LLEVAR
       <% end %>
+    </div>
+
+    <div class="meta">
       <% if @kitchen_data[:customer_name].present? %>
         <div class="meta-line">
           <span><strong>Cliente:</strong></span>
