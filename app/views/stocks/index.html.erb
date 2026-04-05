@@ -1,152 +1,264 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
       <h1 class="text-base font-semibold text-gray-900">Stocks</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de productos en stock.</p>
+      <p class="mt-1 text-sm text-gray-500">Seguimiento de inventario en tiempo real.</p>
     </div>
   </div>
 
-  <%= search_form_for @q, url: stocks_path, class: "mt-8 mb-4" do |f| %>
+  <%# ── Stats cards ────────────────────────────────────────────────────── %>
+  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Total productos</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @total_count %></dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-amber-600">Stock bajo</dt>
+      <dd class="mt-1 flex items-baseline gap-x-2">
+        <span class="text-3xl font-semibold tracking-tight text-amber-600"><%= @low_stock_count %></span>
+        <% if @low_stock_count > 0 %>
+          <%= link_to "Ver", stocks_path(q: { stock_lteq: 0 }), class: "text-xs text-amber-600 underline hover:text-amber-800" %>
+        <% end %>
+      </dd>
+    </div>
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-red-600">Sin stock</dt>
+      <dd class="mt-1 flex items-baseline gap-x-2">
+        <span class="text-3xl font-semibold tracking-tight text-red-600"><%= @out_of_stock_count %></span>
+        <% if @out_of_stock_count > 0 %>
+          <%= link_to "Ver", stocks_path(q: { stock_lteq: 0 }), class: "text-xs text-red-600 underline hover:text-red-800" %>
+        <% end %>
+      </dd>
+    </div>
+  </div>
+
+  <%# ── Search form ─────────────────────────────────────────────────────── %>
+  <%= search_form_for @q, url: stocks_path, class: "mt-6" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
-      <div class="px-4 py-6 sm:p-8">
+      <div class="px-4 py-5 sm:p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div>
-            <%= f.label :name_cont, "Nombre", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.search_field :name_cont, 
-                placeholder: "Buscar por nombre",
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.label :name_cont, "Nombre", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.search_field :name_cont,
+                placeholder: "Buscar por nombre…",
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :category_id_eq, "Categoría", class: "block text-sm font-medium text-gray-900" %>
             <%= f.collection_select :category_id_eq,
-                Category.all,
-                :id,
-                :name,
+                Category.all, :id, :name,
                 { include_blank: "Todas las categorías" },
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :stock_lteq, "Stock menor o igual a", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :stock_lteq, "Stock ≤", class: "block text-sm font-medium text-gray-900" %>
             <%= f.number_field :stock_lteq,
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                placeholder: "ej. 5",
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", stocks_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-3 sm:px-6">
+        <%= f.submit "Buscar",
+            class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer" %>
+        <%= link_to "Limpiar", stocks_path,
+            class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
 
-  
-  <div class="mt-8 flow-root">
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Imagen</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-6">Nombre</th>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">SKU</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Precio</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Disponibilidad</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Mínimo</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Producto</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">SKU</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Categoría</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Precio</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Disponibilidad</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Mínimo</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Estado</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @stocks.each.with_index(1) do |product, index| %>
-                <tr class="<%= stock_status_class(product) %>">
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= stock_text_color(product) %> sm:pl-6">
-                    <%= index %>
-                  </td>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium <%= stock_text_color(product) %> sm:pl-6">
-                    <% if product.images.any? && product.images.first.image.attached? %>
-                      <%= image_tag product.images.first.image.variant(resize_to_fill: [100, 100]), alt: product.name, class: 'shadow-md rounded-md' %>
-                    <% else %>
-                      <span>-</span>
-                    <% end %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium <%= stock_value_color(product) %>">
-                    <%= product.name %>
-                  </td>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm <%= stock_text_color(product) %> sm:pl-6">
-                    <%= product.sku %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
-                    <%= product.category.name %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
-                    <%= number_to_currency(product.price.to_i, unit: "₲s. ", precision: 0, delimiter: '.') %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm font-semibold <%= stock_value_color(product) %>">
-                    <% case product.kind %>
-                    <% when 'simple' %>
-                      <span id="product_stock_value_<%= product.id %>"><%= product.stock %> <%= product&.unit&.abbreviation %></span>
-                      <span class="text-xs text-gray-500 block">Stock físico</span>
-                    <% when 'recipe' %>
-                      <%= product.virtual_stock %> <%= product&.unit&.abbreviation %>
-                      <span class="text-xs text-gray-500 block">Basado en ingredientes</span>
-                    <% when 'combo' %>
-                      <%= product.virtual_stock %>
-                      <span class="text-xs text-gray-500 block">Basado en productos</span>
-                    <% else %>
-                      <%= product.stock || 0 %> <%= product&.unit&.abbreviation %>
-                    <% end %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm <%= stock_value_color(product) %>">
-                    <% case product.kind %>
-                    <% when 'simple' %>
-                      <%= product.min_stock || '-' %> <%= product&.unit&.abbreviation if product.min_stock %>
-                    <% when 'recipe' %>
-                      <span class="text-gray-400 text-sm">N/A</span>
-                      <span class="text-xs text-gray-500 block">Make-to-order</span>
-                    <% when 'combo' %>
-                      <span class="text-gray-400 text-sm">N/A</span>
-                      <span class="text-xs text-gray-500 block">Stock virtual</span>
-                    <% else %>
-                      <%= product.min_stock || '-' %> <%= product&.unit&.abbreviation if product.min_stock %>
-                    <% end %>
-                  </td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <% case product.kind %>
-                    <% when 'simple' %>
-                      <%= link_to "Ajustar", adjust_stock_form_simple_product_path(product),
-                          data: { turbo_frame: "modal" },
-                          class: "font-semibold text-green-600 hover:text-green-800" %>
-                      <%= link_to "Transferir", transfer_form_simple_product_stock_transfers_path(product),
-                          data: { turbo_frame: "modal" },
-                          class: "ml-2 font-semibold text-purple-600 hover:text-purple-800" %>
-                      <%= link_to "Ver", simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                      <% if current_user.has_role?(:superadmin) %>
-                        <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                      <% end %>
-                    <% when 'recipe' %>
-                      <%= link_to "Ver", recipe_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <% if current_user.has_role?(:superadmin) %>
-                        <%= link_to "Editar", edit_recipe_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                      <% end %>
-                    <% when 'combo' %>
-                      <%= link_to "Ver", combo_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <% if current_user.has_role?(:superadmin) %>
-                        <%= link_to "Editar", edit_combo_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                      <% end %>
-                    <% else %>
-                      <%= link_to "Ver", product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
-                      <% if current_user.has_role?(:superadmin) %>
-                        <%= link_to "Editar", hub_products_path, class: "ml-2 text-indigo-600 hover:text-indigo-900", title: "Edite desde el hub de productos" %>
-                      <% end %>
-                    <% end %>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <% if @stocks.empty? %>
+                <tr>
+                  <td colspan="8" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin resultados</p>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron productos con los filtros aplicados.</p>
+                    <%= link_to "Limpiar filtros", stocks_path, class: "mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-500 underline" %>
                   </td>
                 </tr>
+              <% else %>
+                <% @stocks.each do |product| %>
+                  <tr class="<%= stock_row_class(product) %> hover:bg-gray-50 transition-colors duration-100">
+
+                    <%# Producto: imagen + nombre + tipo %>
+                    <td class="py-3 pl-4 pr-3 sm:pl-6">
+                      <div class="flex items-center gap-x-3">
+                        <% if product.images.any? && product.images.first.image.attached? %>
+                          <%= image_tag product.images.first.image.variant(resize_to_fill: [40, 40]),
+                              alt: product.name,
+                              class: "h-10 w-10 rounded-md object-cover shadow-sm flex-shrink-0" %>
+                        <% else %>
+                          <div class="h-10 w-10 flex-shrink-0 rounded-md bg-gray-100 flex items-center justify-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                            </svg>
+                          </div>
+                        <% end %>
+                        <div class="min-w-0">
+                          <p class="truncate text-sm font-medium text-gray-900"><%= product.name %></p>
+                          <div class="mt-0.5"><%= kind_badge(product) %></div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <%# SKU %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500 font-mono"><%= product.sku %></td>
+
+                    <%# Categoría %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500"><%= product.category.name %></td>
+
+                    <%# Precio %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm font-medium text-gray-900">
+                      <%= number_to_currency(product.price.to_i, unit: "₲", precision: 0, delimiter: '.') %>
+                    </td>
+
+                    <%# Disponibilidad %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm">
+                      <% case product.kind %>
+                      <% when 'simple' %>
+                        <span id="product_stock_value_<%= product.id %>" class="font-semibold text-gray-900">
+                          <%= product.stock %> <span class="text-gray-400 font-normal text-xs"><%= product&.unit&.abbreviation %></span>
+                        </span>
+                      <% when 'recipe' %>
+                        <span class="font-semibold text-gray-900">
+                          <%= product.virtual_stock %> <span class="text-gray-400 font-normal text-xs"><%= product&.unit&.abbreviation %></span>
+                        </span>
+                      <% when 'combo' %>
+                        <span class="font-semibold text-gray-900"><%= product.virtual_stock %></span>
+                      <% else %>
+                        <span class="font-semibold text-gray-900">
+                          <%= product.stock || 0 %> <span class="text-gray-400 font-normal text-xs"><%= product&.unit&.abbreviation %></span>
+                        </span>
+                      <% end %>
+                    </td>
+
+                    <%# Mínimo %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
+                      <% case product.kind %>
+                      <% when 'simple' %>
+                        <% if product.min_stock %>
+                          <%= product.min_stock %> <span class="text-xs text-gray-400"><%= product&.unit&.abbreviation %></span>
+                        <% else %>
+                          <span class="text-gray-300">—</span>
+                        <% end %>
+                      <% else %>
+                        <span class="text-gray-300">N/A</span>
+                      <% end %>
+                    </td>
+
+                    <%# Estado (badge) %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm">
+                      <%= stock_badge(product) %>
+                    </td>
+
+                    <%# Acciones %>
+                    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm sm:pr-6">
+                      <div class="flex items-center justify-end gap-x-2">
+                        <% case product.kind %>
+                        <% when 'simple' %>
+                          <%= link_to adjust_stock_form_simple_product_path(product),
+                              data: { turbo_frame: "modal" },
+                              title: "Ajustar stock",
+                              class: "inline-flex items-center gap-x-1 rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-200 hover:bg-green-100" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Ajustar
+                          <% end %>
+                          <%= link_to transfer_form_simple_product_stock_transfers_path(product),
+                              data: { turbo_frame: "modal" },
+                              title: "Transferir stock",
+                              class: "inline-flex items-center gap-x-1 rounded-md bg-purple-50 px-2.5 py-1.5 text-xs font-semibold text-purple-700 shadow-sm ring-1 ring-inset ring-purple-200 hover:bg-purple-100" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                            </svg>
+                            Transferir
+                          <% end %>
+                          <%= link_to simple_product_path(product),
+                              title: "Ver producto",
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          <% end %>
+                          <% if current_user.has_role?(:superadmin) %>
+                            <%= link_to edit_simple_product_path(product),
+                                title: "Editar producto",
+                                class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                              </svg>
+                            <% end %>
+                          <% end %>
+
+                        <% when 'recipe' %>
+                          <%= link_to recipe_path(product),
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          <% end %>
+                          <% if current_user.has_role?(:superadmin) %>
+                            <%= link_to edit_recipe_path(product),
+                                class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                              </svg>
+                            <% end %>
+                          <% end %>
+
+                        <% when 'combo' %>
+                          <%= link_to combo_path(product),
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          <% end %>
+                          <% if current_user.has_role?(:superadmin) %>
+                            <%= link_to edit_combo_path(product),
+                                class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                              </svg>
+                            <% end %>
+                          <% end %>
+
+                        <% else %>
+                          <%= link_to product_path(product),
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </td>
+
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -154,8 +266,10 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="mt-4 justify-center border-t flex">
-  <%= will_paginate @stocks, renderer: TailwindPaginateRenderer %>
+  <%# ── Pagination ──────────────────────────────────────────────────────── %>
+  <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
+    <%= will_paginate @stocks, renderer: TailwindPaginateRenderer %>
+  </div>
+
 </div>

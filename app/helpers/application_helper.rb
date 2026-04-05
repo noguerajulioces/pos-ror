@@ -17,6 +17,50 @@ module ApplicationHelper
     low_stock?(product) ? 'text-red-700' : 'text-gray-500'
   end
 
+  def stock_row_class(product)
+    return '' unless product.kind == 'simple'
+    stock = product.stock.to_i
+    min   = product.min_stock
+    return 'bg-red-50' if stock <= 0
+    return 'bg-amber-50' if min && stock <= min
+    ''
+  end
+
+  def stock_badge(product)
+    case product.kind
+    when 'recipe', 'combo'
+      virtual = product.virtual_stock.to_i
+      if virtual <= 0
+        content_tag(:span, 'Sin stock', class: 'inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700')
+      else
+        content_tag(:span, 'Disponible', class: 'inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700')
+      end
+    else
+      stock = product.stock.to_i
+      min   = product.min_stock
+      if stock <= 0
+        content_tag(:span, 'Sin stock', class: 'inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700')
+      elsif min && stock <= min
+        content_tag(:span, 'Stock bajo', class: 'inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700')
+      else
+        content_tag(:span, 'Normal', class: 'inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700')
+      end
+    end
+  end
+
+  def kind_badge(product)
+    case product.kind
+    when 'simple'
+      content_tag(:span, 'Simple', class: 'inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-600')
+    when 'recipe'
+      content_tag(:span, 'Receta', class: 'inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-600')
+    when 'combo'
+      content_tag(:span, 'Combo', class: 'inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-600')
+    else
+      content_tag(:span, product.kind.to_s.capitalize, class: 'inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600')
+    end
+  end
+
   def sidebar_collapsed?
     # For now, always return false to use JavaScript control
     # This will be controlled by the Stimulus controller
