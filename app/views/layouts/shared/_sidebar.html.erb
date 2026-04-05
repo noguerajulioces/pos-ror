@@ -29,12 +29,8 @@
           </div>
         </div>
         <nav class="flex flex-1 flex-col">
-          <ul role="list" class="flex flex-1 flex-col gap-y-8">
-            <li>
-              <ul role="list" class="-mx-2 space-y-2">
-                <%= SidebarPresenter.new(self).render_items %>
-              </ul>
-            </li>
+          <ul role="list" class="flex flex-1 flex-col gap-y-5">
+            <%= SidebarPresenter.new(self).render_items %>
             <% if current_user.has_role?(:superadmin) %>
               <li class="mt-auto">
                 <a href="<%= edit_settings_path %>" class="group -mx-2 flex gap-x-4 rounded-xl p-4 text-base font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-200">
@@ -83,12 +79,8 @@
       </div>
     </div>
     <nav class="flex flex-1 flex-col">
-      <ul role="list" class="flex flex-1 flex-col gap-y-6">
-        <li>
-          <ul role="list" class="-mx-2 space-y-2">
-            <%= SidebarPresenter.new(self, collapsed: sidebar_collapsed?).render_items %>
-          </ul>
-        </li>
+      <ul role="list" class="flex flex-1 flex-col gap-y-5">
+        <%= SidebarPresenter.new(self, collapsed: sidebar_collapsed?).render_items %>
         <% if current_user.has_role?(:superadmin) %>
           <li class="mt-auto">
             <%= render_settings_icon(collapsed: sidebar_collapsed?, is_current: current_page?(edit_settings_path)) %>
