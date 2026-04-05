@@ -32,6 +32,30 @@ class PosController < ApplicationController
     render json: subcategories
   end
 
+  def products_by_category
+    category = Category.find(params[:category_id])
+    products = category.products
+                       .includes(:product_images, recipe_components: :ingredient, combo_items: :component_product)
+                       .where.not(status: 'inactive')
+                       .order(:name)
+
+    products_with_images = products.map do |product|
+      product_json = product.as_json(only: [ :id, :name, :price ])
+      product_json['stock'] = product.virtual_stock
+
+      first_image = product.product_images.first
+      if first_image&.image&.attached?
+        variant = first_image.image.variant(resize_to_fill: [ 200, 200 ]).processed
+        product_json['image_url'] = Rails.application.routes.url_helpers.rails_blob_path(variant, only_path: true)
+        product_json['image_alt'] = first_image.alt_text
+      end
+
+      product_json
+    end
+
+    render json: products_with_images
+  end
+
   def products_by_subcategory
     subcategory = Category.find(params[:subcategory_id])
     products = subcategory.products

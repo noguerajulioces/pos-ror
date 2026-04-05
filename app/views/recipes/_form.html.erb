@@ -82,17 +82,9 @@
           </div>
         </div>
 
-        <!-- Subcategoría -->
+        <!-- Categoría / Subcategoría -->
         <div class="sm:col-span-2">
-          <%= form.label :category_id, "Subcategoría", class: "block text-sm/6 font-medium text-gray-900" %>
-          <div class="mt-2">
-            <%= form.collection_select :category_id,
-                Category.where.not(parent_id: nil).includes(:parent),
-                :id,
-                ->(subcategory) { "#{subcategory.parent.name} > #{subcategory.name}" },
-                { prompt: "Selecciona una subcategoría" },
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-          </div>
+          <%= render 'shared/category_select', form: form %>
         </div>
 
         <!-- Unidad -->

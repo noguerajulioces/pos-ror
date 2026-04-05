@@ -43,16 +43,60 @@
         </div>
       </div>
 
-      <div class="col-span-1">
-        <%= form.label :category_id, "Categoría", class: "block text-sm/6 font-medium text-gray-900" %>
-        <div class="mt-2 relative">
-          <%= form.collection_select :category_id, Category.where.not(parent_id: nil), :id, :name, 
-              { prompt: "Selecciona una categoría" }, 
-              { class: "block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
-            </svg>
+      <%
+        # Determine initial category/subcategory selection for edit mode
+        current_cat = @product.category
+        if current_cat&.parent_id.present?
+          initial_parent_id = current_cat.parent_id
+          initial_subcategory_id = current_cat.id
+        else
+          initial_parent_id = current_cat&.id
+          initial_subcategory_id = nil
+        end
+      %>
+      <div class="col-span-2"
+           data-controller="category-select"
+           data-category-select-initial-parent-id-value="<%= initial_parent_id.to_i %>"
+           data-category-select-initial-subcategory-id-value="<%= initial_subcategory_id.to_i %>">
+
+        <%= form.hidden_field :category_id, value: @product.category_id, data: { category_select_target: "categoryId" } %>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+          <!-- Categoría raíz -->
+          <div>
+            <label class="block text-sm/6 font-medium text-gray-900">Categoría</label>
+            <div class="mt-2 relative">
+              <select data-category-select-target="parentCategory"
+                      data-action="change->category-select#parentChanged"
+                      class="block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none">
+                <option value="">Selecciona una categoría</option>
+                <% Category.where(parent_id: nil).order(:name).each do |cat| %>
+                  <option value="<%= cat.id %>" <%= 'selected' if initial_parent_id == cat.id %>><%= cat.name %></option>
+                <% end %>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subcategoría (visible solo si la categoría tiene subcategorías) -->
+          <div data-category-select-target="subcategoryWrapper" class="hidden">
+            <label class="block text-sm/6 font-medium text-gray-900">Subcategoría <span class="text-gray-400 font-normal">(opcional)</span></label>
+            <div class="mt-2 relative">
+              <select data-category-select-target="subcategory"
+                      data-action="change->category-select#subcategoryChanged"
+                      class="block w-full rounded-md bg-white px-3 pr-10 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none">
+                <option value="">Sin subcategoría</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
