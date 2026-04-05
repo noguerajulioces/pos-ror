@@ -1,42 +1,63 @@
-<!-- app/views/units/index.html.erb -->
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Unidades</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de unidades de medida disponibles.</p>
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-base font-semibold text-gray-900">Unidades de medida</h1>
+      <p class="mt-1 text-sm text-gray-500">Unidades disponibles para productos e ingredientes.</p>
     </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Nueva Unidad", new_unit_path, 
-          data: { turbo_frame: "modal" }, 
-          class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to new_unit_path,
+          data: { turbo_frame: "modal" },
+          class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 inline-flex items-center gap-x-1.5" do %>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Nueva unidad
+      <% end %>
     </div>
   </div>
-  <div class="mt-8 flow-root">
+
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Nombre</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Abreviación</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Nombre</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Abreviación</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Descripción</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody id="units_table" class="divide-y divide-gray-200 bg-white">
-              <%= render partial: "units/table", locals: { units: @units } %>
+            <tbody id="units_table" class="divide-y divide-gray-100 bg-white">
+              <% if @units.empty? %>
+                <tr>
+                  <td colspan="4" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin unidades</p>
+                    <p class="mt-1 text-sm text-gray-500">No hay unidades de medida registradas todavía.</p>
+                  </td>
+                </tr>
+              <% else %>
+                <%= render partial: "units/table", locals: { units: @units } %>
+              <% end %>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
+
+  <%# ── Pagination ──────────────────────────────────────────────────────── %>
+  <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
+    <%= will_paginate @units, renderer: TailwindPaginateRenderer %>
+  </div>
+
 </div>
 
-<div class="mt-4 justify-center border-t flex">
-  <%= will_paginate @units, renderer: TailwindPaginateRenderer %>
-</div>
 <turbo-frame id="modal"></turbo-frame>

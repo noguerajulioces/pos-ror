@@ -1,19 +1,26 @@
-<!-- app/views/units/_table.html.erb -->
 <% units.each do |unit| %>
-  <tr>
-    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-      <%= unit.name %>
+  <tr class="hover:bg-gray-50 transition-colors duration-100">
+    <td class="whitespace-nowrap py-3 pl-4 pr-3 sm:pl-6">
+      <p class="text-sm font-medium text-gray-900"><%= unit.name %></p>
     </td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-      <%= unit.abbreviation %>
+    <td class="whitespace-nowrap px-3 py-3">
+      <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700 font-mono">
+        <%= unit.abbreviation %>
+      </span>
     </td>
-    <td class="px-3 py-4 text-sm text-gray-500">
-      <%= truncate(unit.description, length: 25) %>
+    <td class="px-3 py-3 text-sm text-gray-500">
+      <%= truncate(unit.description, length: 60, omission: '…') if unit.description.present? %>
+      <%= '—' if unit.description.blank? %>
     </td>
-    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-      <%= link_to "Editar", edit_unit_path(unit), 
+    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right sm:pr-6">
+      <%= link_to edit_unit_path(unit),
           data: { turbo_frame: "modal" },
-          class: "text-indigo-600 hover:text-indigo-900" %>
+          title: "Editar unidad",
+          class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+        </svg>
+      <% end %>
     </td>
   </tr>
 <% end %>

@@ -1,184 +1,191 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Cuentas por Cobrar (Fiado)</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de cuentas pendientes de cobro.</p>
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-base font-semibold text-gray-900">Cuentas por cobrar (Fiado)</h1>
+      <p class="mt-1 text-sm text-gray-500">Órdenes con pago pendiente de cobro.</p>
     </div>
   </div>
 
-  <!-- Statistics Cards -->
-  <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-    <!-- Total Pending Orders -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Pendientes</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= @total_pending %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+  <%# ── Stats cards ────────────────────────────────────────────────────── %>
+  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Total pendientes</dt>
+      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900"><%= @total_pending %></dd>
     </div>
-
-    <!-- Total Outstanding Amount -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Monto Pendiente</dt>
-              <dd class="text-lg font-medium text-gray-900">₲s. <%= number_with_delimiter(@total_outstanding.to_i, delimiter: '.') %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-red-600">Monto pendiente</dt>
+      <dd class="mt-1 text-2xl font-semibold tracking-tight text-red-600">
+        ₲ <%= number_with_delimiter(@total_outstanding.to_i, delimiter: '.') %>
+      </dd>
     </div>
-
-    <!-- Total Paid (Partial) -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Pagado</dt>
-              <dd class="text-lg font-medium text-gray-900">₲s. <%= number_with_delimiter(@total_paid_on_pending.to_i, delimiter: '.') %></dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-green-600">Total cobrado</dt>
+      <dd class="mt-1 text-2xl font-semibold tracking-tight text-green-600">
+        ₲ <%= number_with_delimiter(@total_paid_on_pending.to_i, delimiter: '.') %>
+      </dd>
     </div>
-
-    <!-- Oldest Pending Order -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Más Antigua</dt>
-              <dd class="text-lg font-medium text-gray-900">
-                <% if @oldest_pending %>
-                  <%= time_ago_in_words(@oldest_pending.order_date) %>
-                <% else %>
-                  N/A
-                <% end %>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 px-4 py-5 sm:p-6">
+      <dt class="truncate text-sm font-medium text-gray-500">Más antigua</dt>
+      <dd class="mt-1 text-xl font-semibold tracking-tight text-gray-700">
+        <% if @oldest_pending %>
+          <span title="<%= @oldest_pending.order_date.strftime('%d/%m/%Y') %>">
+            <%= time_ago_in_words(@oldest_pending.order_date) %>
+          </span>
+        <% else %>
+          <span class="text-gray-300">—</span>
+        <% end %>
+      </dd>
     </div>
   </div>
 
-  <!-- Search Filters -->
-  <%= search_form_for @q, url: pending_orders_path, class: "mt-8 mb-4" do |f| %>
+  <%# ── Search form ─────────────────────────────────────────────────────── %>
+  <%= search_form_for @q, url: pending_orders_path, class: "mt-6" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
-      <div class="px-4 py-6 sm:p-8">
+      <div class="px-4 py-5 sm:p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div>
-            <%= f.label :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, "Buscar Orden o Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.search_field :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, 
-                placeholder: "Número de orden, documento, nombre o apellido",
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.label :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont,
+                "Orden / Cliente", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.search_field :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont,
+                placeholder: "Nº orden, documento, nombre…",
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.date_field :order_date_gteq, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.date_field :order_date_gteq,
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.date_field :order_date_lteq, 
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.date_field :order_date_lteq,
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", pending_orders_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-3 sm:px-6">
+        <%= f.submit "Buscar",
+            class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+        <%= link_to "Limpiar", pending_orders_path,
+            class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
 
-  <!-- Orders Table -->
-  <div class="mt-8 flow-root">
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+        <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">ID</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cliente</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha</th>
-                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Total</th>
-                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Pagado</th>
-                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Pendiente</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Orden</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Cliente</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Creado por</th>
+                <th scope="col" class="px-3 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Total</th>
+                <th scope="col" class="px-3 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Cobrado</th>
+                <th scope="col" class="px-3 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Pendiente</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @orders.each do |order| %>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <% if @orders.empty? %>
                 <tr>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    #<%= order.id %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= order.customer&.full_name || "Cliente Genérico" %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= order.order_date.strftime("%d/%m/%Y") %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right">
-                    ₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-green-600 text-right font-medium">
-                    ₲s. <%= number_with_delimiter(order.total_paid.to_i, delimiter: '.') %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-red-600 text-right font-medium">
-                    ₲s. <%= number_with_delimiter(order.outstanding_balance.to_i, delimiter: '.') %>
-                  </td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <div class="flex items-center justify-end gap-x-2">
-                      <%= link_to order_path(order), class: "text-indigo-600 hover:text-indigo-900", title: "Ver" do %>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                      <% end %>
-                      <%= link_to new_order_payment_path(order_id: order.id), class: "text-green-600 hover:text-green-900", title: "Registrar Pago" do %>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
-                        </svg>
-                      <% end %>
-                    </div>
+                  <td colspan="7" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin cuentas pendientes</p>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron órdenes con los filtros aplicados.</p>
+                    <%= link_to "Limpiar filtros", pending_orders_path, class: "mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-500 underline" %>
                   </td>
                 </tr>
+              <% else %>
+                <% @orders.each do |order| %>
+                  <%
+                    outstanding = order.outstanding_balance.to_d
+                    total       = order.total_amount.to_d
+                    pct_paid    = total > 0 ? ((order.total_paid.to_d / total) * 100).round : 0
+                  %>
+                  <tr class="hover:bg-gray-50 transition-colors duration-100">
+
+                    <%# Orden: nº + fecha %>
+                    <td class="whitespace-nowrap py-3 pl-4 pr-3 sm:pl-6">
+                      <span class="block text-sm font-semibold text-gray-900">#<%= order.id.to_s.rjust(4, '0') %></span>
+                      <span class="block text-xs text-gray-400 mt-0.5"><%= order.order_date.strftime("%d/%m/%Y %H:%M") %></span>
+                    </td>
+
+                    <%# Cliente %>
+                    <td class="px-3 py-3">
+                      <span class="block text-sm text-gray-900 font-medium"><%= order.customer&.full_name || "Cliente genérico" %></span>
+                      <% if order.customer&.document.present? %>
+                        <span class="block text-xs text-gray-400 mt-0.5"><%= order.customer.document %></span>
+                      <% end %>
+                    </td>
+
+                    <%# Creado por %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <div class="flex items-center gap-x-2">
+                        <div class="h-6 w-6 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
+                          <span class="text-xs font-medium text-white"><%= order.user.name.first.upcase %></span>
+                        </div>
+                        <span class="text-xs text-gray-600"><%= order.user.name %></span>
+                      </div>
+                    </td>
+
+                    <%# Total %>
+                    <td class="whitespace-nowrap px-3 py-3 text-right">
+                      <span class="text-sm font-semibold text-gray-900">
+                        ₲ <%= number_with_delimiter(total.to_i, delimiter: '.') %>
+                      </span>
+                    </td>
+
+                    <%# Cobrado + barra de progreso %>
+                    <td class="whitespace-nowrap px-3 py-3 text-right">
+                      <span class="block text-sm font-medium text-green-600">
+                        ₲ <%= number_with_delimiter(order.total_paid.to_i, delimiter: '.') %>
+                      </span>
+                      <div class="mt-1 flex items-center justify-end gap-x-1.5">
+                        <div class="w-16 bg-gray-200 rounded-full h-1.5">
+                          <div class="bg-green-500 h-1.5 rounded-full" style="width: <%= pct_paid %>%"></div>
+                        </div>
+                        <span class="text-xs text-gray-400"><%= pct_paid %>%</span>
+                      </div>
+                    </td>
+
+                    <%# Pendiente %>
+                    <td class="whitespace-nowrap px-3 py-3 text-right">
+                      <span class="text-sm font-semibold text-red-600">
+                        ₲ <%= number_with_delimiter(outstanding.to_i, delimiter: '.') %>
+                      </span>
+                    </td>
+
+                    <%# Acciones %>
+                    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right sm:pr-6">
+                      <div class="flex items-center justify-end gap-x-2">
+                        <%= link_to new_order_payment_path(order_id: order.id),
+                            title: "Registrar pago",
+                            class: "inline-flex items-center gap-x-1 rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-200 hover:bg-green-100" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                          </svg>
+                          Cobrar
+                        <% end %>
+
+                        <%= link_to order_path(order),
+                            title: "Ver orden",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          </svg>
+                        <% end %>
+                      </div>
+                    </td>
+
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -187,9 +194,11 @@
     </div>
   </div>
 
+  <%# ── Pagination ──────────────────────────────────────────────────────── %>
   <% if @orders.respond_to?(:total_pages) %>
-    <div class="mt-4 justify-center border-t flex">
+    <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
       <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
     </div>
   <% end %>
+
 </div>
