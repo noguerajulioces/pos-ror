@@ -3,7 +3,11 @@ class SimpleProductsController < ApplicationController
 
   def index
     @q = Product.where(kind: 'simple').ransack(params[:q])
-    @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
+    base = @q.result(distinct: true)
+    @total_count        = base.count
+    @low_stock_count    = Product.where(kind: 'simple').where('stock IS NOT NULL AND min_stock IS NOT NULL AND stock > 0 AND stock <= min_stock').count
+    @out_of_stock_count = Product.where(kind: 'simple').where('stock IS NULL OR stock = 0').count
+    @products = base.includes(:category, :images).paginate(page: params[:page], per_page: 10)
   end
 
   def show
