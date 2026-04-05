@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_26_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_05_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -468,6 +468,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_26_130000) do
     t.index ["account_id"], name: "index_settings_on_account_id"
   end
 
+  create_table "stock_transfers", force: :cascade do |t|
+    t.bigint "from_account_id", null: false
+    t.bigint "to_account_id", null: false
+    t.string "from_item_type", null: false
+    t.bigint "from_item_id", null: false
+    t.string "to_item_type", null: false
+    t.bigint "to_item_id", null: false
+    t.decimal "quantity", precision: 10, scale: 3, null: false
+    t.string "reason"
+    t.string "status", default: "pending", null: false
+    t.bigint "transferred_by_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["from_account_id"], name: "index_stock_transfers_on_from_account_id"
+    t.index ["from_item_type", "from_item_id"], name: "index_stock_transfers_on_from_item_type_and_from_item_id"
+    t.index ["status"], name: "index_stock_transfers_on_status"
+    t.index ["to_account_id"], name: "index_stock_transfers_on_to_account_id"
+    t.index ["to_item_type", "to_item_id"], name: "index_stock_transfers_on_to_item_type_and_to_item_id"
+    t.index ["transferred_by_id"], name: "index_stock_transfers_on_transferred_by_id"
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "company_name"
     t.string "document"
@@ -604,6 +625,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_26_130000) do
   add_foreign_key "sale_items", "sales"
   add_foreign_key "sales", "accounts"
   add_foreign_key "settings", "accounts"
+  add_foreign_key "stock_transfers", "accounts", column: "from_account_id"
+  add_foreign_key "stock_transfers", "accounts", column: "to_account_id"
+  add_foreign_key "stock_transfers", "users", column: "transferred_by_id"
   add_foreign_key "suppliers", "accounts"
   add_foreign_key "tables", "accounts"
   add_foreign_key "tax_rates", "accounts"

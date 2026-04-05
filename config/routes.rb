@@ -41,6 +41,12 @@ Rails.application.routes.draw do
   # Productos simples - DEBE IR ANTES que la ruta general de products
   resources :simple_products, path: 'products/simple', as: :simple_products do
     resources :images, only: [ :destroy ], controller: 'product_images'
+    resources :stock_transfers, only: [ :create ], controller: 'stock_transfers' do
+      collection do
+        get :transfer_form
+        get :products_by_account
+      end
+    end
     member do
       patch :update_status
       get :adjust_stock_form
