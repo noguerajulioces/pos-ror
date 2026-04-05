@@ -1,218 +1,239 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
       <h1 class="text-base font-semibold text-gray-900">Órdenes</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de todas las órdenes registradas.</p>
-    </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%#= link_to "Nueva Orden", new_order_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      <p class="mt-1 text-sm text-gray-500">Historial de todas las órdenes registradas.</p>
     </div>
   </div>
 
-  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%# ── Search form ─────────────────────────────────────────────────────── %>
+  <%= search_form_for @q, url: orders_path, class: "mt-6" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
-      <div class="px-4 py-6 sm:p-8">
-        <!-- Primera fila: Cliente, Tipo de Orden y Usuario Delivery -->
-        <div class="mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
-            <div>
-              <%= f.label :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, "Buscar Orden o Cliente", class: "block text-sm font-medium leading-6 text-gray-900" %>
-              <%= f.search_field :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont, 
-                  placeholder: "Número de orden, documento, nombre o apellido del cliente",
-                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-            </div>
-
-            <div>
-              <%= f.label :order_type_eq, "Tipo de Orden", class: "block text-sm font-medium leading-6 text-gray-900" %>
-              <%= f.select :order_type_eq, 
-                  options_for_select([
-                    ['Todos los tipos', ''],
-                    ['En Tienda', 'in_store'],
-                    ['Delivery', 'delivery']
-                  ], params.dig(:q, :order_type_eq)), 
-                  {}, 
-                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-            </div>
-
-            <div>
-              <%= f.label :delivery_user_id_eq, "Usuario Delivery", class: "block text-sm font-medium leading-6 text-gray-900" %>
-              <%= f.select :delivery_user_id_eq, 
-                  options_for_select([['Todos los usuarios', '']] + @delivery_users.map { |user| [user.name, user.id] }, params.dig(:q, :delivery_user_id_eq)), 
-                  {}, 
-                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-            </div>
+      <div class="px-4 py-5 sm:p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont,
+                "Orden / Cliente", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.search_field :id_as_string_or_customer_document_or_customer_first_name_or_customer_last_name_cont,
+                placeholder: "Nº orden, documento, nombre…",
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
+          </div>
+          <div>
+            <%= f.label :order_type_eq, "Tipo de orden", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.select :order_type_eq,
+                options_for_select([
+                  ['Todos los tipos', ''],
+                  ['En Tienda', 'in_store'],
+                  ['Delivery', 'delivery']
+                ], params.dig(:q, :order_type_eq)),
+                {},
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
+          </div>
+          <div>
+            <%= f.label :delivery_user_id_eq, "Usuario delivery", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.select :delivery_user_id_eq,
+                options_for_select([['Todos los usuarios', '']] + @delivery_users.map { |u| [u.name, u.id] }, params.dig(:q, :delivery_user_id_eq)),
+                {},
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
         </div>
-
-        <!-- Filtros por Fecha -->
-        <div class="mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <div>
-              <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
-              <%= f.date_field :order_date_gteq, 
-                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-            </div>
-
-            <div>
-              <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
-              <%= f.date_field :order_date_lteq, 
-                  class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-            </div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <%= f.label :order_date_gteq, "Fecha desde", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.date_field :order_date_gteq,
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
+          </div>
+          <div>
+            <%= f.label :order_date_lteq, "Fecha hasta", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.date_field :order_date_lteq,
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", orders_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-3 sm:px-6">
+        <%= f.submit "Buscar",
+            class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+        <%= link_to "Limpiar", orders_path,
+            class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
 
-  <div class="mt-8 flow-root">
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-2 pl-4 pr-3 text-left text-xs font-semibold text-gray-900 sm:pl-6">Orden</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-gray-900">Cliente</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-gray-900">Total</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-gray-900">Estado</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-gray-900">Creado por</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-gray-900">Delivery</th>
-                <th scope="col" class="relative py-2 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Orden</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Cliente</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Total</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tipo</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Estado</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Creado por</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Delivery / Mesa</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @orders.each do |order| %>
-                <tr class="hover:bg-gray-50">
-                  <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6">
-                    <div class="flex flex-col">
-                      <span class="font-medium text-gray-900">#0<%= order.id %></span>
-                      <span class="text-xs text-gray-500"><%= order.order_date.strftime("%d/%m/%Y %H:%M") %></span>
-                    </div>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <% if @orders.empty? %>
+                <tr>
+                  <td colspan="8" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin resultados</p>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron órdenes con los filtros aplicados.</p>
+                    <%= link_to "Limpiar filtros", orders_path, class: "mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-500 underline" %>
                   </td>
-                  <td class="px-3 py-2">
-                    <div class="flex flex-col">
-                      <span class="text-sm text-gray-900"><%= order.customer&.full_name || "Cliente Genérico" %></span>
-                      <span class="text-xs text-gray-500"><%= order&.display_payment_method %></span>
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-2">
-                    <div class="flex flex-col">
-                      <span class="text-sm font-semibold text-gray-900">₲s. <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %></span>
-                      <span class="text-xs text-gray-500">
-                        <% if order.order_type == 'delivery' %>
-                          <span class="inline-flex items-center text-orange-600">
-                            <svg class="w-3 h-3 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Delivery
-                          </span>
-                        <% else %>
-                          <span class="text-blue-600">En Tienda</span>
-                        <% end %>
+                </tr>
+              <% else %>
+                <% @orders.each do |order| %>
+                  <tr class="hover:bg-gray-50 transition-colors duration-100">
+
+                    <%# Orden: nº + fecha %>
+                    <td class="whitespace-nowrap py-3 pl-4 pr-3 sm:pl-6">
+                      <span class="block text-sm font-semibold text-gray-900">#<%= order.id.to_s.rjust(4, '0') %></span>
+                      <span class="block text-xs text-gray-400 mt-0.5"><%= order.order_date.strftime("%d/%m/%Y %H:%M") %></span>
+                    </td>
+
+                    <%# Cliente + método de pago %>
+                    <td class="px-3 py-3">
+                      <span class="block text-sm text-gray-900"><%= order.customer&.full_name || "Cliente genérico" %></span>
+                      <span class="block text-xs text-gray-400 mt-0.5"><%= order.display_payment_method %></span>
+                    </td>
+
+                    <%# Total %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <span class="text-sm font-semibold text-gray-900">
+                        ₲ <%= number_with_delimiter(order.total_amount.to_i, delimiter: '.') %>
                       </span>
-                    </div>
-                  </td>
-                  <td class="px-3 py-2">
-                    <% status_class = case order.status 
-                       when Order::STATUSES[:completed] then "text-green-600 bg-green-100"
-                       when Order::STATUSES[:on_hold] then "text-yellow-600 bg-yellow-100"
-                       when Order::STATUSES[:cancelled] then "text-red-600 bg-red-100"
-                       when Order::STATUSES[:pending_payment] then "text-orange-600 bg-orange-100"
-                       end %>
-                    <span class="<%= status_class %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                      <%= order.status == "completed" ? "Completado" : 
-                          order.status == "on_hold" ? "Cuenta Abierta" : 
-                          order.status == "cancelled" ? "Cancelado" : 
-                          order.status == "pending_payment" ? "Pago Pendiente" : order.status %>
-                    </span>
-                  </td>
-                  <td class="px-3 py-2">
-                    <div class="flex items-center">
-                      <div class="flex-shrink-0 h-6 w-6">
-                        <div class="h-6 w-6 rounded-full bg-indigo-500 flex items-center justify-center">
-                          <span class="text-xs font-medium text-white">
-                            <%= order.user.name.first.upcase %>
-                          </span>
+                    </td>
+
+                    <%# Tipo de orden %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <% if order.order_type == 'delivery' %>
+                        <span class="inline-flex items-center gap-x-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
+                          <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                          </svg>
+                          Delivery
+                        </span>
+                      <% else %>
+                        <span class="inline-flex items-center gap-x-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                          <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+                          </svg>
+                          En tienda
+                        </span>
+                      <% end %>
+                    </td>
+
+                    <%# Estado %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <% status_classes = case order.status
+                         when 'completed'      then 'bg-green-100 text-green-700'
+                         when 'on_hold'        then 'bg-yellow-100 text-yellow-700'
+                         when 'cancelled'      then 'bg-red-100 text-red-700'
+                         when 'pending_payment' then 'bg-orange-100 text-orange-700'
+                         else 'bg-gray-100 text-gray-600'
+                         end %>
+                      <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= status_classes %>">
+                        <%= case order.status
+                            when 'completed'       then 'Completado'
+                            when 'on_hold'         then 'Cuenta abierta'
+                            when 'cancelled'       then 'Cancelado'
+                            when 'pending_payment' then 'Pago pendiente'
+                            else order.status
+                            end %>
+                      </span>
+                    </td>
+
+                    <%# Creado por %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <div class="flex items-center gap-x-2">
+                        <div class="h-6 w-6 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
+                          <span class="text-xs font-medium text-white"><%= order.user.name.first.upcase %></span>
                         </div>
+                        <span class="text-xs text-gray-600"><%= order.user.name %></span>
                       </div>
-                      <span class="ml-1.5 text-xs text-gray-600"><%= order.user.name %></span>
-                    </div>
-                  </td>
-                  <td class="px-3 py-2">
-                    <% if order.order_type == 'delivery' %>
-                      <% if order.delivery_user.present? %>
-                        <div class="flex items-center">
-                          <div class="flex-shrink-0 h-5 w-5">
-                            <div class="h-5 w-5 rounded-full bg-orange-500 flex items-center justify-center">
-                              <span class="text-xs font-medium text-white">
-                                <%= order.delivery_user.name.first.upcase %>
-                              </span>
+                    </td>
+
+                    <%# Delivery / Mesa %>
+                    <td class="px-3 py-3">
+                      <% if order.order_type == 'delivery' %>
+                        <% if order.delivery_user.present? %>
+                          <div class="flex items-center gap-x-2">
+                            <div class="h-6 w-6 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
+                              <span class="text-xs font-medium text-white"><%= order.delivery_user.name.first.upcase %></span>
                             </div>
+                            <span class="text-xs text-gray-600"><%= order.delivery_user.name %></span>
                           </div>
-                          <span class="ml-1.5 text-xs text-gray-600"><%= order.delivery_user.name %></span>
-                        </div>
-                      <% elsif order.status != 'cancelled' && current_user.has_role?(:superadmin) %>
-                        <%= select_tag "delivery_user_#{order.id}", 
-                            options_from_collection_for_select(@delivery_users, :id, :name, order.delivery_user_id),
-                            { prompt: "Asignar", 
-                              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-xs py-1",
-                              data: { 
+                        <% elsif order.status != 'cancelled' && current_user.has_role?(:superadmin) %>
+                          <%= select_tag "delivery_user_#{order.id}",
+                              options_from_collection_for_select(@delivery_users, :id, :name, order.delivery_user_id),
+                              prompt: "Asignar…",
+                              class: "block w-full rounded-md border-0 py-1 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-500",
+                              data: {
                                 controller: "order-delivery",
                                 action: "change->order-delivery#assign",
                                 order_id: order.id
-                              }
-                            } %>
+                              } %>
+                        <% else %>
+                          <span class="text-gray-300 text-xs">—</span>
+                        <% end %>
+                      <% elsif order.order_type == 'in_store' && order.table.present? %>
+                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                          <%= order.table.name %>
+                        </span>
                       <% else %>
-                        <span class="text-gray-400 text-xs">-</span>
+                        <span class="text-gray-300 text-xs">—</span>
                       <% end %>
-                    <% elsif order.order_type == 'in_store' && order.table.present? %>
-                      <span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
-                        <%= order.table.name %>
-                      </span>
-                    <% else %>
-                      <span class="text-gray-400 text-xs">-</span>
-                    <% end %>
-                  </td>
-                  <td class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <div class="flex justify-end space-x-1">
-                      <%= link_to order_path(order), class: "text-indigo-600 hover:text-indigo-900", title: "Ver" do %>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                      <% end %>
-                      <%= link_to print_preview_order_path(order), 
-                          class: "text-indigo-600 hover:text-green-900", 
-                          title: "Imprimir",
-                          data: { 
-                            controller: "print", 
-                            action: "click->print#print",
-                            print_url_value: print_preview_order_path(order)
-                          } do %>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                        </svg>
-                      <% end %>
-                      <% if current_user.has_role?(:superadmin) %>
-                        <% if order.status != "cancelled" %>
-                          <%= link_to order_path(order), 
-                              data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                              class: "text-red-600 hover:text-red-900", title: "Cancelar" do %>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </td>
+
+                    <%# Acciones %>
+                    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right sm:pr-6">
+                      <div class="flex items-center justify-end gap-x-2">
+                        <%= link_to order_path(order),
+                            title: "Ver orden",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          </svg>
+                        <% end %>
+
+                        <%= link_to print_preview_order_path(order),
+                            title: "Imprimir",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
+                            data: {
+                              controller: "print",
+                              action: "click->print#print",
+                              print_url_value: print_preview_order_path(order)
+                            } do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                          </svg>
+                        <% end %>
+
+                        <% if current_user.has_role?(:superadmin) && order.status != 'cancelled' %>
+                          <%= link_to order_path(order),
+                              data: { turbo_method: :delete, turbo_confirm: "¿Cancelar esta orden?" },
+                              title: "Cancelar orden",
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-200 hover:bg-red-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                             </svg>
                           <% end %>
                         <% end %>
-                      <% end %>
-                    </div>
-                  </td>
-                </tr>
+                      </div>
+                    </td>
+
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -220,10 +241,12 @@
       </div>
     </div>
   </div>
-</div>
 
-<% if @orders.respond_to?(:total_pages) %>
-  <div class="mt-4 justify-center border-t flex">
-    <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
-  </div>
-<% end %>
+  <%# ── Pagination ──────────────────────────────────────────────────────── %>
+  <% if @orders.respond_to?(:total_pages) %>
+    <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
+      <%= will_paginate @orders, renderer: TailwindPaginateRenderer %>
+    </div>
+  <% end %>
+
+</div>
