@@ -9,6 +9,7 @@ class PosController < ApplicationController
   def show
     @categories = Category.where(parent_id: nil)
     @order_type = session[:order_type] || 'in_store'
+    @table = Table.find_by(id: session[:table_id])
 
     # Render different view for mobile
     if mobile_device?
@@ -137,13 +138,15 @@ class PosController < ApplicationController
   def update_order_type_and_table
     @order_type = params[:order_type]
     session[:order_type] = @order_type
-    
+
     # Solo guarda la mesa si el tipo es in_store, la limpia si es delivery
     if @order_type == "in_store"
       session[:table_id] = params[:table_id].presence
     else
       session[:table_id] = nil
     end
+
+    @table = Table.find_by(id: session[:table_id])
 
     respond_to do |format|
       format.turbo_stream

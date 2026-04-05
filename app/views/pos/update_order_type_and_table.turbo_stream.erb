@@ -1,7 +1,7 @@
 <%= turbo_stream.update "order-type-display-mobile" do %>
   <% if @order_type == "in_store" %>
-    <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
-      <span class="md:hidden text-indigo-600"><%= Table.find(session[:table_id]).name %></span>
+    <% if @table %>
+      <span class="md:hidden text-indigo-600"><%= @table.name %></span>
       <span class="hidden md:inline">En el local</span>
     <% else %>
       <span class="md:hidden text-gray-400">Seleccionar</span>
@@ -19,11 +19,11 @@
 
 <%= turbo_stream.replace "table-display-container-mobile" do %>
   <div id="table-display-container-mobile">
-    <% if @order_type == "in_store" && session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+    <% if @order_type == "in_store" && @table %>
       <div class="hidden md:flex justify-between items-center mt-1">
         <span class="text-xs text-gray-500">Mesa:</span>
         <span class="text-xs font-medium text-indigo-600" id="table-display">
-          <%= Table.find(session[:table_id]).name %>
+          <%= @table.name %>
         </span>
       </div>
     <% end %>
@@ -32,11 +32,11 @@
 
 <%= turbo_stream.replace "table-display-container-desktop" do %>
   <div id="table-display-container-desktop">
-    <% if @order_type == "in_store" && session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+    <% if @order_type == "in_store" && @table %>
       <div class="mt-1">
         <span class="text-xs text-gray-500">Mesa:</span>
         <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
-          <%= Table.find(session[:table_id]).name %>
+          <%= @table.name %>
         </span>
       </div>
     <% end %>
