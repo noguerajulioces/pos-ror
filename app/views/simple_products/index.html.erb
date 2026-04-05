@@ -106,7 +106,9 @@
                     </strong>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= product.stock %> <%= product&.unit&.abbreviation %>
+                    <span id="product_stock_value_<%= product.id %>">
+                      <%= product.stock %> <%= product&.unit&.abbreviation %>
+                    </span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <% case product.status %>
@@ -125,7 +127,10 @@
                     <% end %>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", simple_product_path(product), class: "text-indigo-600 hover:text-indigo-900" %>
+                    <%= link_to "Ajustar Stock", adjust_stock_form_simple_product_path(product),
+                        data: { turbo_frame: "modal" },
+                        class: "font-semibold text-green-600 hover:text-green-800" %>
+                    <%= link_to "Ver", simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
                     <%= link_to "Editar", edit_simple_product_path(product), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
                     
                     <% case product.status %>
