@@ -89,8 +89,8 @@ module ApplicationHelper
   def render_settings_icon(collapsed: false, is_current: false)
     if collapsed
       link_class = is_current ?
-        'group flex justify-start items-center rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 pl-3 text-sm/6 font-semibold text-indigo-700 shadow-sm border border-indigo-200' :
-        'group flex justify-start items-center rounded-xl p-4 pl-3 text-sm/6 font-semibold text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-indigo-600 transition-all duration-200 hover:shadow-md hover:scale-105'
+        'group flex justify-start items-center rounded-xl bg-indigo-50 p-4 pl-3 text-sm/6 font-semibold text-indigo-700 border border-indigo-200' :
+        'group flex justify-start items-center rounded-xl p-4 pl-3 text-sm/6 font-semibold text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-100'
 
       icon_class = is_current ?
         'size-6 shrink-0 text-indigo-600' :
@@ -104,8 +104,8 @@ module ApplicationHelper
       end
     else
       link_class = is_current ?
-        'group -mx-2 flex gap-x-3 rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100 p-3 text-sm/6 font-semibold text-indigo-700 shadow-sm border border-indigo-200 transition-all duration-200' :
-        'group -mx-2 flex gap-x-3 rounded-xl p-3 text-sm/6 font-semibold text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-indigo-600 transition-all duration-200 hover:shadow-md hover:scale-[1.02]'
+        'group -mx-2 flex gap-x-3 rounded-xl bg-indigo-50 p-3 text-sm/6 font-semibold text-indigo-700 border border-indigo-200' :
+        'group -mx-2 flex gap-x-3 rounded-xl p-3 text-sm/6 font-semibold text-gray-600 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-100'
 
       icon_class = is_current ?
         'size-6 shrink-0 text-indigo-600' :
