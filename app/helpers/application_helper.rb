@@ -48,6 +48,25 @@ module ApplicationHelper
     end
   end
 
+  def ingredient_row_class(ingredient)
+    case ingredient.stock_status
+    when 'out_of_stock' then 'bg-red-50'
+    when 'low_stock'    then 'bg-amber-50'
+    else ''
+    end
+  end
+
+  def ingredient_stock_badge(ingredient)
+    case ingredient.stock_status
+    when 'out_of_stock'
+      content_tag(:span, 'Sin stock', class: 'inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700')
+    when 'low_stock'
+      content_tag(:span, 'Stock bajo', class: 'inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700')
+    else
+      content_tag(:span, 'Normal', class: 'inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700')
+    end
+  end
+
   def kind_badge(product)
     case product.kind
     when 'simple'

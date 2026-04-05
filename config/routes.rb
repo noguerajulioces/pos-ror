@@ -33,6 +33,12 @@ Rails.application.routes.draw do
       get :adjust_stock_form
       post :adjust_stock
     end
+    resources :ingredient_transfers, only: [ :create ], controller: 'ingredient_transfers' do
+      collection do
+        get :transfer_form
+        get :ingredients_by_account
+      end
+    end
   end
 
   # Ruta específica para el modal picker de ingredientes

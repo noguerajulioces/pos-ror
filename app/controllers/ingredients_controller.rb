@@ -18,7 +18,11 @@ class IngredientsController < ApplicationController
 
   def index
     @q = Ingredient.ransack(params[:q])
-    @ingredients = @q.result(distinct: true).includes(:unit).paginate(page: params[:page], per_page: 10)
+    base = @q.result(distinct: true)
+    @total_count      = base.count
+    @low_stock_count  = Ingredient.where('stock > 0 AND min_stock IS NOT NULL AND min_stock > 0 AND stock <= min_stock').count
+    @out_of_stock_count = Ingredient.where('stock IS NULL OR stock = 0').count
+    @ingredients = base.includes(:unit).paginate(page: params[:page], per_page: 10)
   end
 
   def show
