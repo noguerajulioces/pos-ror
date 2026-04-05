@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Recibo - Orden #<%= @order.id %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=80mm, initial-scale=1.0, maximum-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
@@ -64,25 +64,25 @@
         margin: 3px 0;
       }
       
-      /* Estilos optimizados para impresión en térmica 80mm */
       @media print {
         @page {
           size: 80mm auto;
           margin: 0;
         }
-        
+
         body {
           width: 80mm;
           margin: 0;
           padding: 0;
           background: white;
         }
-        
+
         .receipt {
-          max-width: 80mm;
+          box-sizing: border-box;
           width: 80mm;
+          max-width: 80mm;
           margin: 0;
-          padding: 3mm 4mm;
+          padding: 2mm;
           box-shadow: none;
         }
         
@@ -115,12 +115,15 @@
           margin: 2px 0;
         }
         
-        /* Monocromático para térmicas */
+        /* Monocromático y nítido para térmicas */
         * {
           color: #000 !important;
           background: #fff !important;
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
+          -webkit-font-smoothing: none;
+          font-smooth: never;
+          text-rendering: optimizeSpeed;
         }
         
         /* Evitar saltos de página */
