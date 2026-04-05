@@ -87,8 +87,8 @@
           <span class="text-gray-700 text-sm md:hidden">Mesa:</span>
           <span class="text-gray-700 text-sm hidden md:inline">Tipo de Pedido:</span>
           <span class="font-medium text-sm" id="order-type-display-mobile">
-            <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
-              <span class="md:hidden text-indigo-600"><%= Table.find(session[:table_id]).name %></span>
+            <% if @table %>
+              <span class="md:hidden text-indigo-600"><%= @table.name %></span>
               <span class="hidden md:inline"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
             <% else %>
               <span class="md:hidden text-gray-400">Seleccionar</span>
@@ -100,11 +100,11 @@
           <input type="hidden" id="discount-reason" value="<%= session[:discount_reason] %>">
         </div>
         <div id="table-display-container-mobile">
-          <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+          <% if @table %>
             <div class="hidden md:flex justify-between items-center mt-1">
               <span class="text-xs text-gray-500">Mesa:</span>
               <span class="text-xs font-medium text-indigo-600" id="table-display">
-                <%= Table.find(session[:table_id]).name %>
+                <%= @table.name %>
               </span>
             </div>
           <% end %>
@@ -148,11 +148,11 @@
           <span class="text-gray-700">Tipo de Pedido:</span>
           <span class="float-right font-medium" id="order-type-display-desktop"><%= @order_type == "in_store" ? "En el local" : (@order_type == "delivery" ? "Delivery" : "N/A") %></span>
           <div id="table-display-container-desktop">
-            <% if session[:table_id].present? && Table.find_by(id: session[:table_id]) %>
+            <% if @table %>
               <div class="mt-1">
                 <span class="text-xs text-gray-500">Mesa:</span>
                 <span class="float-right text-xs font-medium text-indigo-600" id="table-display">
-                  <%= Table.find(session[:table_id]).name %>
+                  <%= @table.name %>
                 </span>
               </div>
             <% end %>

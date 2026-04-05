@@ -18,7 +18,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   resources :categories do
-    resources :subcategories, only: [ :new, :create ]
+    resources :subcategories, only: [ :new, :create, :destroy ]
+    member do
+      get :subcategories, action: :subcategories_json, as: :subcategories_json
+    end
   end
   resources :ingredients do
     collection do
@@ -30,6 +33,12 @@ Rails.application.routes.draw do
       get :adjust_stock_form
       post :adjust_stock
     end
+    resources :ingredient_transfers, only: [ :create ], controller: 'ingredient_transfers' do
+      collection do
+        get :transfer_form
+        get :ingredients_by_account
+      end
+    end
   end
 
   # Ruta específica para el modal picker de ingredientes
@@ -38,6 +47,12 @@ Rails.application.routes.draw do
   # Productos simples - DEBE IR ANTES que la ruta general de products
   resources :simple_products, path: 'products/simple', as: :simple_products do
     resources :images, only: [ :destroy ], controller: 'product_images'
+    resources :stock_transfers, only: [ :create ], controller: 'stock_transfers' do
+      collection do
+        get :transfer_form
+        get :products_by_account
+      end
+    end
     member do
       patch :update_status
       get :adjust_stock_form
@@ -100,6 +115,7 @@ Rails.application.routes.draw do
   patch 'pos/update_order_type', to: 'pos#update_order_type'
   get 'pos/subcategories', to: 'pos#subcategories'
   get 'pos/products_by_subcategory', to: 'pos#products_by_subcategory'
+  get 'pos/products_by_category', to: 'pos#products_by_category'
 
   post 'pos/add_product_to_order', to: 'pos#add_product_to_order'
   post 'pos/set_order_type', to: 'pos#set_order_type'

@@ -24,9 +24,24 @@
   <div class="px-4 py-6 sm:p-8">
     <div class="grid grid-cols gap-x-6 gap-y-8 sm:grid-cols-6 md:grid-cols-2">
       <div class="col-span-1">
-        <%= form.label :name, "Nombre de la categoría", class: "block text-sm/6 font-medium text-gray-900" %>
+        <%= form.label :name, "Nombre", class: "block text-sm/6 font-medium text-gray-900" %>
         <div class="mt-2">
           <%= form.text_field :name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+        </div>
+      </div>
+
+      <div class="col-span-1">
+        <%= form.label :parent_id, "Categoría padre (opcional)", class: "block text-sm/6 font-medium text-gray-900" %>
+        <p class="text-xs text-gray-500 mb-1">Dejá vacío para crear una categoría raíz. Seleccioná una si querés que sea subcategoría.</p>
+        <div class="mt-2 relative">
+          <%= form.collection_select :parent_id, @parent_categories, :id, :name,
+              { include_blank: "— Sin categoría padre —" },
+              { class: "block w-full rounded-md bg-white px-3 pr-10 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>

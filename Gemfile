@@ -95,3 +95,5 @@ gem 'escpos'
 
 # Browser detection
 gem 'browser'
+gem "sentry-ruby"
+gem "sentry-rails"

@@ -3,7 +3,11 @@ class SimpleProductsController < ApplicationController
 
   def index
     @q = Product.where(kind: 'simple').ransack(params[:q])
-    @products = @q.result(distinct: true).includes(:category).paginate(page: params[:page], per_page: 10)
+    base = @q.result(distinct: true)
+    @total_count        = base.count
+    @low_stock_count    = Product.where(kind: 'simple').where('stock IS NOT NULL AND min_stock IS NOT NULL AND stock > 0 AND stock <= min_stock').count
+    @out_of_stock_count = Product.where(kind: 'simple').where('stock IS NULL OR stock = 0').count
+    @products = base.includes(:category, :images).paginate(page: params[:page], per_page: 10)
   end
 
   def show
@@ -89,23 +93,28 @@ class SimpleProductsController < ApplicationController
     if movement
       respond_to do |format|
         format.turbo_stream do
+          @product.reload
           render turbo_stream: [
             # Cerrar modal
             turbo_stream.update("modal", ""),
-            
-            # Actualizar stock actual
-            turbo_stream.replace("stock_display", 
-              partial: "shared/stock_display", 
-              locals: { item: @product.reload }),
-            
+
+            # Actualizar stock actual (show page)
+            turbo_stream.replace("stock_display",
+              partial: "shared/stock_display",
+              locals: { item: @product }),
+
+            # Actualizar stock en index (stocks y simple_products)
+            turbo_stream.update("product_stock_value_#{@product.id}",
+              "#{@product.stock} #{@product.unit&.abbreviation}"),
+
             # Agregar nueva fila a la tabla (al inicio)
-            turbo_stream.prepend("inventory_movements_table", 
-              partial: "inventory_movements/row", 
+            turbo_stream.prepend("inventory_movements_table",
+              partial: "inventory_movements/row",
               locals: { movement: movement, item: @product }),
-            
+
             # Mostrar toast de éxito
-            turbo_stream.append("flash_messages", 
-              partial: "shared/flash", 
+            turbo_stream.append("flash_messages",
+              partial: "shared/flash",
               locals: { type: "success", message: "Stock actualizado correctamente" })
           ]
         end

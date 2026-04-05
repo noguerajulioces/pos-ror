@@ -30,6 +30,11 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def subcategories_json
+    category = Category.find(params[:id])
+    render json: category.subcategories.order(:name).map { |s| { id: s.id, name: s.name } }
+  end
+
   def destroy
     begin
       if @category.subcategories.any?

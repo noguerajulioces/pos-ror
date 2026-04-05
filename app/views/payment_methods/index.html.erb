@@ -1,63 +1,129 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Métodos de Pago</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de métodos de pago disponibles.</p>
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-base font-semibold text-gray-900">Métodos de pago</h1>
+      <p class="mt-1 text-sm text-gray-500">Métodos de pago disponibles en el sistema.</p>
     </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Nuevo Método de Pago", new_payment_method_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-    </div>
+    <% if current_user.has_role?(:superadmin) %>
+      <div class="mt-4 sm:mt-0">
+        <%= link_to new_payment_method_path, class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 inline-flex items-center gap-x-1.5" do %>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Nuevo método
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
-  <div class="mt-8 flow-root">
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Nombre</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Estado</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Método</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Descripción</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Estado</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @payment_methods.each.with_index(1) do |payment_method, index| %>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <% if @payment_methods.empty? %>
                 <tr>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    <%= index %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= payment_method.name %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= truncate(payment_method.description, length: 25, omission: '...', separator: ' ') %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm">
-                    <span class="<%= payment_method.active ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100' %> inline-flex rounded-full px-2 text-xs font-semibold leading-5">
-                      <%= payment_method.active ? 'Activo' : 'Inactivo' %>
-                    </span>
-                  </td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Ver", payment_method_path(payment_method), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                    <% if current_user.has_role?(:superadmin) %>
-                      <%= link_to "Editar", edit_payment_method_path(payment_method), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
-                      <% if payment_method.active %>
-                        <%= link_to "Cancelar", payment_method_path(payment_method), 
-                            data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas cancelar este método de pago?" }, 
-                            class: "text-red-600 hover:text-red-900" %>
-                      <% else %>
-                        <%= link_to "Activar", payment_method_path(payment_method, activate: true), 
-                            data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro que deseas activar este método de pago?" }, 
-                            class: "text-green-600 hover:text-green-900" %>
-                      <% end %>
-                    <% end %>
+                  <td colspan="4" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin métodos de pago</p>
+                    <p class="mt-1 text-sm text-gray-500">No hay métodos de pago registrados todavía.</p>
                   </td>
                 </tr>
+              <% else %>
+                <% @payment_methods.each do |payment_method| %>
+                  <tr class="hover:bg-gray-50 transition-colors duration-100 <%= 'opacity-60' unless payment_method.active %>">
+
+                    <%# Método: ícono + nombre %>
+                    <td class="py-3 pl-4 pr-3 sm:pl-6">
+                      <div class="flex items-center gap-x-3">
+                        <div class="h-9 w-9 flex-shrink-0 rounded-full bg-blue-100 flex items-center justify-center">
+                          <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                          </svg>
+                        </div>
+                        <p class="text-sm font-medium text-gray-900"><%= payment_method.name %></p>
+                      </div>
+                    </td>
+
+                    <%# Descripción %>
+                    <td class="px-3 py-3 text-sm text-gray-500 max-w-xs">
+                      <%= truncate(payment_method.description, length: 60, omission: '…') if payment_method.description.present? %>
+                      <%= '—' if payment_method.description.blank? %>
+                    </td>
+
+                    <%# Estado %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <% if payment_method.active %>
+                        <span class="inline-flex items-center gap-x-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                          <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                          Activo
+                        </span>
+                      <% else %>
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
+                          Inactivo
+                        </span>
+                      <% end %>
+                    </td>
+
+                    <%# Acciones %>
+                    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right sm:pr-6">
+                      <div class="flex items-center justify-end gap-x-2">
+                        <%= link_to payment_method_path(payment_method),
+                            title: "Ver método",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          </svg>
+                        <% end %>
+
+                        <% if current_user.has_role?(:superadmin) %>
+                          <%= link_to edit_payment_method_path(payment_method),
+                              title: "Editar método",
+                              class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                            </svg>
+                          <% end %>
+
+                          <% if payment_method.active %>
+                            <%= link_to payment_method_path(payment_method),
+                                data: { turbo_method: :delete, turbo_confirm: "¿Cancelar este método de pago?" },
+                                title: "Cancelar método",
+                                class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-200 hover:bg-red-50" do %>
+                              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                              </svg>
+                            <% end %>
+                          <% else %>
+                            <%= link_to payment_method_path(payment_method, activate: true),
+                                data: { turbo_method: :delete, turbo_confirm: "¿Activar este método de pago?" },
+                                title: "Activar método",
+                                class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-green-600 shadow-sm ring-1 ring-inset ring-green-200 hover:bg-green-50" do %>
+                              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                              </svg>
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </td>
+
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -65,10 +131,11 @@
       </div>
     </div>
   </div>
-</div>
 
-<% if @payment_methods.respond_to?(:total_pages) %>
-  <div class="mt-4 justify-center border-t flex">
-    <%= will_paginate @payment_methods, renderer: TailwindPaginateRenderer %>
-  </div>
-<% end %>
+  <% if @payment_methods.respond_to?(:total_pages) %>
+    <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
+      <%= will_paginate @payment_methods, renderer: TailwindPaginateRenderer %>
+    </div>
+  <% end %>
+
+</div>

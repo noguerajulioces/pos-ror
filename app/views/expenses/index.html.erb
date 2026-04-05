@@ -1,117 +1,160 @@
 <div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
+
+  <%# ── Header ────────────────────────────────────────────────────────── %>
+  <div class="sm:flex sm:items-center sm:justify-between">
+    <div>
       <h1 class="text-base font-semibold text-gray-900">Gastos</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de todos los gastos registrados.</p>
+      <p class="mt-1 text-sm text-gray-500">Lista de todos los gastos registrados.</p>
     </div>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-      <%= link_to "Nuevo Gasto", new_expense_path, class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+    <div class="mt-4 sm:mt-0">
+      <%= link_to new_expense_path, class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 inline-flex items-center gap-x-1.5" do %>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Nuevo gasto
+      <% end %>
     </div>
   </div>
 
-  <%= search_form_for @q, class: "mt-8 mb-4" do |f| %>
+  <%# ── Search form ─────────────────────────────────────────────────────── %>
+  <%= search_form_for @q, url: expenses_path, class: "mt-6" do |f| %>
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg">
-      <div class="px-4 py-6 sm:p-8">
+      <div class="px-4 py-5 sm:p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div>
-            <%= f.label :description_cont, "Descripción", class: "block text-sm font-medium leading-6 text-gray-900" %>
-            <%= f.search_field :description_cont, 
-                placeholder: "Buscar por descripción",
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+            <%= f.label :description_cont, "Descripción", class: "block text-sm font-medium text-gray-900" %>
+            <%= f.search_field :description_cont,
+                placeholder: "Buscar por descripción…",
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :category_eq, "Categoría", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :category_eq, "Categoría", class: "block text-sm font-medium text-gray-900" %>
             <%= f.select :category_eq,
-              Expense.categories.keys.map { |k| [I18n.t("activerecord.attributes.expense.categories.#{k}", default: k.humanize), k] },
+                Expense.categories.keys.map { |k| [I18n.t("activerecord.attributes.expense.categories.#{k}", default: k.humanize), k] },
                 { include_blank: "Todas las categorías" },
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :payment_method_id_eq, "Método de Pago", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :payment_method_id_eq, "Método de pago", class: "block text-sm font-medium text-gray-900" %>
             <%= f.collection_select :payment_method_id_eq,
-                PaymentMethod.all,
-                :id,
-                :name,
+                PaymentMethod.all, :id, :name,
                 { include_blank: "Todos los métodos" },
-                class: "block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :expense_date_gteq, "Fecha desde", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :expense_date_gteq, "Fecha desde", class: "block text-sm font-medium text-gray-900" %>
             <%= f.date_field :expense_date_gteq,
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
-
           <div>
-            <%= f.label :expense_date_lteq, "Fecha hasta", class: "block text-sm font-medium leading-6 text-gray-900" %>
+            <%= f.label :expense_date_lteq, "Fecha hasta", class: "block text-sm font-medium text-gray-900" %>
             <%= f.date_field :expense_date_lteq,
-                class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
+                class: "mt-1 block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" %>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-        <%= f.submit "Buscar", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        <%= link_to "Limpiar", expenses_path, class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+      <div class="flex items-center gap-x-3 border-t border-gray-900/10 px-4 py-3 sm:px-6">
+        <%= f.submit "Buscar",
+            class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+        <%= link_to "Limpiar", expenses_path,
+            class: "rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
       </div>
     </div>
   <% end %>
 
-  <div class="mt-8 flow-root">
+  <%# ── Table ───────────────────────────────────────────────────────────── %>
+  <div class="mt-6 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Monto</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Descripción</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Categoría</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Método de Pago</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Referencia</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span class="sr-only">Acciones</span>
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:pl-6">Gasto</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Categoría</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Método de pago</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Referencia</th>
+                <th scope="col" class="px-3 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Monto</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6"><span class="sr-only">Acciones</span></th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
-              <% @expenses.each.with_index(1) do |expense, index| %>
+            <tbody class="divide-y divide-gray-100 bg-white">
+              <% if @expenses.empty? %>
                 <tr>
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                    <%= index %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= l(expense.expense_date) %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= number_to_currency(expense.amount, delimiter: '.', precision: 0, unit: '₲s. ') %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= truncate(sanitize(expense.description), length: 15, separator: ' ', omission: '...', word_count: 20) %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <% if expense.category.present? %>
-                      <%= t("activerecord.attributes.expense.categories.#{expense.category}", default: expense.category&.humanize) %>
-                    <% else %>
-                      <span class="text-gray-400">-</span>
-                    <% end %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.payment_method&.name %>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <%= expense.reference_number || "-" %>
-                  </td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Editar", edit_expense_path(expense), class: "ml-2 text-indigo-600 hover:text-indigo-900" %>
-                    <%= link_to "Eliminar", expense_path(expense), 
-                        data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro?" }, 
-                        class: "ml-2 text-red-600 hover:text-red-900" %>
+                  <td colspan="6" class="py-16 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    <p class="mt-3 text-sm font-medium text-gray-900">Sin gastos</p>
+                    <p class="mt-1 text-sm text-gray-500">No se encontraron gastos con los filtros aplicados.</p>
+                    <%= link_to "Limpiar filtros", expenses_path, class: "mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-500 underline" %>
                   </td>
                 </tr>
+              <% else %>
+                <% @expenses.each do |expense| %>
+                  <tr class="hover:bg-gray-50 transition-colors duration-100">
+
+                    <%# Gasto: descripción + fecha %>
+                    <td class="py-3 pl-4 pr-3 sm:pl-6">
+                      <p class="text-sm font-medium text-gray-900">
+                        <%= truncate(sanitize(expense.description), length: 50, omission: '…') %>
+                      </p>
+                      <p class="text-xs text-gray-400 mt-0.5">
+                        <%= expense.expense_date&.strftime("%d/%m/%Y") %>
+                      </p>
+                    </td>
+
+                    <%# Categoría badge %>
+                    <td class="whitespace-nowrap px-3 py-3">
+                      <% if expense.category.present? %>
+                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                          <%= t("activerecord.attributes.expense.categories.#{expense.category}", default: expense.category.humanize) %>
+                        </span>
+                      <% else %>
+                        <span class="text-gray-300">—</span>
+                      <% end %>
+                    </td>
+
+                    <%# Método de pago %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
+                      <%= expense.payment_method&.name || '—' %>
+                    </td>
+
+                    <%# Referencia %>
+                    <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500 font-mono">
+                      <%= expense.reference_number.presence || '—' %>
+                    </td>
+
+                    <%# Monto %>
+                    <td class="whitespace-nowrap px-3 py-3 text-right">
+                      <span class="text-sm font-semibold text-gray-900">
+                        ₲ <%= number_with_delimiter(expense.amount.to_i, delimiter: '.') %>
+                      </span>
+                    </td>
+
+                    <%# Acciones %>
+                    <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right sm:pr-6">
+                      <div class="flex items-center justify-end gap-x-2">
+                        <%= link_to edit_expense_path(expense),
+                            title: "Editar gasto",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                          </svg>
+                        <% end %>
+                        <%= link_to expense_path(expense),
+                            data: { turbo_method: :delete, turbo_confirm: "¿Eliminar este gasto?" },
+                            title: "Eliminar gasto",
+                            class: "inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-200 hover:bg-red-50" do %>
+                          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        <% end %>
+                      </div>
+                    </td>
+
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -119,8 +162,10 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="mt-4 justify-center border-t flex">
-  <%= will_paginate @expenses, renderer: TailwindPaginateRenderer %>
+  <%# ── Pagination ──────────────────────────────────────────────────────── %>
+  <div class="mt-4 flex justify-center border-t border-gray-100 pt-4">
+    <%= will_paginate @expenses, renderer: TailwindPaginateRenderer %>
+  </div>
+
 </div>

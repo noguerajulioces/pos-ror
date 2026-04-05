@@ -19,7 +19,7 @@
       <div class="flex grow flex-col gap-y-6 overflow-y-auto bg-white px-4 pb-6">
         <div class="flex h-20 shrink-0 items-center justify-center pt-4">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
+            <div class="w-10 h-10 rounded-xl overflow-hidden border border-gray-200">
               <img src="/logo.jpg" alt="Kombi Burger Logo" class="w-full h-full object-cover">
             </div>
             <div class="flex flex-col">
@@ -29,12 +29,8 @@
           </div>
         </div>
         <nav class="flex flex-1 flex-col">
-          <ul role="list" class="flex flex-1 flex-col gap-y-8">
-            <li>
-              <ul role="list" class="-mx-2 space-y-2">
-                <%= SidebarPresenter.new(self).render_items %>
-              </ul>
-            </li>
+          <ul role="list" class="flex flex-1 flex-col gap-y-5">
+            <%= SidebarPresenter.new(self).render_items %>
             <% if current_user.has_role?(:superadmin) %>
               <li class="mt-auto">
                 <a href="<%= edit_settings_path %>" class="group -mx-2 flex gap-x-4 rounded-xl p-4 text-base font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors duration-200">
@@ -57,13 +53,13 @@
 <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col transition-all duration-300 ease-in-out" 
      data-sidebar-collapse-target="sidebar">
   <!-- Sidebar component for desktop -->
-  <div class="flex grow flex-col gap-y-6 overflow-y-auto border-r border-gray-200 bg-gradient-to-b from-white to-gray-50 px-6 pb-6 shadow-lg sidebar-scroll">
+  <div class="flex grow flex-col gap-y-6 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-6 sidebar-scroll">
     <!-- Header with toggle button -->
     <div class="flex flex-col h-20 shrink-0 items-center justify-center relative">
       <div class="flex items-center justify-between w-full">
         <div class="flex flex-col items-center" data-sidebar-collapse-target="content">
           <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-lg overflow-hidden shadow-md">
+            <div class="w-8 h-8 rounded-lg overflow-hidden border border-gray-200">
               <img src="/logo.jpg" alt="Kombi Burger Logo" class="w-full h-full object-cover">
             </div>
             <span class="h-8 w-auto font-bold text-lg text-indigo-600">POS Sistema</span>
@@ -72,7 +68,7 @@
         </div>
         <!-- Toggle button -->
         <button type="button" 
-                class="group p-2.5 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 transform hover:scale-110 shadow-sm hover:shadow-md relative z-10"
+                class="group p-2.5 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors duration-100 relative z-10"
                 data-action="click->sidebar-collapse#toggle"
                 data-sidebar-collapse-target="toggleButton"
                 title="Colapsar sidebar">
@@ -83,12 +79,8 @@
       </div>
     </div>
     <nav class="flex flex-1 flex-col">
-      <ul role="list" class="flex flex-1 flex-col gap-y-6">
-        <li>
-          <ul role="list" class="-mx-2 space-y-2">
-            <%= SidebarPresenter.new(self, collapsed: sidebar_collapsed?).render_items %>
-          </ul>
-        </li>
+      <ul role="list" class="flex flex-1 flex-col gap-y-5">
+        <%= SidebarPresenter.new(self, collapsed: sidebar_collapsed?).render_items %>
         <% if current_user.has_role?(:superadmin) %>
           <li class="mt-auto">
             <%= render_settings_icon(collapsed: sidebar_collapsed?, is_current: current_page?(edit_settings_path)) %>

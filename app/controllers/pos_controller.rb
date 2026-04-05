@@ -9,6 +9,7 @@ class PosController < ApplicationController
   def show
     @categories = Category.where(parent_id: nil)
     @order_type = session[:order_type] || 'in_store'
+    @table = Table.find_by(id: session[:table_id])
 
     # Render different view for mobile
     if mobile_device?
@@ -30,6 +31,30 @@ class PosController < ApplicationController
     subcategories = category.subcategories.order(:name)
 
     render json: subcategories
+  end
+
+  def products_by_category
+    category = Category.find(params[:category_id])
+    products = category.products
+                       .includes(:product_images, recipe_components: :ingredient, combo_items: :component_product)
+                       .where.not(status: 'inactive')
+                       .order(:name)
+
+    products_with_images = products.map do |product|
+      product_json = product.as_json(only: [ :id, :name, :price ])
+      product_json['stock'] = product.virtual_stock
+
+      first_image = product.product_images.first
+      if first_image&.image&.attached?
+        variant = first_image.image.variant(resize_to_fill: [ 200, 200 ]).processed
+        product_json['image_url'] = Rails.application.routes.url_helpers.rails_blob_path(variant, only_path: true)
+        product_json['image_alt'] = first_image.alt_text
+      end
+
+      product_json
+    end
+
+    render json: products_with_images
   end
 
   def products_by_subcategory
@@ -113,13 +138,15 @@ class PosController < ApplicationController
   def update_order_type_and_table
     @order_type = params[:order_type]
     session[:order_type] = @order_type
-    
+
     # Solo guarda la mesa si el tipo es in_store, la limpia si es delivery
     if @order_type == "in_store"
       session[:table_id] = params[:table_id].presence
     else
       session[:table_id] = nil
     end
+
+    @table = Table.find_by(id: session[:table_id])
 
     respond_to do |format|
       format.turbo_stream

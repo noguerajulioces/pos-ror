@@ -2,87 +2,99 @@
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
       <h1 class="text-xl font-semibold text-gray-900">Reportes</h1>
-      <p class="mt-2 text-sm text-gray-700">Lista de reportes disponibles </p>
+      <p class="mt-1 text-sm text-gray-500">Lista de reportes disponibles</p>
     </div>
   </div>
 
-  <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    <%= link_to products_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <%= link_to products_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Reporte de Productos</p>
-        <p class="text-sm text-gray-500">Inventario y precios</p>
+        <p class="text-sm font-semibold text-gray-900">Reporte de Productos</p>
+        <p class="text-xs text-gray-400">Inventario y precios</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
 
-    <%= link_to orders_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+    <%= link_to orders_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Reporte de Órdenes</p>
-        <p class="text-sm text-gray-500">Ventas y facturación</p>
+        <p class="text-sm font-semibold text-gray-900">Reporte de Órdenes</p>
+        <p class="text-xs text-gray-400">Ventas y facturación</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
 
-    <%= link_to stocks_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+    <%= link_to stocks_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Reporte de Stock</p>
-        <p class="text-sm text-gray-500">Movimientos de inventario</p>
+        <p class="text-sm font-semibold text-gray-900">Reporte de Stock</p>
+        <p class="text-xs text-gray-400">Movimientos de inventario</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
 
-    <%= link_to expenses_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+    <%= link_to expenses_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Reporte de Gastos</p>
-        <p class="text-sm text-gray-500">Gastos y categorías</p>
+        <p class="text-sm font-semibold text-gray-900">Reporte de Gastos</p>
+        <p class="text-xs text-gray-400">Gastos y categorías</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
 
-    <%= link_to credits_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+    <%= link_to credits_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M9 3.75H6.75a1.5 1.5 0 00-1.5 1.5v2.25m10.5-3.75H18a1.5 1.5 0 011.5 1.5v2.25" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M9 3.75H6.75a1.5 1.5 0 00-1.5 1.5v2.25m10.5-3.75H18a1.5 1.5 0 011.5 1.5v2.25" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Cuentas por Cobrar (Fiado)</p>
-        <p class="text-sm text-gray-500">Gestión de saldos pendientes</p>
+        <p class="text-sm font-semibold text-gray-900">Cuentas por Cobrar (Fiado)</p>
+        <p class="text-xs text-gray-400">Gestión de saldos pendientes</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
 
-    <%= link_to income_expenses_reports_path, class: "relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-indigo-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500" do %>
+    <%= link_to income_expenses_reports_path, class: "bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center gap-3 hover:border-indigo-400 transition-colors duration-100" do %>
       <div class="flex-shrink-0">
-        <svg class="h-10 w-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <span class="absolute inset-0" aria-hidden="true"></span>
-        <p class="text-sm font-medium text-gray-900">Reporte de Ingresos y Gastos</p>
-        <p class="text-sm text-gray-500">Flujo de caja y balance</p>
+        <p class="text-sm font-semibold text-gray-900">Reporte de Ingresos y Gastos</p>
+        <p class="text-xs text-gray-400">Flujo de caja y balance</p>
       </div>
+      <svg class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
     <% end %>
   </div>
 </div>
