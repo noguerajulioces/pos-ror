@@ -8,6 +8,10 @@ module Pos
       @product = Product.find(params[:product_id])
       quantity = params[:quantity].to_i || 1
 
+      if @product.virtual_stock <= 0
+        return render json: { error: 'Producto sin stock' }, status: :unprocessable_entity
+      end
+
       # Initialize the cart in the session if it doesn't exist
       session[:cart] ||= []
 

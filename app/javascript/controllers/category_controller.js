@@ -120,11 +120,6 @@ export default class extends Controller {
     const product = this.directProductsData.find(p => p.id.toString() === productId.toString());
     if (!product) return;
 
-    if (parseInt(product.stock) <= 0) {
-      alert('Este producto está fuera de stock');
-      return;
-    }
-
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     fetch('/pos/add_product_to_cart', {
       method: 'POST',
@@ -136,7 +131,7 @@ export default class extends Controller {
       body: JSON.stringify({ product_id: productId, quantity: 1 })
     })
     .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) return response.json().then(data => { alert(data.error || 'Error al agregar producto'); throw data.error });
       return response.text();
     })
     .then(html => Turbo.renderStreamMessage(html))
