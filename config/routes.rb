@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resources :subcategories, only: [ :new, :create, :destroy ]
     member do
       get :subcategories, action: :subcategories_json, as: :subcategories_json
+      get :products
     end
   end
   resources :ingredients do
@@ -69,6 +70,9 @@ Rails.application.routes.draw do
   end
 
   resources :products, only: [ :show, :edit, :update ] do
+    member do
+      patch :update_category
+    end
     resources :product_images, only: [ :destroy ]
     resources :stock_adjustments, only: [ :new, :create ], module: 'products'
     namespace :products do

@@ -1,0 +1,43 @@
+<turbo-frame id="modal">
+  <div data-controller="modal" class="fixed inset-0 z-[1000] flex items-center justify-center">
+    <div data-action="click->modal#clickOutside" class="fixed inset-0 bg-black opacity-50"></div>
+
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl z-[1100] relative flex flex-col" style="max-height: 85vh;">
+      <%# Header %>
+      <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900"><%= @category.name %></h2>
+          <p class="text-xs text-gray-500 mt-0.5"><%= @products.size %> <%= @products.size == 1 ? 'producto' : 'productos' %></p>
+        </div>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-gray-500">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <%# Body %>
+      <div class="overflow-y-auto flex-1">
+        <% if @products.empty? %>
+          <div class="py-12 text-center">
+            <p class="text-sm text-gray-500">Sin productos en esta categoría.</p>
+          </div>
+        <% else %>
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100 bg-gray-50">
+                <th class="px-5 py-2 text-left font-medium">Producto</th>
+                <th class="px-5 py-2 text-left font-medium">Mover a categoría</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100" id="category_products_<%= @category.id %>">
+              <% @products.each do |product| %>
+                <%= render "categories/category_product_row", product: product, categories_for_select: @categories_for_select %>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</turbo-frame>

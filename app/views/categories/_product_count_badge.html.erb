@@ -1,0 +1,11 @@
+<% show_zero_label = local_assigns.fetch(:show_zero_label, false) %>
+<span id="product_count_badge_<%= category.id %>">
+  <% prod_count = category.products.size %>
+  <% if prod_count > 0 %>
+    <span class="text-sm font-medium text-gray-700">
+      <%= prod_count %> <%= prod_count == 1 ? 'producto' : 'productos' %>
+    </span>
+  <% elsif show_zero_label %>
+    <span class="text-sm text-gray-400">Sin productos</span>
+  <% end %>
+</span>

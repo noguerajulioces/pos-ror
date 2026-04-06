@@ -1,54 +1,50 @@
-<%= form_with(model: @category, class: "bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-3") do |form| %>
+<%= form_with model: @category do |f| %>
+
   <% if @category.errors.any? %>
-    <div class="rounded-md bg-red-50 p-4 mb-6">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800">Se encontraron <%= @category.errors.count %> errores:</h3>
-          <div class="mt-2 text-sm text-red-700">
-            <ul class="list-disc space-y-1 pl-5">
-              <% @category.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      </div>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+      <ul class="list-disc pl-4 space-y-1">
+        <% @category.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
-  <div class="px-4 py-6 sm:p-8">
-    <div class="grid grid-cols gap-x-6 gap-y-8 sm:grid-cols-6 md:grid-cols-2">
-      <div class="col-span-1">
-        <%= form.label :name, "Nombre", class: "block text-sm/6 font-medium text-gray-900" %>
-        <div class="mt-2">
-          <%= form.text_field :name, class: "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" %>
-        </div>
+  <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div class="px-5 py-3 border-b border-gray-100">
+      <p class="text-sm font-semibold text-gray-700">Información</p>
+    </div>
+    <div class="px-5 py-4 space-y-4">
+
+      <div>
+        <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :name,
+            placeholder: "Ej: Bebidas, Entradas, Postres…",
+            class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
       </div>
 
-      <div class="col-span-1">
-        <%= form.label :parent_id, "Categoría padre (opcional)", class: "block text-sm/6 font-medium text-gray-900" %>
-        <p class="text-xs text-gray-500 mb-1">Dejá vacío para crear una categoría raíz. Seleccioná una si querés que sea subcategoría.</p>
-        <div class="mt-2 relative">
-          <%= form.collection_select :parent_id, @parent_categories, :id, :name,
+      <div>
+        <%= f.label :parent_id, "Categoría padre", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <p class="text-xs text-gray-500 mb-1.5">Déjalo vacío para crear una categoría principal. Selecciona una si quieres que sea subcategoría.</p>
+        <div class="relative">
+          <%= f.collection_select :parent_id, @parent_categories, :id, :name,
               { include_blank: "— Sin categoría padre —" },
-              { class: "block w-full rounded-md bg-white px-3 pr-10 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 appearance-none" } %>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z" clip-rule="evenodd" />
+              { class: "block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 pr-8 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" } %>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 
-  <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-    <%= link_to "Cancelar", categories_path, class: "text-sm/6 font-semibold text-gray-900" %>
-    <%= form.submit "Guardar", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+  <div class="flex items-center justify-end gap-3 pt-1">
+    <button type="button" data-action="modal#close" class="text-sm font-medium text-gray-600 hover:text-gray-900">Cancelar</button>
+    <%= f.submit @category.new_record? ? "Crear categoría" : "Guardar cambios",
+        class: "inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
   </div>
+
 <% end %>

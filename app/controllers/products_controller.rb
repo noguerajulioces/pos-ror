@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[show edit update]
+  before_action :set_product, only: %i[show edit update update_category]
 
   def hub; end
 
@@ -83,6 +83,45 @@ class ProductsController < ApplicationController
             stock: product.virtual_stock
           }
         }
+      end
+    end
+  end
+
+  def update_category
+    old_category_id = @product.category_id
+    @product.skip_recipe_validation = true
+    if @product.update(category_id: params[:category_id])
+      old_category = Category.find(old_category_id)
+      new_category = Category.find(params[:category_id])
+
+      streams = [ turbo_stream.remove("category_product_#{@product.id}") ]
+
+      # Si la categoría origen es subcategoría, re-renderizar el chip completo
+      # (para que el color ámbar/verde se actualice). Si es padre, solo el badge.
+      if old_category.parent_id.present?
+        streams << turbo_stream.replace(ActionView::RecordIdentifier.dom_id(old_category),
+          partial: "subcategories/subcategory", locals: { subcategory: old_category })
+      else
+        streams << turbo_stream.replace("product_count_badge_#{old_category_id}",
+          partial: "categories/product_count_badge", locals: { category: old_category, show_zero_label: true })
+      end
+
+      if new_category.parent_id.present?
+        streams << turbo_stream.replace(ActionView::RecordIdentifier.dom_id(new_category),
+          partial: "subcategories/subcategory", locals: { subcategory: new_category })
+      else
+        streams << turbo_stream.replace("product_count_badge_#{params[:category_id]}",
+          partial: "categories/product_count_badge", locals: { category: new_category, show_zero_label: true })
+      end
+
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: streams }
+        format.html { redirect_back fallback_location: categories_path, notice: 'Categoría actualizada.' }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html { redirect_back fallback_location: categories_path, alert: 'Error al actualizar.' }
       end
     end
   end

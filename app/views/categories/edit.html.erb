@@ -1,12 +1,19 @@
-<div class="px-4 sm:px-6 lg:px-8">
-  <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
-      <h1 class="text-base font-semibold text-gray-900">Editar Categoría</h1>
-      <p class="mt-2 text-sm text-gray-700">Modifica los detalles de la categoría seleccionada.</p>
+<turbo-frame id="modal">
+  <div data-controller="modal" class="fixed inset-0 z-[1000] flex items-center justify-center">
+    <div data-action="click->modal#clickOutside" class="fixed inset-0 bg-black opacity-50"></div>
+
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md z-[1100] relative">
+      <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+        <h2 class="text-base font-semibold text-gray-900">Editar categoría</h2>
+        <button type="button" data-action="modal#close" class="text-gray-400 hover:text-gray-500">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="px-5 py-4">
+        <%= render "categories/form" %>
+      </div>
     </div>
   </div>
-
-  <div class="mt-4">
-    <%= render 'categories/form', category: @category %>
-  </div>
-</div>
+</turbo-frame>

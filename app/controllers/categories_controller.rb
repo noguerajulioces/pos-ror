@@ -1,7 +1,7 @@
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[edit update destroy]
+  before_action :set_category, only: %i[edit update destroy products]
   def index
-    @categories = Category.where(parent_id: nil).includes(:subcategories).paginate(page: params[:page], per_page: 10)
+    @categories = Category.where(parent_id: nil).includes(:products, subcategories: :products).paginate(page: params[:page], per_page: 10)
   end
 
   def new
@@ -27,6 +27,15 @@ class CategoriesController < ApplicationController
       redirect_to categories_path, notice: 'Categoría actualizada con éxito.'
     else
       render :edit
+    end
+  end
+
+  def products
+    @products = @category.products.order(:name)
+    parent_cats = Category.where(parent_id: nil).includes(:subcategories).order(:name)
+    @categories_for_select = parent_cats.flat_map do |cat|
+      subs = cat.subcategories.order(:name)
+      [ [cat.name, cat.id] ] + subs.map { |s| ["  └ #{s.name}", s.id] }
     end
   end
 
