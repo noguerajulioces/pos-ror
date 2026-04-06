@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Read(//Users/noguerajulioces/Desktop/apps/**)"
+    ]
+  }
+}
