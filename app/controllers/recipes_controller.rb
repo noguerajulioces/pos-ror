@@ -119,30 +119,36 @@ class RecipesController < ApplicationController
     recipe_components_params = params.permit(recipe_components: [ :id, :ingredient_id, :quantity, :waste_pct ])[:recipe_components]
     return unless recipe_components_params.present?
 
-    # Eliminar componentes existentes que no están en los nuevos parámetros
+    # Eliminar componentes existentes que no están en los nuevos parámetros.
+    # Se usa really_destroy! para hard-delete y evitar conflictos con el índice único
+    # cuando acts_as_paranoid deja registros "borrados" con la misma combinación (product_id, ingredient_id).
     existing_ids = recipe_components_params.values.map { |component| component[:id] }.compact
-    @product.recipe_components.where.not(id: existing_ids).destroy_all
+    @product.recipe_components.where.not(id: existing_ids).each(&:really_destroy!)
 
     recipe_components_params.each do |index, component_params|
       next if component_params[:ingredient_id].blank? || component_params[:quantity].blank?
 
+      ingredient = Ingredient.find(component_params[:ingredient_id])
+      attrs = {
+        ingredient_id: ingredient.id,
+        quantity: component_params[:quantity],
+        waste_pct: component_params[:waste_pct] || 0,
+        unit_id: ingredient.unit_id
+      }
+
       if component_params[:id].present?
         # Actualizar componente existente
-        component = @product.recipe_components.find(component_params[:id])
-        component.update!(
-          ingredient_id: component_params[:ingredient_id],
-          quantity: component_params[:quantity],
-          waste_pct: component_params[:waste_pct] || 0,
-          unit_id: Ingredient.find(component_params[:ingredient_id]).unit_id
-        )
+        @product.recipe_components.find(component_params[:id]).update!(attrs)
       else
-        # Crear nuevo componente
-        @product.recipe_components.create!(
-          ingredient_id: component_params[:ingredient_id],
-          quantity: component_params[:quantity],
-          waste_pct: component_params[:waste_pct] || 0,
-          unit_id: Ingredient.find(component_params[:ingredient_id]).unit_id
-        )
+        # Si existe un registro soft-deleted con ese ingrediente, restaurarlo y actualizarlo
+        # en vez de crear uno nuevo (evita UniqueViolation en el índice de la DB)
+        deleted = @product.recipe_components.only_deleted.find_by(ingredient_id: ingredient.id)
+        if deleted
+          deleted.restore!
+          deleted.update!(attrs)
+        else
+          @product.recipe_components.create!(attrs)
+        end
       end
     end
   end
