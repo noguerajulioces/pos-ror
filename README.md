@@ -1,63 +1,28 @@
-# POS
+# POS Ferretería
 
-Sistema de punto de venta multi-tenant construido con Ruby on Rails 8 y Hotwire.
+Punto de venta multi-tenant para venta de mostrador, construido con Ruby on Rails 8 y Hotwire.
 
-Este repositorio aloja **dos productos distintos en dos ramas separadas**. No es un flujo
-`feature branch → main`: cada rama es la línea de desarrollo de un cliente diferente y ambas
-son de larga duración.
+> **KombiBurguer se mudó**
+> Este repositorio alojaba dos productos en dos ramas: `main` (Ferretería) y `principal`
+> (KombiBurguer). En julio de 2026 KombiBurguer se separó a su propio repositorio,
+> [`noguerajulioces/kombiburguer`](https://github.com/noguerajulioces/kombiburguer) (privado),
+> con la historia completa.
+>
+> La rama `principal` sigue acá como respaldo del momento del corte, pero **está retirada**:
+> el desarrollo gastronómico continúa en el repo nuevo. No abras PRs contra `principal`.
 
 ---
 
-## Ramas
+## Funcionalidad
 
-| Rama | Cliente | Rubro | Estado |
-|------|---------|-------|--------|
-| `main` | Ferretería | Venta de productos de ferretería | Rama por defecto en GitHub |
-| `principal` | KombiBurguer | Gastronomía / hamburguesería | Rama de desarrollo activo |
-
-Ambas ramas divergieron en el commit `d3e965c` (29 de julio de 2025) y desde entonces
-evolucionan por separado.
-
-### `main` — Ferretería
-
-Versión orientada a venta de mostrador de productos físicos:
-
-- Catálogo de productos, variantes, categorías y stock
-- Clientes (`clients_controller`), proveedores y compras
-- Caja, órdenes y reportes
-- Multi-tenant con `acts_as_tenant`
-
-### `principal` — KombiBurguer
-
-Versión gastronómica. Contiene lo mismo que `main` más lo específico del rubro:
-
-- **Mesas** (`Table`) y flujo de cuentas abiertas por mesa
-- **Delivery** y órdenes pendientes
-- **Recetas e ingredientes** (`Recipe`, `Ingredient`, `RecipeComponent`) con descuento de stock por insumo
-- **Combos** (`Combo`, `ComboItem`)
-- **Modificadores** de producto (`Modifier`, `ModifierGroup`) — extras, quitar ingredientes, etc.
-- **Transferencias de stock** entre sucursales (`StockTransfer`, `IngredientTransfer`)
-- **Roles y permisos** con `rolify` + `cancancan` (ver [ROLES_AUTHORIZATION.md](ROLES_AUTHORIZATION.md))
-- Impuestos (`TaxRate`) y monitoreo de errores con Sentry
-
-### Cómo trabajar con las ramas
-
-```bash
-# Trabajar en Ferretería
-git checkout main
-
-# Trabajar en KombiBurguer
-git checkout principal
-```
-
-**Reglas importantes:**
-
-- Nunca mergear `principal` → `main` completo: arrastraría funcionalidad gastronómica
-  (mesas, recetas, combos) que la ferretería no usa.
-- Los arreglos que aplican a ambos productos (bugs de núcleo, seguridad, dependencias)
-  se llevan con `git cherry-pick` de una rama a la otra.
-- Los PRs deben apuntar explícitamente a la rama del cliente correspondiente. GitHub
-  propone `main` por defecto — verificar antes de abrir el PR si el trabajo es de KombiBurguer.
+- Catálogo de productos con variantes, categorías, subcategorías e imágenes
+- Stock y movimientos de inventario
+- Punto de venta, órdenes y pagos (múltiples métodos y monedas)
+- Caja: apertura, cierre y movimientos
+- Clientes, proveedores, compras y gastos
+- Reportes
+- Impresión de comprobantes en PDF y generación de códigos de barra / QR
+- **Multi-tenant** con `acts_as_tenant`: cada `Account` tiene sus datos aislados
 
 ---
 
@@ -68,10 +33,11 @@ git checkout principal
 - **Hotwire** (Turbo + Stimulus) con `importmap-rails` — sin bundler de JS
 - **Tailwind CSS** vía `tailwindcss-rails` — sin librerías de UI externas
 - **Solid Queue / Solid Cache / Solid Cable** (respaldados por la base de datos)
-- **Devise** (autenticación), **Pundit** + **CanCanCan** (autorización), **acts_as_tenant** (multi-tenancy)
-- **wicked_pdf** (comprobantes PDF), **escpos** / **barby** / **rqrcode** (impresión térmica y códigos)
+- **Devise** (autenticación) y **acts_as_tenant** (multi-tenancy)
+- **wicked_pdf** (comprobantes), **barby** / **rqrcode** / **chunky_png** (códigos)
+- **ransack** (búsquedas), **will_paginate**, **friendly_id**, **paranoia** (borrado lógico)
 
-Las convenciones de UI y el design system están en [CLAUDE.md](CLAUDE.md).
+La UI está en español y usa solo clases utilitarias de Tailwind, sin librerías de componentes.
 
 ---
 
@@ -82,14 +48,13 @@ Las convenciones de UI y el design system están en [CLAUDE.md](CLAUDE.md).
 - Ruby 3.4.1
 - PostgreSQL
 - ImageMagick (para `image_processing` / `mini_magick`)
-- `wkhtmltopdf` (se instala vía gem en desarrollo)
+- `wkhtmltopdf` (se instala vía gem)
 
 ### Instalación
 
 ```bash
-git clone <repo>
+git clone git@github.com:noguerajulioces/pos-ror.git
 cd pos-ror
-git checkout principal        # o main, según el cliente
 
 bin/setup                     # instala gems, prepara la base y arranca el servidor
 ```
@@ -99,7 +64,7 @@ O paso a paso:
 ```bash
 bundle install
 bin/rails db:prepare
-bin/rails db:seed             # roles, monedas, cuenta demo y datos de ejemplo
+bin/rails db:seed             # cuenta demo, usuario, monedas y datos de ejemplo
 bin/dev                       # servidor + watcher de Tailwind (usa foreman)
 ```
 
@@ -121,7 +86,6 @@ Levanta PostgreSQL 15 y la app en el puerto 3000.
 ```bash
 bin/dev                       # desarrollo (web + tailwind:watch)
 bin/rails test                # suite de tests
-bin/rails test:system         # tests de sistema (Capybara + Selenium)
 bin/rubocop                   # linter (rubocop-rails-omakase)
 bin/brakeman                  # análisis estático de seguridad
 bin/rails db:seed             # datos de ejemplo
@@ -133,20 +97,15 @@ bin/rails erd                 # diagrama entidad-relación
 
 ## Deploy
 
-Ambas ramas se despliegan en [Render](https://render.com) usando `render.yaml` y
-`bin/render-build.sh` (bundle install → precompile assets → migrate).
+El repo trae `Dockerfile`, `docker-compose.yml` y la configuración de
+[Kamal](https://kamal-deploy.org) en `config/deploy.yml`.
 
-Instrucciones detalladas en [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md).
+**Kamal está sin configurar**: `config/deploy.yml` conserva los valores de la plantilla
+(`image: your-user/pos_ror`, servidor `192.168.0.1`). Antes de desplegar hay que completar
+imagen, servidores, registry y secretos en `.kamal/secrets`.
 
-> **Nota de seguridad:** `RENDER_DEPLOYMENT.md` tiene la `RAILS_MASTER_KEY` en texto plano
-> dentro del repositorio. Conviene rotar la key y mover el valor a un gestor de secretos.
-
----
-
-## Documentación adicional
-
-| Documento | Contenido |
-|-----------|-----------|
-| [CLAUDE.md](CLAUDE.md) | Design system, convenciones de UI y reglas de estilo |
-| [ROLES_AUTHORIZATION.md](ROLES_AUTHORIZATION.md) | Roles disponibles y uso de la autorización |
-| [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) | Guía de deploy paso a paso |
+> **⚠️ Credencial expuesta**
+> Este repositorio es **público** y la rama `principal` contiene un `RENDER_DEPLOYMENT.md`
+> con la `RAILS_MASTER_KEY` en texto plano. Esa key desencripta `config/credentials.yml.enc`,
+> que está commiteado. **Hay que rotarla** — borrar el archivo no alcanza, el valor sigue en
+> el historial de git de este repo y del repo de KombiBurguer.
